@@ -4108,13 +4108,14 @@
 
       .splash-photo {
         width: auto;
-        height: 80%;
+        height: 62%;
         /* Фото почти квадратное — на узком мобильном экране ширина (85vw)
            раньше упиралась в лимит, чем высота, и фото получалось намного
-           короче, чем разрешают 80% высоты, поэтому не доставало до текста.
-           Даём запас по ширине шире экрана — обрезку по бокам скрывает
-           overflow:hidden у .splash — чтобы высота 80% была главным
-           ограничением, как на десктопе. */
+           короче, чем разрешают проценты высоты, поэтому не доставало до
+           текста. Даём запас по ширине шире экрана — обрезку по бокам
+           скрывает overflow:hidden у .splash — чтобы высота была главным
+           ограничением, как на десктопе. Высоту держим умеренной (62%),
+           чтобы фото перекрывало текст, но не съедало весь экран. */
         max-width: none;
       }
 
@@ -6215,6 +6216,26 @@
       const langEl = document.querySelector('.lang');
       const navScrim = document.getElementById('navScrim');
 
+      // matchMedia — не в каждый кадр скролла, а только когда реально меняется
+      const mobileMQ = window.matchMedia('(max-width: 760px)');
+      let isMobile = mobileMQ.matches;
+      if (mobileMQ.addEventListener) {
+        mobileMQ.addEventListener('change', function(e) { isMobile = e.matches; });
+      }
+
+      // getBoundingClientRect() на contactsSection на каждый scroll-тик — это
+      // принудительный layout reflow по всей странице, даже когда контакты
+      // далеко за кадром. Заменяем на IntersectionObserver — он считается
+      // браузером асинхронно и не блокирует scroll-рендер.
+      let onContacts = false;
+      if (contactsSection && header) {
+        const contactsObserver = new IntersectionObserver(function(entries) {
+          const entry = entries[0];
+          onContacts = entry.isIntersecting && entry.boundingClientRect.top < header.offsetHeight;
+        }, { rootMargin: `-${header.offsetHeight}px 0px 0px 0px`, threshold: 0 });
+        contactsObserver.observe(contactsSection);
+      }
+
       let _rafSplash = null;
       function updateSplashHeader() {
         _rafSplash = null;
@@ -6226,7 +6247,6 @@
         if (photo) photo.style.opacity = photoProgress;
         if (label) label.style.opacity = photoProgress;
 
-        const isMobile = window.matchMedia('(max-width: 760px)').matches;
         if (isMobile) {
           const inSplash = scrolled < splashEnd;
           splash.classList.toggle('mobile-pinned', inSplash);
@@ -6244,9 +6264,7 @@
           if (navScrim) navScrim.classList.remove('visible');
         }
 
-        if (header && contactsSection) {
-          const rect = contactsSection.getBoundingClientRect();
-          const onContacts = rect.top < header.offsetHeight && rect.bottom > 0;
+        if (header) {
           header.classList.toggle('on-contacts', onContacts);
           if (langEl) langEl.classList.toggle('on-contacts', onContacts);
           if (navScrim) navScrim.classList.toggle('on-contacts', onContacts);
