@@ -3964,6 +3964,21 @@
            особенно когда системная капсула браузера разворачивается прямо
            над fixed-элементом с блюром. Убираем blur, оставляем плотный фон. */
         background: rgba(13, 13, 13, 0.96);
+        /* Заранее промоутим в свой composite-слой, чтобы WebKit не делал
+           это впервые именно в момент анимации капсулы браузера */
+        will-change: transform;
+        transform: translateZ(0);
+      }
+
+      .lang {
+        will-change: transform;
+        transform: translateZ(0);
+      }
+      .nav-burger-wrap {
+        will-change: transform;
+        /* .nav-burger-wrap уже центрируется через translateX(-50%) (базовое
+           правило) — не перезаписываем, а комбинируем с translateZ(0) */
+        transform: translateX(-50%) translateZ(0);
       }
 
       .nav-scrim {
