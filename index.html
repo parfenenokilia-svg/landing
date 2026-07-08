@@ -4630,7 +4630,7 @@
   </style>
 </head>
 <body>
-  <div class="splash-container" style="height:250vh;position:relative;z-index:10;">
+  <div class="splash-container" style="height:250vh;height:250dvh;position:relative;z-index:10;">
   <div class="splash" id="splash">
     <!-- Текст фоном -->
     <div class="splash-bg-text" aria-hidden="true">
@@ -6179,9 +6179,21 @@
       if (label) { label.style.opacity = '0'; label.style.transition = 'none'; }
 
       let containerH = splashContainer.offsetHeight;
-      window.addEventListener('resize', function() {
+      function recalcContainerH() {
         containerH = splashContainer.offsetHeight;
+      }
+      window.addEventListener('resize', recalcContainerH, { passive: true });
+      window.addEventListener('orientationchange', function() {
+        setTimeout(recalcContainerH, 200);
       }, { passive: true });
+      // iOS Safari: адресная строка скрывается/появляется без обычного resize —
+      // ловим это через visualViewport, иначе containerH протухает и вся
+      // scroll-привязанная логика (фото, хедер) сбивается по таймингу
+      if (window.visualViewport) {
+        window.visualViewport.addEventListener('resize', recalcContainerH, { passive: true });
+      }
+      // догоняем после полной загрузки шрифтов/изображений — layout мог чуть сдвинуться
+      window.addEventListener('load', recalcContainerH);
 
       // Hint GPU for photo composite
       if (photo) photo.style.willChange = 'opacity';
