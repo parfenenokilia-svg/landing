@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="ru" class="fonts-loading">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -2782,6 +2782,14 @@
       display: block;
       line-height: 0.82;
       transition: opacity 0.22s ease;
+    }
+    /* Пока кастомный шрифт (Space Grotesk) не подтверждён как загруженный,
+       прячем имя на сплеше — иначе браузер на секунду показывает системный
+       шрифт (другая ширина букв), а после подгрузки реального шрифта текст
+       мгновенно меняет ширину — выглядит как резкий скачок. Снимается
+       классом fonts-loading с <html> сразу как document.fonts.ready. */
+    .fonts-loading .splash-bg-line {
+      opacity: 0;
     }
     .splash-bg-line:first-child {
       font-size: 38vw;
@@ -5852,6 +5860,23 @@
     setLang(localStorage.getItem('landing-lang') || 'ru');
     fitSplashNames();
     window.addEventListener('load', fitSplashNames);
+
+    // Показываем имя на сплеше только когда шрифт реально готов — иначе
+    // виден скачок ширины при подмене системного шрифта на Space Grotesk
+    // (см. комментарий у .fonts-loading в CSS). Таймаут — подстраховка,
+    // если fonts.ready по какой-то причине не резолвится вовсе.
+    function revealSplashNames() {
+      fitSplashNames();
+      document.documentElement.classList.remove('fonts-loading');
+    }
+    if (document.fonts && document.fonts.ready) {
+      Promise.race([
+        document.fonts.ready,
+        new Promise((resolve) => setTimeout(resolve, 1500))
+      ]).then(revealSplashNames);
+    } else {
+      revealSplashNames();
+    }
 
     // ── ABOUT STICKY TIMELINE (только десктоп — на мобильном это линейный список,
     // см. IIFE "ABOUT MOBILE TIMELINE" ниже) ──
