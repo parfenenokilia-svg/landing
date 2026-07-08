@@ -7171,6 +7171,15 @@
       const lastCard = document.querySelector('.cs-card[data-idx="4"]');
       if (!services || !lastCard) return;
 
+      // ДИАГНОСТИЧЕСКИЙ ТЕСТ: эту анимацию (services "наезжает" снизу поверх
+      // последней карточки) раньше не гейтили по мобиле вообще — возможно,
+      // именно она и есть то, что выглядит как "экспертиза наезжает".
+      // Отключаем на мобиле, оставляем как было на десктопе.
+      if (window.matchMedia('(max-width: 760px)').matches) {
+        gsap.set(services, { clearProps: 'y' });
+        return;
+      }
+
       gsap.set(services, { y: '30%' });
       gsap.to(services, {
         y: '0%',
@@ -7184,6 +7193,18 @@
       });
     })();
 
+    // ДИАГНОСТИЧЕСКИЙ ТЕСТ (временно): на мобиле через секунду после загрузки
+    // убиваем вообще ВСЕ ScrollTrigger-инстансы — даже те, что сейчас не
+    // дают видимого эффекта, всё равно что-то пересчитывают на каждый
+    // скролл/ресайз. Цель — получить честный "нулевой" замер: если рывки
+    // на выезде браузерной капсулы остаются даже без единого ScrollTrigger
+    // во всём документе, значит дело не в нашем JS вообще.
+    setTimeout(() => {
+      if (typeof ScrollTrigger === 'undefined') return;
+      if (!window.matchMedia('(max-width: 760px)').matches) return;
+      ScrollTrigger.getAll().forEach(st => st.kill());
+      console.log('[diag] all ScrollTrigger instances killed on mobile:', ScrollTrigger.getAll().length);
+    }, 1200);
 
 
   </script>
