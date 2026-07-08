@@ -5932,11 +5932,16 @@
       if (typeof Lenis === 'undefined') return;
       if (!window.matchMedia('(max-width: 760px)').matches) return;
 
+      // syncTouch:true заставлял Lenis полностью подменять физику touch-
+      // скролла своей собственной инерцией — вместе с duration:1.0 это
+      // давало эффект "тормозит, потом резко довозит через пару секунд".
+      // Отключаем перехват touch, оставляем лёгкое сглаживание — этого
+      // достаточно, чтобы не было резких скачков скорости под пальцем,
+      // но без полной замены нативной физики скролла.
       const lenis = new Lenis({
-        duration: 1.0,
-        smoothWheel: false, // на десктопе не трогаем — только мобильный touch
-        syncTouch: true,
-        touchMultiplier: 1,
+        duration: 0.5,
+        smoothWheel: false,
+        syncTouch: false,
       });
 
       if (typeof ScrollTrigger !== 'undefined') {
