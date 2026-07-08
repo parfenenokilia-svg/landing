@@ -5723,19 +5723,17 @@
     // не дотягивает до края экрана. После масштабирования проверяем фактический
     // bounding box и подправляем сдвигом по X, если самый широкий глиф
     // (диагональные штрихи A) вылезает за экран сильнее, чем остальные буквы.
-    // На мобиле не тянем текст через scaleX — там надёжнее и без риска
-    // визуального скачка (font-swap, разная ширина между системным и
-    // кастомным шрифтом) просто держать fluid-размер через vw/clamp,
-    // заданный в CSS. Эффект "буквы точно в край" остаётся только на
-    // десктопе, где он и задумывался изначально.
+    // Раньше на мобиле scaleX отключали, потому что после подмены системного
+    // шрифта на Space Grotesk (FOUT) пересчитанный масштаб резко "прыгал".
+    // Корень проблемы теперь устранён по-другому: текст просто скрыт
+    // (.fonts-loading), пока document.fonts.ready не подтвердит, что нужный
+    // шрифт точно загружен — поэтому scaleX теперь безопасно считать и на
+    // мобиле тоже, без риска видимого скачка. Без этого текст без scaleX
+    // не дотягивает или вылезает за экран на некоторых именах/языках.
     const splashFitMQ = window.matchMedia('(max-width: 760px)');
 
     function fitSplashLine(el) {
       if (!el) return;
-      if (splashFitMQ.matches) {
-        el.style.transform = 'none';
-        return;
-      }
       el.style.transform = 'none';
       const targetWidth = window.innerWidth;
       const textWidth = el.getBoundingClientRect().width;
@@ -5773,9 +5771,7 @@
         last.textContent  = target.last;
         fitSplashNames();
         // EN: ILIA — буква A смещает центр вправо, корректируем на 1.5vw влево.
-        // Актуально только для десктопного scaleX-эффекта — на мобиле текст
-        // не масштабируется через transform, править нечего.
-        if (lang === 'en' && !splashFitMQ.matches) {
+        if (lang === 'en') {
           const shift = Math.round(window.innerWidth * 0.015);
           first.style.transform = first.style.transform + ` translateX(-${shift}px)`;
         }
@@ -6268,13 +6264,15 @@
       window.addEventListener('orientationchange', function() {
         setTimeout(recalcContainerH, 200);
       }, { passive: true });
-      // iOS Safari: адресная строка скрывается/появляется без обычного resize —
-      // ловим это через visualViewport, иначе containerH протухает и вся
-      // scroll-привязанная логика (фото, хедер) сбивается по таймингу
-      if (window.visualViewport) {
-        window.visualViewport.addEventListener('resize', recalcContainerH, { passive: true });
-      }
-      // догоняем после полной загрузки шрифтов/изображений — layout мог чуть сдвинуться
+      // ВАЖНО: раньше здесь висел ещё и слушатель visualViewport.resize —
+      // на iOS он стреляет ПРЯМО ВО ВРЕМЯ обычного скролла (когда прячется/
+      // появляется адресная строка), не только при осознанном ресайзе. Из-за
+      // этого containerH пересчитывался на лету, splashEnd сдвигался, и уже
+      // "отпущенный" (проскрolленный мимо) сплеш иногда резко возвращался в
+      // position:fixed — страница визуально прыгала назад посреди скролла.
+      // Отсюда и баг "всё само скачет туда-сюда", пойманный на записи экрана.
+      // Пересчитываем только на настоящий resize/orientationchange/load —
+      // этого достаточно, а мидскролльных скачков больше не будет.
       window.addEventListener('load', recalcContainerH);
 
       // Hint GPU for photo composite
@@ -6304,6 +6302,13 @@
         contactsObserver.observe(contactsSection);
       }
 
+      // Защёлка состояния "отпущен": один раз перейдя в released, не
+      // возвращаемся в pinned из-за небольшого пересчёта splashEnd — только
+      // если пользователь реально проскроллил обратно почти к началу.
+      // Без этого любое колебание containerH могло резко вернуть сплеш в
+      // position:fixed поверх уже пройденного контента.
+      let splashReleased = false;
+
       let _rafSplash = null;
       function updateSplashHeader() {
         _rafSplash = null;
@@ -6316,9 +6321,10 @@
         if (label) label.style.opacity = photoProgress;
 
         if (isMobile) {
-          const inSplash = scrolled < splashEnd;
-          splash.classList.toggle('mobile-pinned', inSplash);
-          splash.classList.toggle('mobile-released', !inSplash);
+          if (!splashReleased && scrolled >= splashEnd) splashReleased = true;
+          if (splashReleased && scrolled < splashEnd * 0.5) splashReleased = false;
+          splash.classList.toggle('mobile-pinned', !splashReleased);
+          splash.classList.toggle('mobile-released', splashReleased);
         } else {
           splash.classList.remove('mobile-pinned', 'mobile-released');
         }
@@ -7093,12 +7099,24 @@
           }
         });
 
+        // Та же логика, что и casesHero: scale+rotateZ+scrub — тяжело
+        // перерисовывать на мобиле при активном touch-drag. На мобиле
+        // лёгкий opacity/y once, на десктопе — как было.
+        const isMobileCards = window.matchMedia('(max-width: 760px)').matches;
         cards.forEach((card, i) => {
-          gsap.set(card, { transformOrigin: '50% 100%', scale: 0.88, rotateZ: 3, y: '6%' });
-          gsap.to(card, {
-            scale: 1, rotateZ: 0, y: '0%', ease: 'power2.out',
-            scrollTrigger: { trigger: card, start: 'top bottom', end: 'top 60%', scrub: 0.8 }
-          });
+          if (isMobileCards) {
+            gsap.set(card, { opacity: 0, y: 16 });
+            gsap.to(card, {
+              opacity: 1, y: 0, ease: 'power2.out', duration: 0.4,
+              scrollTrigger: { trigger: card, start: 'top 92%', toggleActions: 'play none none reverse' }
+            });
+          } else {
+            gsap.set(card, { transformOrigin: '50% 100%', scale: 0.88, rotateZ: 3, y: '6%' });
+            gsap.to(card, {
+              scale: 1, rotateZ: 0, y: '0%', ease: 'power2.out',
+              scrollTrigger: { trigger: card, start: 'top bottom', end: 'top 60%', scrub: 0.8 }
+            });
+          }
         });
 
         const observer = new IntersectionObserver((entries) => {
@@ -7124,23 +7142,25 @@
       const hero = document.getElementById('casesHero');
       if (!hero) return;
 
-      gsap.set(hero, {
-        transformOrigin: '50% 100%',
-        scale: 0.88,
-        rotateZ: 3,
-        y: '6%',
+      // scale+rotateZ на scrub — самая дорогая комбинация для перерисовки
+      // на мобильном Safari при быстром touch-drag (палец зажат, гоняет
+      // вверх-вниз): каждый кадр требует пересчёта композитного слоя с
+      // трансформацией по двум осям сразу. На мобиле оставляем только
+      // лёгкий opacity/y без scale/rotate и без scrub (once по входу).
+      const casesHeroMM = gsap.matchMedia();
+      casesHeroMM.add('(min-width: 761px)', () => {
+        gsap.set(hero, { transformOrigin: '50% 100%', scale: 0.88, rotateZ: 3, y: '6%' });
+        gsap.to(hero, {
+          scale: 1, rotateZ: 0, y: '0%', ease: 'power2.out',
+          scrollTrigger: { trigger: hero, start: 'top bottom', end: 'top 60%', scrub: 0.8 }
+        });
       });
-      gsap.to(hero, {
-        scale: 1,
-        rotateZ: 0,
-        y: '0%',
-        ease: 'power2.out',
-        scrollTrigger: {
-          trigger: hero,
-          start: 'top bottom',
-          end: 'top 60%',
-          scrub: 0.8,
-        }
+      casesHeroMM.add('(max-width: 760px)', () => {
+        gsap.set(hero, { opacity: 0, y: 16 });
+        gsap.to(hero, {
+          opacity: 1, y: 0, ease: 'power2.out', duration: 0.4,
+          scrollTrigger: { trigger: hero, start: 'top 90%', toggleActions: 'play none none reverse' }
+        });
       });
 
       // Entrance каждой карточки — уже в первом IIFE
