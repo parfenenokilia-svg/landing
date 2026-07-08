@@ -3960,8 +3960,10 @@
       }
 
       header {
-        background: rgba(13, 13, 13, 0.86);
-        backdrop-filter: blur(12px);
+        /* ДИАГНОСТИЧЕСКИЙ ТЕСТ: backdrop-filter — дорогой эффект для WebKit,
+           особенно когда системная капсула браузера разворачивается прямо
+           над fixed-элементом с блюром. Убираем blur, оставляем плотный фон. */
+        background: rgba(13, 13, 13, 0.96);
       }
 
       .nav-scrim {
@@ -4027,8 +4029,9 @@
         justify-content: center;
         padding: 0 10px;
         border-color: rgba(240, 237, 232, 0.5);
-        background: rgba(13, 13, 13, 0.34);
-        backdrop-filter: blur(10px);
+        /* ДИАГНОСТИЧЕСКИЙ ТЕСТ: убрали blur — см. комментарий у header выше,
+           эта капсула fixed прямо в зоне системной капсулы браузера. */
+        background: rgba(13, 13, 13, 0.75);
         font-size: 0;
         letter-spacing: 0.08em;
         pointer-events: auto;
