@@ -6097,26 +6097,12 @@
       });
 
       transitionsMM.add('(max-width: 760px)', () => {
-        gsap.to(services, {
-          opacity: 0, ease: 'none',
-          scrollTrigger: { trigger: services, start: 'bottom 60%', end: 'bottom 15%', scrub: true }
-        });
-
-        // toggleActions с фиксированной длительностью (0.5s) здесь ломался
-        // именно при "трении" пальцем по границе триггера: каждое пересечение
-        // порога запускало новый независимый твин, и они накладывались друг
-        // на друга — визуально мигание и рывки. scrub привязывает прогресс
-        // анимации напрямую к прогрессу скролла без своего таймера, поэтому
-        // не может "разъехаться" с пальцем.
-        gsap.fromTo(about, { opacity: 0, y: 24 }, {
-          opacity: 1, y: 0, ease: 'none',
-          scrollTrigger: { trigger: about, start: 'top 95%', end: 'top 65%', scrub: true }
-        });
-
-        gsap.fromTo(recs, { opacity: 0, y: 24 }, {
-          opacity: 1, y: 0, ease: 'none',
-          scrollTrigger: { trigger: recs, start: 'top 95%', end: 'top 65%', scrub: true }
-        });
+        // ДИАГНОСТИЧЕСКИЙ ТЕСТ: временно вообще без scroll-scrub анимаций
+        // в этой зоне на мобиле — блоки просто в своём обычном состоянии.
+        // Цель — понять, рывки из-за суммы наших анимаций или это внешний
+        // фактор (рендеринг браузера при выезде адресной панели). Ничего
+        // не анимируем: просто гарантируем финальное видимое состояние.
+        gsap.set([services, about, recs], { clearProps: 'opacity,y,scale,rotateZ' });
       });
 
       // Твин "About проваливается когда recs въезжает" убран: он дважды
@@ -7122,13 +7108,8 @@
         const isMobileCards = window.matchMedia('(max-width: 760px)').matches;
         cards.forEach((card, i) => {
           if (isMobileCards) {
-            // scrub, не toggleActions — см. комментарий у casesHero чуть выше
-            // по коду: независимый таймер конфликтовал сам с собой при
-            // "трении" пальцем по границе триггера.
-            gsap.fromTo(card, { opacity: 0, y: 16 }, {
-              opacity: 1, y: 0, ease: 'none',
-              scrollTrigger: { trigger: card, start: 'top 95%', end: 'top 70%', scrub: true }
-            });
+            // ДИАГНОСТИЧЕСКИЙ ТЕСТ: без анимации вообще на мобиле.
+            gsap.set(card, { clearProps: 'opacity,y,scale,rotateZ' });
           } else {
             gsap.set(card, { transformOrigin: '50% 100%', scale: 0.88, rotateZ: 3, y: '6%' });
             gsap.to(card, {
@@ -7175,14 +7156,8 @@
         });
       });
       casesHeroMM.add('(max-width: 760px)', () => {
-        // scrub вместо toggleActions с фикс. длительностью — при "трении"
-        // пальцем по границе триггера независимые твины накладывались друг
-        // на друга (мигание/рывки). scrub жёстко привязан к прогрессу
-        // скролла, разъехаться с пальцем не может.
-        gsap.fromTo(hero, { opacity: 0, y: 16 }, {
-          opacity: 1, y: 0, ease: 'none',
-          scrollTrigger: { trigger: hero, start: 'top 95%', end: 'top 70%', scrub: true }
-        });
+        // ДИАГНОСТИЧЕСКИЙ ТЕСТ: без анимации вообще на мобиле.
+        gsap.set(hero, { clearProps: 'opacity,y,scale,rotateZ' });
       });
 
       // Entrance каждой карточки — уже в первом IIFE
