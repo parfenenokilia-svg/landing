@@ -1,0 +1,13 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "index",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": ["-m", "http.server", "3456"],
+      "port": 3456,
+      "autoPort": false,
+      "cwd": "/Users/iliaparfeneok/Documents/New project 3"
+    }
+  ]
+}
