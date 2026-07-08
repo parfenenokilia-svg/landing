@@ -5880,6 +5880,17 @@
     setTimeout(() => {
       if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') return;
 
+      // По умолчанию ScrollTrigger пересчитывает ВСЕ триггеры на обычный
+      // window resize. На iOS (Safari и Chrome — там тот же движок WebKit)
+      // адресная строка выезжает/прячется прямо во время скролла пальцем,
+      // это тоже resize — и пересчёт координат триггеров прямо посреди
+      // жеста ломает scrub-анимации (границы триггеров резко сдвигаются).
+      // Убираем 'resize' из автообновления, оставляем только настоящую
+      // смену ориентации и первичную загрузку.
+      if (typeof ScrollTrigger.config === 'function') {
+        ScrollTrigger.config({ autoRefreshEvents: 'DOMContentLoaded,load,orientationchange' });
+      }
+
       const mm = gsap.matchMedia();
       mm.add('(min-width: 761px)', () => {
         const stages    = document.querySelectorAll('.scroll-stage');
