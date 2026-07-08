@@ -5715,8 +5715,19 @@
     // не дотягивает до края экрана. После масштабирования проверяем фактический
     // bounding box и подправляем сдвигом по X, если самый широкий глиф
     // (диагональные штрихи A) вылезает за экран сильнее, чем остальные буквы.
+    // На мобиле не тянем текст через scaleX — там надёжнее и без риска
+    // визуального скачка (font-swap, разная ширина между системным и
+    // кастомным шрифтом) просто держать fluid-размер через vw/clamp,
+    // заданный в CSS. Эффект "буквы точно в край" остаётся только на
+    // десктопе, где он и задумывался изначально.
+    const splashFitMQ = window.matchMedia('(max-width: 760px)');
+
     function fitSplashLine(el) {
       if (!el) return;
+      if (splashFitMQ.matches) {
+        el.style.transform = 'none';
+        return;
+      }
       el.style.transform = 'none';
       const targetWidth = window.innerWidth;
       const textWidth = el.getBoundingClientRect().width;
@@ -5753,8 +5764,10 @@
         first.textContent = target.first;
         last.textContent  = target.last;
         fitSplashNames();
-        // EN: ILIA — буква A смещает центр вправо, корректируем на 1.5vw влево
-        if (lang === 'en') {
+        // EN: ILIA — буква A смещает центр вправо, корректируем на 1.5vw влево.
+        // Актуально только для десктопного scaleX-эффекта — на мобиле текст
+        // не масштабируется через transform, править нечего.
+        if (lang === 'en' && !splashFitMQ.matches) {
           const shift = Math.round(window.innerWidth * 0.015);
           first.style.transform = first.style.transform + ` translateX(-${shift}px)`;
         }
@@ -6183,9 +6196,13 @@
     // ── END FLOW PARTY TRANSITION ──────────────────────────────────
 
 
-    // Автоподбор ПАРФЕНЕНОК на всю ширину
+    // Автоподбор ПАРФЕНЕНОК на всю ширину — только десктоп.
+    // На мобиле это дублировало fitSplashLine (тот же элемент .splash-last),
+    // два независимых механизма спорили за один текст и давали видимый
+    // скачок размера. На мобиле держим чистый vw/clamp-размер из CSS.
     (function() {
       function fitSplashText() {
+        if (window.matchMedia('(max-width: 760px)').matches) return;
         const el = document.querySelector('.splash-last');
         if (!el) return;
         el.style.fontSize = '10px';
