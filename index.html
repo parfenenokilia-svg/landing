@@ -7273,6 +7273,10 @@
           // ничего не рендерится, проступать нечему — вместо борьбы с багом
           // прячем весь остальной ленд на время просмотра кейса.
           if (window.matchMedia('(max-width: 760px)').matches) {
+            // Запоминаем, откуда открыли кейс, чтобы «Назад» вернул
+            // на ту же карточку, а не на сплеш-экран (scrollTo(0,0) сбросит
+            // позицию, если её не восстановить явно при закрытии).
+            document.body.dataset.caseReturnScrollY = window.scrollY;
             document.querySelectorAll('.splash-container, header, .lang, #navOverlay, main.wrap, #qa, #contacts, footer.footer').forEach(el => {
               el.dataset.caseHiddenDisplay = el.style.display;
               el.style.display = 'none';
@@ -7310,6 +7314,13 @@
                   delete el.dataset.caseHiddenDisplay;
                 }
               });
+
+              if (document.body.dataset.caseReturnScrollY !== undefined) {
+                const y = parseFloat(document.body.dataset.caseReturnScrollY) || 0;
+                delete document.body.dataset.caseReturnScrollY;
+                if (window.ScrollTrigger) ScrollTrigger.refresh();
+                window.scrollTo(0, y);
+              }
             }});
           }
         });
