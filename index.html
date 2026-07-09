@@ -5938,21 +5938,24 @@
     // инерционное движение, поэтому даже когда системная панель браузера
     // всплывает во время скролла, анимации на странице не дёргаются вслед
     // за дребезгом настоящего touch-инпута.
-    // ── LENIS DEBUG BADGE (временно, для диагностики — потом уберём) ──
     (function() {
       if (typeof Lenis === 'undefined') return;
       if (!window.matchMedia('(max-width: 760px)').matches) return;
 
-      // Точное повторение joinflowparty.com. Проверено напрямую в их
-      // живом коде: смещённого GSAP/ScrollTrigger у них нет вообще —
-      // Lenis просто сглаживает сырой скролл, ничего тяжёлого на нём
-      // не висит. Конфиг — их реальные значения (smoothTouch:false,
-      // lerp:0.1, wheelMultiplier:0.8), native touch без перехвата.
+      // Native touch (как у joinflowparty.com) даёт лучший скролл, но не
+      // убирает капсулу на нашей странице — проверили это отдельно, все
+      // найденные CSS-отличия (header/nav-ctas/lang фон-на-себе,
+      // body::after, viewport-fit=cover, scroll-behavior) уже исправлены,
+      // и капсула всё равно ломает интерфейс при native touch. Единственное,
+      // что реально убирает капсулу — синхронизация тача через Lenis.
+      // Берём лучший сбалансированный конфиг из уже проверенных вариантов.
       const lenis = new Lenis({
-        lerp: 0.1,
+        lerp: 0.09,
         smoothWheel: false,
-        syncTouch: false,
-        wheelMultiplier: 0.8,
+        syncTouch: true,
+        syncTouchLerp: 0.1,
+        touchInertiaMultiplier: 25,
+        touchMultiplier: 1.1,
       });
 
       if (typeof gsap !== 'undefined') {
