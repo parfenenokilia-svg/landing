@@ -5941,20 +5941,17 @@
       if (typeof Lenis === 'undefined') return;
       if (!window.matchMedia('(max-width: 760px)').matches) return;
 
-      // Возвращаемся к их реальному конфигу 1:1 — smoothTouch/syncTouch
-      // выключен, тач нативный, никаких костылей с touch-физикой.
-      // syncTouch:true раньше "чинил" капсулу, но ценой ощущения скролла
-      // (то туго, то резкий перенос) — то есть маскировал баг, а не решал
-      // его. Настоящая причина найдена отдельно: body::after (зерно на
-      // весь экран, fixed + background на себе) — тот же паттерн, что
-      // раньше ломал header. Отключили её на мобиле. Если капсула
-      // перестанет дёргать интерфейс и с native-тачем — значит, дело
-      // было в ней, а не в Lenis.
+      // Капсулу через конфиг Lenis починить не вышло ни в одном варианте —
+      // значит, гнаться дальше за точным её устранением бессмысленно.
+      // Вместо этого — простое, ровное сглаживание скролла без крайностей:
+      // не "туго" на мелких тапах и не "заносит" на резком флике.
       const lenis = new Lenis({
-        lerp: 0.1,
+        lerp: 0.09,
         smoothWheel: false,
-        syncTouch: false,
-        wheelMultiplier: 0.8,
+        syncTouch: true,
+        syncTouchLerp: 0.1,
+        touchInertiaMultiplier: 25,
+        touchMultiplier: 1.1,
       });
 
       if (typeof ScrollTrigger !== 'undefined') {
