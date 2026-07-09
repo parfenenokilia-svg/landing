@@ -3606,7 +3606,6 @@
       will-change: transform;
       position: relative;
     }
-    }
     .cs-hero::before {
       content: '';
       position: absolute;
@@ -4217,6 +4216,11 @@
       .splash-label { bottom: max(18px, env(safe-area-inset-bottom)); }
 
       .fp-section-wrap { min-height: auto; }
+      /* .fp-slide (обёртка sticky-перехода Flow Party, десктоп-механика)
+         держит min-height:100dvh даже на мобиле, где .hero сжали — сама
+         обёртка остаётся высотой в целый экран, и разница выглядит как
+         пустота под текстом. */
+      .fp-slide { min-height: auto; }
 
       .fp-slide,
       .stack-section,
