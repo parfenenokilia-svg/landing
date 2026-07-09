@@ -5942,12 +5942,15 @@
       // Капсула фиксится syncTouch:true как таковым, а "слишком быстро"
       // после отпускания пальца — это touchInertiaMultiplier (дальность
       // проекции инерции) и syncTouchLerp (скорость доезда до неё).
-      // Снижаем оба, чтобы накат гасился медленнее и мягче.
+      // syncTouchLerp:0.07 давал слишком долгий "хвост" доката — в самом
+      // конце, когда шаг между кадрами становится меньше пикселя, это
+      // ощущается как мелкая дрожь из-за округления. Чуть приподняли,
+      // чтобы этот хвост был короче и не успевал быть заметным.
       const lenis = new Lenis({
         lerp: 0.09,
         smoothWheel: false,
         syncTouch: true,
-        syncTouchLerp: 0.07,
+        syncTouchLerp: 0.09,
         touchInertiaMultiplier: 15,
         touchMultiplier: 1,
       });
@@ -6184,19 +6187,13 @@
       });
 
       transitionsMM.add('(max-width: 760px)', () => {
-        // Лёгкая версия для мобилы: opacity/y один раз при входе в экран
-        // (toggleActions), без scale (дорогая перерисовка текста на
-        // каждый кадр) и без scrub (постоянный пересчёт на скролле).
-        gsap.set(about, { opacity: 0, y: 40 });
-        gsap.to(about, {
-          opacity: 1, y: 0, ease, duration: 0.6,
-          scrollTrigger: { trigger: about, start: 'top 85%', toggleActions: 'play none none reverse' }
-        });
-        gsap.set(recs, { opacity: 0, y: 40 });
-        gsap.to(recs, {
-          opacity: 1, y: 0, ease, duration: 0.6,
-          scrollTrigger: { trigger: recs, start: 'top 85%', toggleActions: 'play none none reverse' }
-        });
+        // Никакой отдельной анимации на сами секции #about/#recommendations
+        // не вешаем: их прямые дочерние элементы УЖЕ проявляются через
+        // общесайтовую систему .reveal (см. "Scroll-reveal with
+        // IntersectionObserver" ниже) — чистый CSS-transition, без GSAP.
+        // Добавление второго, независимого твина поверх (на сам контейнер)
+        // давало заметную дрожь текста: два наложенных движения на вложенных
+        // друг в друга элементах. Секции просто остаются в обычном потоке.
       });
 
       // Твин "About проваливается когда recs въезжает" убран: он дважды
