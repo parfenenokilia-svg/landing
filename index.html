@@ -5932,19 +5932,18 @@
       if (typeof Lenis === 'undefined') return;
       if (!window.matchMedia('(max-width: 760px)').matches) return;
 
-      // Реальный конфиг joinflowparty.com (вытащил прямо из их инлайн-кода):
-      // lerp:0.1, smoothTouch:false, wheelMultiplier:0.8, infinite:false.
-      // Ключевое отличие от моей первой попытки — они используют lerp
-      // (подтягивание к цели каждый кадр с экспоненциальным затуханием),
-      // а не duration (анимация с фиксированной длительностью). duration
-      // и давал тот самый эффект "тормозит, потом резко довозит через
-      // пару секунд" — lerp так не делает, он непрерывно и мягко следует
-      // за реальной точкой скролла без отдельного таймера завершения.
+      // У них smoothTouch:false — тач не перехвачен вообще, но у них,
+      // видимо, и нет самого паттерна бага (fixed-элементы с фоном на
+      // себе и т.п.), поэтому он им и не нужен. У нас без перехвата тача
+      // проблема возвращается — значит, нам всё-таки нужен syncTouch:true,
+      // но с lerp (подтягивание каждый кадр), а не duration (фиксированная
+      // по времени анимация) — именно duration давал "тормозит, потом
+      // скачком довозит". lerp так себя не ведёт.
       const lenis = new Lenis({
-        lerp: 0.1,
+        lerp: 0.12,
         smoothWheel: false,
-        syncTouch: false,
-        wheelMultiplier: 0.8,
+        syncTouch: true,
+        touchMultiplier: 1,
       });
 
       if (typeof ScrollTrigger !== 'undefined') {
