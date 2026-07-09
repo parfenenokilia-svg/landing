@@ -5978,12 +5978,22 @@
         touchMultiplier: 1.1,
       });
 
-      if (typeof ScrollTrigger !== 'undefined') {
-        lenis.on('scroll', ScrollTrigger.update);
-      }
+      // ДИАГНОСТИЧЕСКИЙ ТЕСТ (см. бейдж — не относится к цифрам конфига
+      // выше). Разобрал исходники Lenis: во время касания используется
+      // lerp:1 (почти мгновенная догонка пальца), "тугости" тут по формуле
+      // быть не должно. Подозреваю два реальных источника ощущения
+      // "то тормозит, то резко довозит":
+      // 1) lenis.on('scroll', ScrollTrigger.update) пересчитывает ВСЕ
+      //    активные ScrollTrigger на каждый кадр тача — дорого, может
+      //    подвешивать кадр;
+      // 2) gsap.ticker.lagSmoothing(0) убирает защиту GSAP от рывков
+      //    после подвисания кадра — после любого лага следующий кадр
+      //    анимации просто прыгает на всю накопленную дельту времени,
+      //    это и похоже на "резкий перенос".
+      // Ниже — временно убираю оба, чтобы проверить гипотезу.
       if (typeof gsap !== 'undefined') {
         gsap.ticker.add((time) => { lenis.raf(time * 1000); });
-        gsap.ticker.lagSmoothing(0);
+        // lagSmoothing НЕ трогаем — оставляем дефолтное поведение GSAP.
       } else {
         function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
         requestAnimationFrame(raf);
