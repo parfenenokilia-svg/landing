@@ -3606,14 +3606,19 @@
       will-change: transform;
       position: relative;
     }
+    /* Раньше здесь была цветная полоска слева (border-left-style accent) —
+       классический "ленивый акцент", а не осознанная граница раздела.
+       Убрали. Разделение между Hero и Кейсами теперь — тонкая
+       горизонтальная линия сверху (настоящая граница нового блока)
+       плюс отступ, а не декоративная полоска сбоку. */
     .cs-hero::before {
       content: '';
       position: absolute;
       top: 0;
       left: 0;
-      width: 5px;
-      height: 100%;
-      background: #38bdf8;
+      right: 0;
+      height: 1px;
+      background: rgba(240, 237, 232, 0.14);
     }
     .cs-hero-title {
       font-family: "Oswald", sans-serif !important;
