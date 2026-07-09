@@ -7266,6 +7266,20 @@
           // управляет скроллом на JS-уровне и продолжит крутить страницу
           // под оверлеем при тач-свайпе. Останавливаем его явно.
           if (window.__lenis) window.__lenis.stop();
+
+          // На мобиле position:fixed на весь экран у Safari/Telegram-webview
+          // не перерисовывается корректно (тот самый капсульный баг) — текст
+          // лендинга проступает сквозь оверлей. Если под оверлеем физически
+          // ничего не рендерится, проступать нечему — вместо борьбы с багом
+          // прячем весь остальной ленд на время просмотра кейса.
+          if (window.matchMedia('(max-width: 760px)').matches) {
+            document.querySelectorAll('header, .lang, #navOverlay, main.wrap, #qa, #contacts, footer.footer').forEach(el => {
+              el.dataset.caseHiddenDisplay = el.style.display;
+              el.style.display = 'none';
+            });
+            window.scrollTo(0, 0);
+          }
+
           gsap.fromTo(overlay, { opacity: 0 }, { opacity: 1, duration: 0.4 });
         });
 
@@ -7289,6 +7303,13 @@
               document.body.style.overflow = '';
               overlay.style.opacity = 1;
               if (window.__lenis) window.__lenis.start();
+
+              document.querySelectorAll('header, .lang, #navOverlay, main.wrap, #qa, #contacts, footer.footer').forEach(el => {
+                if (el.dataset.caseHiddenDisplay !== undefined) {
+                  el.style.display = el.dataset.caseHiddenDisplay || '';
+                  delete el.dataset.caseHiddenDisplay;
+                }
+              });
             }});
           }
         });
