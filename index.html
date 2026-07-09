@@ -4363,14 +4363,11 @@
         max-width: calc(100vw - 120px);
       }
 
+      /* Декоративная нумерация карточек ("01", "02"...) — классическая
+         "01/N"-пагинация, которая не несёт нужной пользователю информации.
+         Убрана на мобиле. */
       .cs-num {
-        top: 24px;
-        right: var(--mobile-pad);
-        bottom: auto;
-        left: auto;
-        font-size: clamp(26px, 7vw, 36px);
-        line-height: 1;
-        color: rgba(240, 237, 232, 0.55);
+        display: none;
       }
 
       .cs-title {
@@ -7266,17 +7263,17 @@
           }
         });
 
-        // Та же логика, что и casesHero: scale+rotateZ+scrub — тяжело
-        // перерисовывать на мобиле при активном touch-drag. На мобиле
-        // лёгкий opacity/y once, на десктопе — как было.
+        // Дорогим на мобиле был именно scrub (пересчёт transform каждый
+        // кадр скролла во время touch-drag) — не сам поворот/scale.
+        // Одноразовый (toggleActions) твин с тем же диагональным въездом
+        // стоит примерно как opacity/y, но выглядит как на десктопе.
         const isMobileCards = window.matchMedia('(max-width: 760px)').matches;
         cards.forEach((card, i) => {
           if (isMobileCards) {
-            // Лёгкая версия: opacity/y один раз при входе, без scale/rotate.
-            gsap.set(card, { opacity: 0, y: 24 });
+            gsap.set(card, { transformOrigin: '50% 100%', opacity: 0, scale: 0.92, rotateZ: 2, y: 28 });
             gsap.to(card, {
-              opacity: 1, y: 0, duration: 0.5, ease: 'power2.out',
-              scrollTrigger: { trigger: card, start: 'top 88%', toggleActions: 'play none none reverse' }
+              opacity: 1, scale: 1, rotateZ: 0, y: 0, duration: 0.6, ease: 'power2.out',
+              scrollTrigger: { trigger: card, start: 'top 85%', toggleActions: 'play none none reverse' }
             });
           } else {
             gsap.set(card, { transformOrigin: '50% 100%', scale: 0.88, rotateZ: 3, y: '6%' });
@@ -7324,10 +7321,14 @@
         });
       });
       casesHeroMM.add('(max-width: 760px)', () => {
-        gsap.set(hero, { opacity: 0, y: 24 });
+        // Триггер раньше стоял на 'top 88%' — срабатывал, когда заголовок
+        // только на 12% вошёл в кадр, к моменту показа анимация уже
+        // отыгрывала и выглядела как её отсутствие. Сдвинули на 78% и
+        // усилили путь (rotateZ+scale, как на десктопе, но once — не scrub).
+        gsap.set(hero, { transformOrigin: '50% 100%', opacity: 0, scale: 0.92, rotateZ: 2, y: 32 });
         gsap.to(hero, {
-          opacity: 1, y: 0, duration: 0.5, ease: 'power2.out',
-          scrollTrigger: { trigger: hero, start: 'top 88%', toggleActions: 'play none none reverse' }
+          opacity: 1, scale: 1, rotateZ: 0, y: 0, duration: 0.65, ease: 'power2.out',
+          scrollTrigger: { trigger: hero, start: 'top 78%', toggleActions: 'play none none reverse' }
         });
       });
 
