@@ -238,8 +238,12 @@
       opacity: 1;
       pointer-events: auto;
     }
-    #navCvBtn::after { content: "↓"; margin-left: 4px; }
-    #navContactBtn::after { content: "↗"; margin-left: 4px; }
+    /* \FE0E — модификатор "текстовое представление": без него ↗ на iOS
+       рендерится цветным emoji-значком, а не обычным глифом (у ↓ такого
+       варианта нет, поэтому у CV стрелка и выглядела нормально). gap:6px
+       у .nav-cta уже даёт отступ — margin-left не дублируем. */
+    #navCvBtn::after { content: "\2193"; }
+    #navContactBtn::after { content: "\2197\FE0E"; }
 
     .nav-cta {
       display: inline-flex;
@@ -3991,6 +3995,11 @@
       header {
         will-change: transform;
         transform: translateZ(0);
+        /* Явно фиксируем высоту хедера, чтобы подложка (header::before,
+           inset:0) занимала ровно зону с кнопками/меню, а не расползалась
+           вниз из-за унаследованных правил .nav-row из старой раскладки. */
+        height: 62px;
+        overflow: hidden;
       }
       /* НАШЁЛ ПОДТВЕРЖДЁННЫЙ БАГ (iOS 26, Apple Community / GitHub issues):
          background/backdrop-filter ПРЯМО на fixed/sticky элементе у верхней
@@ -4094,7 +4103,23 @@
 
       /* Контакт-кнопка остаётся с полным текстом, не сжимается до иконки —
          но узкая буква-в-букву spacing и меньший паддинг, чтобы не
-         доставать до хамбургера в центре */
+         доставать до хамбургера в центре. Сдвигаем весь блок так, чтобы
+         зазор до хамбургера совпадал с зазором хамбургер→CV (тот зазор —
+         это просто "что осталось" после ширины CV/ENG у правого края,
+         примерно 30px от края хамбургера, поэтому явно считаем то же
+         самое слева через right вместо left). */
+      .nav-ctas {
+        left: auto;
+        right: calc(50% + 59px); /* половина ширины хамбургера (29px) + зазор (30px) */
+        justify-content: flex-end;
+      }
+
+      /* RU/ENG-переключатель виден с первого кадра (ещё до хедера) —
+         сплошной тёмный фон на голом сплеше смотрится отдельной чёрной
+         плашкой. Оставляем только обводку, без заливки. */
+      .lang .lang-btn {
+        background: transparent;
+      }
       #navContactBtn {
         min-width: 0;
         font-size: 10px;
@@ -4112,11 +4137,17 @@
       .lang .lang-btn[data-lang="en"]::before { content: "ENG"; }
       .lang .lang-btn[data-lang="ru"]::before { content: "RU"; }
 
+      /* ↗ на iOS по умолчанию рендерится цветным эмодзи-значком (в отличие
+         от ↓, у которого нет emoji-варианта) — отсюда и "галимый" вид.
+         \FE0E — модификатор "текстовое представление", убирает emoji-стиль.
+         margin-left убран: gap:6px у .nav-cta уже даёт нужный отступ,
+         дублирование margin+gap и создавало "огромный" зазор у CV. */
       #navCvBtn::after,
       #navContactBtn::after {
         font-size: 11px;
-        margin-left: 4px;
+        margin-left: 0;
       }
+      #navContactBtn::after { content: "\2197\FE0E"; }
 
       .nav-overlay {
         width: min(100vw, 420px);
