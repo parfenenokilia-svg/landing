@@ -5937,6 +5937,30 @@
     // инерционное движение, поэтому даже когда системная панель браузера
     // всплывает во время скролла, анимации на странице не дёргаются вслед
     // за дребезгом настоящего touch-инпута.
+    // ── LENIS DEBUG BADGE (временно, для диагностики — потом уберём) ──
+    (function() {
+      if (!window.matchMedia('(max-width: 760px)').matches) return;
+      const badge = document.createElement('div');
+      badge.style.cssText = 'position:fixed;top:4px;left:4px;z-index:999999;'
+        + 'background:rgba(0,0,0,0.85);color:#0f0;font:10px/1.35 monospace;'
+        + 'padding:5px 7px;border-radius:4px;pointer-events:none;white-space:pre;';
+      document.body.appendChild(badge);
+      function update() {
+        const loaded = typeof Lenis !== 'undefined';
+        const l = window.__lenis;
+        let txt = 'Lenis script: ' + (loaded ? 'loaded' : 'NOT LOADED');
+        if (l) {
+          txt += '\nrunning, lerp=' + l.options.lerp + ' syncTouch=' + l.options.syncTouch;
+          txt += '\nvel=' + (typeof l.velocity === 'number' ? l.velocity.toFixed(2) : '?');
+        } else if (loaded) {
+          txt += '\ninstance NOT created yet';
+        }
+        badge.textContent = txt;
+        requestAnimationFrame(update);
+      }
+      update();
+    })();
+
     (function() {
       if (typeof Lenis === 'undefined') return;
       if (!window.matchMedia('(max-width: 760px)').matches) return;
