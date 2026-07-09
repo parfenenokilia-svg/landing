@@ -7273,7 +7273,7 @@
           // ничего не рендерится, проступать нечему — вместо борьбы с багом
           // прячем весь остальной ленд на время просмотра кейса.
           if (window.matchMedia('(max-width: 760px)').matches) {
-            document.querySelectorAll('header, .lang, #navOverlay, main.wrap, #qa, #contacts, footer.footer').forEach(el => {
+            document.querySelectorAll('.splash-container, header, .lang, #navOverlay, main.wrap, #qa, #contacts, footer.footer').forEach(el => {
               el.dataset.caseHiddenDisplay = el.style.display;
               el.style.display = 'none';
             });
@@ -7304,7 +7304,7 @@
               overlay.style.opacity = 1;
               if (window.__lenis) window.__lenis.start();
 
-              document.querySelectorAll('header, .lang, #navOverlay, main.wrap, #qa, #contacts, footer.footer').forEach(el => {
+              document.querySelectorAll('.splash-container, header, .lang, #navOverlay, main.wrap, #qa, #contacts, footer.footer').forEach(el => {
                 if (el.dataset.caseHiddenDisplay !== undefined) {
                   el.style.display = el.dataset.caseHiddenDisplay || '';
                   delete el.dataset.caseHiddenDisplay;
