@@ -4393,6 +4393,20 @@
         padding: 28px var(--mobile-pad) 56px !important;
       }
 
+      /* Тот же баг iOS 26, что чинили для header: фон ПРЯМО на fixed-элементе
+         у кромки экрана ломает системную панель браузера, и во время этого
+         слома видно страницу под оверлеем. Фон переносим на дочерний слой. */
+      #caseOverlay {
+        background: transparent !important;
+      }
+      #caseOverlay::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        z-index: -1;
+        background: #0d0d0d;
+      }
+
       .cs-detail-body,
       .cs-detail-inner {
         max-width: none;
@@ -7237,6 +7251,10 @@
           overlay.style.display = 'block';
           overlay.scrollTop = 0;
           document.body.style.overflow = 'hidden';
+          // overflow:hidden на body не останавливает Lenis — он сам
+          // управляет скроллом на JS-уровне и продолжит крутить страницу
+          // под оверлеем при тач-свайпе. Останавливаем его явно.
+          if (window.__lenis) window.__lenis.stop();
           gsap.fromTo(overlay, { opacity: 0 }, { opacity: 1, duration: 0.4 });
         });
 
@@ -7259,6 +7277,7 @@
               overlay.style.display = 'none';
               document.body.style.overflow = '';
               overlay.style.opacity = 1;
+              if (window.__lenis) window.__lenis.start();
             }});
           }
         });
