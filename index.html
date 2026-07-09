@@ -706,16 +706,6 @@
       opacity: 1;
       z-index: 0;
     }
-    @media (max-width: 760px) {
-      /* ДИАГНОСТИЧЕСКИЙ ТЕСТ: мелкая повторяющаяся радиальная текстура
-         (3×3px тайл) на весь раздел «Кейсы» — дорого перерисовывать при
-         любом изменении высоты вьюпорта (в том числе при выезде браузерной
-         капсулы). Убираем на мобиле, проверяем, была ли она виновником. */
-      #cases::before {
-        display: none;
-      }
-    }
-
     #cases > * {
       position: relative;
       z-index: 1;
@@ -6194,12 +6184,19 @@
       });
 
       transitionsMM.add('(max-width: 760px)', () => {
-        // ДИАГНОСТИЧЕСКИЙ ТЕСТ: временно вообще без scroll-scrub анимаций
-        // в этой зоне на мобиле — блоки просто в своём обычном состоянии.
-        // Цель — понять, рывки из-за суммы наших анимаций или это внешний
-        // фактор (рендеринг браузера при выезде адресной панели). Ничего
-        // не анимируем: просто гарантируем финальное видимое состояние.
-        gsap.set([services, about, recs], { clearProps: 'opacity,y,scale,rotateZ' });
+        // Лёгкая версия для мобилы: opacity/y один раз при входе в экран
+        // (toggleActions), без scale (дорогая перерисовка текста на
+        // каждый кадр) и без scrub (постоянный пересчёт на скролле).
+        gsap.set(about, { opacity: 0, y: 40 });
+        gsap.to(about, {
+          opacity: 1, y: 0, ease, duration: 0.6,
+          scrollTrigger: { trigger: about, start: 'top 85%', toggleActions: 'play none none reverse' }
+        });
+        gsap.set(recs, { opacity: 0, y: 40 });
+        gsap.to(recs, {
+          opacity: 1, y: 0, ease, duration: 0.6,
+          scrollTrigger: { trigger: recs, start: 'top 85%', toggleActions: 'play none none reverse' }
+        });
       });
 
       // Твин "About проваливается когда recs въезжает" убран: он дважды
@@ -6218,8 +6215,11 @@
         });
       });
       mm.add('(max-width: 760px)', () => {
-        // ДИАГНОСТИЧЕСКИЙ ТЕСТ: тоже отключаем — строчки просто видны сразу.
-        gsap.set('#servicesGrid .svc-row', { clearProps: 'opacity,x' });
+        // Та же логика, но без x-сдвига (дешевле на мобиле) и once, не scrub.
+        gsap.from('#servicesGrid .svc-row', {
+          scrollTrigger: { trigger: '#servicesGrid', start: 'top 90%', toggleActions: 'play none none reverse' },
+          opacity: 0, y: 20, duration: 0.5, ease: 'power2.out', stagger: 0.08
+        });
       });
     }, 0);
 
@@ -7218,8 +7218,12 @@
         const isMobileCards = window.matchMedia('(max-width: 760px)').matches;
         cards.forEach((card, i) => {
           if (isMobileCards) {
-            // ДИАГНОСТИЧЕСКИЙ ТЕСТ: без анимации вообще на мобиле.
-            gsap.set(card, { clearProps: 'opacity,y,scale,rotateZ' });
+            // Лёгкая версия: opacity/y один раз при входе, без scale/rotate.
+            gsap.set(card, { opacity: 0, y: 24 });
+            gsap.to(card, {
+              opacity: 1, y: 0, duration: 0.5, ease: 'power2.out',
+              scrollTrigger: { trigger: card, start: 'top 88%', toggleActions: 'play none none reverse' }
+            });
           } else {
             gsap.set(card, { transformOrigin: '50% 100%', scale: 0.88, rotateZ: 3, y: '6%' });
             gsap.to(card, {
@@ -7266,8 +7270,11 @@
         });
       });
       casesHeroMM.add('(max-width: 760px)', () => {
-        // ДИАГНОСТИЧЕСКИЙ ТЕСТ: без анимации вообще на мобиле.
-        gsap.set(hero, { clearProps: 'opacity,y,scale,rotateZ' });
+        gsap.set(hero, { opacity: 0, y: 24 });
+        gsap.to(hero, {
+          opacity: 1, y: 0, duration: 0.5, ease: 'power2.out',
+          scrollTrigger: { trigger: hero, start: 'top 88%', toggleActions: 'play none none reverse' }
+        });
       });
 
       // Entrance каждой карточки — уже в первом IIFE
@@ -7280,10 +7287,11 @@
       const lastCard = document.querySelector('.cs-card[data-idx="4"]');
       if (!services || !lastCard) return;
 
-      // ДИАГНОСТИЧЕСКИЙ ТЕСТ: эту анимацию (services "наезжает" снизу поверх
-      // последней карточки) раньше не гейтили по мобиле вообще — возможно,
-      // именно она и есть то, что выглядит как "экспертиза наезжает".
-      // Отключаем на мобиле, оставляем как было на десктопе.
+      // Эта анимация (services "наезжает" снизу поверх последней карточки)
+      // раньше не была ограничена десктопом — именно она давала эффект
+      // "экспертиза наезжает на карточку", о котором были жалобы в самом
+      // начале. Оставляем отключённой на мобиле намеренно (не диагностика),
+      // на десктопе — как было.
       if (window.matchMedia('(max-width: 760px)').matches) {
         gsap.set(services, { clearProps: 'y' });
         return;
@@ -7301,20 +7309,6 @@
         }
       });
     })();
-
-    // ДИАГНОСТИЧЕСКИЙ ТЕСТ (временно): на мобиле через секунду после загрузки
-    // убиваем вообще ВСЕ ScrollTrigger-инстансы — даже те, что сейчас не
-    // дают видимого эффекта, всё равно что-то пересчитывают на каждый
-    // скролл/ресайз. Цель — получить честный "нулевой" замер: если рывки
-    // на выезде браузерной капсулы остаются даже без единого ScrollTrigger
-    // во всём документе, значит дело не в нашем JS вообще.
-    setTimeout(() => {
-      if (typeof ScrollTrigger === 'undefined') return;
-      if (!window.matchMedia('(max-width: 760px)').matches) return;
-      ScrollTrigger.getAll().forEach(st => st.kill());
-      console.log('[diag] all ScrollTrigger instances killed on mobile:', ScrollTrigger.getAll().length);
-    }, 1200);
-
 
   </script>
   <div id="caseOverlay" style="display:none; position:fixed; inset:0; z-index:1000; background:#0d0d0d; overflow-y:auto;">
