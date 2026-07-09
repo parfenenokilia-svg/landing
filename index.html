@@ -238,6 +238,9 @@
       opacity: 1;
       pointer-events: auto;
     }
+    #navCvBtn::after { content: "↓"; margin-left: 4px; }
+    #navContactBtn::after { content: "↗"; margin-left: 4px; }
+
     .nav-cta {
       display: inline-flex;
       align-items: center;
@@ -4027,7 +4030,7 @@
 
       .lang {
         position: fixed;
-        top: 18px;
+        top: 11px;
         right: var(--mobile-pad);
         z-index: 310;
         margin: 0;
@@ -4040,8 +4043,10 @@
         height: 40px;
       }
 
+      /* Хамбургер (40px) выше, чем пилюли (34px) — центр по вертикали
+         совпадает, только если top отличается на разницу высот/2 (3px) */
       .nav-burger-wrap {
-        top: 18px;
+        top: 8px;
       }
 
       .nav-burger {
@@ -4056,7 +4061,7 @@
 
       .nav-ctas {
         position: fixed;
-        top: 18px;
+        top: 11px;
         left: var(--mobile-pad);
         z-index: 250;
         display: flex;
@@ -4080,15 +4085,21 @@
         pointer-events: auto;
       }
 
+      /* Раньше было min-width:58px — с коротким "CV" это давало заметную
+         пустую зону справа от текста. Пусть кнопка просто облегает контент. */
       #navCvBtn {
-        min-width: 58px;
+        min-width: 0;
+        padding: 0 12px;
       }
 
-      /* Контакт-кнопка остаётся с полным текстом, не сжимается до иконки */
+      /* Контакт-кнопка остаётся с полным текстом, не сжимается до иконки —
+         но узкая буква-в-букву spacing и меньший паддинг, чтобы не
+         доставать до хамбургера в центре */
       #navContactBtn {
         min-width: 0;
-        font-size: 11px;
-        padding: 0 16px;
+        font-size: 10px;
+        padding: 0 12px;
+        letter-spacing: 0.03em;
       }
 
       #navCvBtn::before,
@@ -4101,9 +4112,8 @@
       .lang .lang-btn[data-lang="en"]::before { content: "ENG"; }
       .lang .lang-btn[data-lang="ru"]::before { content: "RU"; }
 
-      #navCvBtn::after { content: "↓"; }
-
-      #navCvBtn::after {
+      #navCvBtn::after,
+      #navContactBtn::after {
         font-size: 11px;
         margin-left: 4px;
       }
@@ -5126,8 +5136,8 @@
         aboutLead: "Сочетаю проектное и продуктовое управление. Мыслю метриками, юнит-экономикой и пользовательским опытом.",
         recommendationsLabel: "коллеги и менеджеры о работе со мной",
         qaLabel: "ответы на частые вопросы",
-        navCv: "СКАЧАТЬ CV ↓",
-        navContact: "НАПИСАТЬ МНЕ ↗",
+        navCv: "СКАЧАТЬ CV",
+        navContact: "НАПИСАТЬ МНЕ",
         timeline: [
           { name: "ИВЕНТ", year: "2012–2019", text: "Семь лет в индустрии: от хелпера до ивент-продюсера. Каждый месяц новый B2B заказчик, новый концепт, новые цели мероприятия. Научился управлять людьми, бюджетами и ожиданиями клиентов в условиях высокой неопределённости с минимальным правом на ошибку. Эта база работает и в продуктовых запусках." },
           { name: "РОСТЕХ", year: "2019–2021", text: "Работал над программой поддержки технологических стартапов. Здесь впервые начал смотреть на продукт глазами пользователя: проектировал путь участника, отслеживал удовлетворённость, проводил кастдевы. Параллельно погрузился в устройство технологических стартапов и логику привлечения инвестиций. Узнал, как думают фаундеры, что ожидают от продукта и с какими ошибками сталкиваются." },
@@ -5299,8 +5309,8 @@
         aboutLead: "I combine project and product management. I think in metrics, unit economics, and user experience.",
         recommendationsLabel: "colleagues and managers on working with me",
         qaLabel: "answers to common questions",
-        navCv: "DOWNLOAD CV ↓",
-        navContact: "CONTACT ME ↗",
+        navCv: "DOWNLOAD CV",
+        navContact: "CONTACT ME",
         timeline: [
           { name: "EVENTS", year: "2012–2019", text: "Seven years in the industry: from assistant to event producer. Every month brought a new B2B client, a new concept, new event goals. I learned to manage people, budgets, and client expectations under high uncertainty with little room for error. That foundation carries over directly into product launches." },
           { name: "ROSTEC", year: "2019–2021", text: "Worked on a technology startup support program. This is where I first started looking at a product through the user's eyes: designing participant journeys, tracking satisfaction, running customer interviews. I also went deep into how technology startups work and how investment logic operates — understanding what founders expect from a product and where they typically go wrong." },
