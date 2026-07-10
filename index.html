@@ -5024,7 +5024,7 @@
   </main>
 
   <section id="qa" class="punk-section" style="background:#111111;margin-left:calc(-50vw + 50%);margin-right:calc(-50vw + 50%);width:100vw;position:relative;z-index:6;padding-left:max(24px, calc(50vw - 556px));padding-right:max(24px, calc(50vw - 556px));box-sizing:border-box;">
-    <span class="section-mega-title">Q&A</span>
+    <span class="section-mega-title" id="qaTitle">Q&A</span>
     <span class="section-mega-label">ответы на частые вопросы</span>
     <div class="qa-punk" id="qaGrid"></div>
   </section>
@@ -6802,10 +6802,24 @@
     // панелью на iOS). Возвращаем плавность через JS, только для этих
     // ссылок — на native scrollIntoView, никакого влияния на обычный
     // тач-скролл/Lenis.
+    // Секция как таковая — это большой контейнер, её верхняя граница не
+    // совпадает с самим заголовком (отступы, пустой #cases-плейсхолдер
+    // внутри #casesOuter и т.п.). Ведём явно на элемент заголовка, а не на
+    // секцию целиком — тогда попадание всегда на заголовок, без сюрпризов.
+    const NAV_SCROLL_TARGETS = {
+      cases: 'casesHeroTitle',
+      services: 'servicesTitle',
+      about: 'aboutTitle',
+      recommendations: 'recommendationsTitle',
+      qa: 'qaTitle',
+      contacts: 'contactsTitle',
+    };
+
     document.querySelectorAll('a.nav-flip-link[href^="#"]').forEach((link) => {
       link.addEventListener('click', (e) => {
         const id = link.getAttribute('href').slice(1);
-        const target = document.getElementById(id);
+        const titleId = NAV_SCROLL_TARGETS[id];
+        const target = (titleId && document.getElementById(titleId)) || document.getElementById(id);
         if (!target) return;
         e.preventDefault();
         // Нативный scrollIntoView двигает scrollTop напрямую, а Lenis (на
