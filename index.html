@@ -6808,7 +6808,17 @@
         const target = document.getElementById(id);
         if (!target) return;
         e.preventDefault();
-        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        // Нативный scrollIntoView двигает scrollTop напрямую, а Lenis (на
+        // мобиле) может в этот же момент доигрывать свою собственную инерцию
+        // от предыдущего скролла и на следующем кадре откатить позицию к
+        // СВОЕЙ старой цели — отсюда "иногда попадает не туда". Если Lenis
+        // активен, скроллим через него самого, чтобы не было двух хозяев
+        // одной позиции скролла.
+        if (window.__lenis) {
+          window.__lenis.scrollTo(target, { offset: 0 });
+        } else {
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
       });
     });
 
