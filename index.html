@@ -6058,6 +6058,11 @@
 
       document.addEventListener('touchmove', (e) => {
         if (!e.touches || !e.touches.length) return;
+        // Пока открыт оверлей кейса, скролл документа заморожен на 0 —
+        // guard решил бы, что мы "всегда наверху страницы", и блокировал
+        // бы любой свайп внутри оверлея. Пропускаем элементы со своим
+        // собственным скроллом (тот же маркер, что понимает и Lenis).
+        if (e.target.closest && e.target.closest('[data-lenis-prevent]')) return;
         const y = e.touches[0].clientY;
         const deltaY = y - touchStartY;
         const doc = document.documentElement;
