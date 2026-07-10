@@ -4057,6 +4057,16 @@
         height: 40px;
       }
 
+      /* Панель меню теперь плавающая карточка ниже хедера (top:78px), но
+         крестик закрытия должен остаться там же, где бургер — иначе
+         теряется иллюзия "бургер превращается в крестик на месте". Крестик
+         крепим к экрану напрямую, а не к панели. */
+      .nav-overlay-close {
+        position: fixed;
+        top: 8px;
+        z-index: 320;
+      }
+
       /* Хамбургер (40px) выше, чем пилюли (34px) — центр по вертикали
          совпадает, только если top отличается на разницу высот/2 (3px) */
       .nav-burger-wrap {
@@ -4155,10 +4165,13 @@
       #navContactBtn::after { content: "\2197\FE0E"; }
 
       .nav-overlay {
-        width: min(100vw, 420px);
-        max-height: 100dvh;
-        border-radius: 0 0 16px 16px;
-        padding: 66px var(--mobile-pad) 24px;
+        /* Плавающая карточка, как у флоу-пати — не прилипает к кромке
+           экрана, а висит с отступом со всех сторон и скруглена целиком. */
+        top: 78px;
+        width: min(calc(100vw - 48px), 380px);
+        max-height: calc(100dvh - 78px - 24px);
+        border-radius: 22px;
+        padding: 28px var(--mobile-pad) 24px;
       }
 
       .nav-flip-link { padding: 12px 0; }
