@@ -44,6 +44,12 @@
       color: var(--text);
       font-family: "IBM Plex Sans", -apple-system, BlinkMacSystemFont, sans-serif;
       -webkit-font-smoothing: antialiased;
+      /* Резиновое перетягивание (overscroll bounce) на iOS тянет страницу
+         за пределы документа и на миг показывает то, что физически лежит
+         "за" ней — а фон сплэша (#1a1a2e) и фон html/body (var(--bg),
+         #0d0d0d) не совпадают, отсюда чужой тёмный прямоугольник при
+         скролле выше самого верха. Проще отключить сам эффект. */
+      overscroll-behavior-y: none;
     }
 
     body {
