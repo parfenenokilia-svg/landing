@@ -6815,6 +6815,15 @@
         // активен, скроллим через него самого, чтобы не было двух хозяев
         // одной позиции скролла.
         if (window.__lenis) {
+          // Lenis считает целевую позицию как rect.top + СВОЙ внутренний
+          // animatedScroll, а не реальный scrollTop страницы. Если где-то
+          // до этого скролл двигали напрямую (window.scrollTo, закрытие
+          // оверлея кейса и т.п.) и Lenis не успел пересинхронизироваться —
+          // его animatedScroll устаревший, и цель считается неверно (отсюда
+          // "то попадает, то нет"). resize() принудительно подтягивает
+          // animatedScroll к реальному scrollTop прямо перед прыжком.
+          window.__lenis.resize();
+          if (typeof ScrollTrigger !== 'undefined') ScrollTrigger.refresh();
           window.__lenis.scrollTo(target, { offset: 0 });
         } else {
           target.scrollIntoView({ behavior: 'smooth', block: 'start' });
