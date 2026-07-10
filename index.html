@@ -40,15 +40,16 @@
     html, body {
       width: 100%;
       overflow-x: clip;
-      background: var(--bg);
+      /* Резиновое перетягивание (overscroll bounce) на iOS/Telegram-webview —
+         нативное поведение UIScrollView, overscroll-behavior там часто
+         игнорируется и эффект всё равно тянется. Раз сам bounce не убрать
+         через CSS в этом окружении — убираем то, что делает его заметным:
+         фон совпадает с фоном сплэша (первый экран документа), поэтому
+         при растяжении сверху видно тот же цвет, а не чужой прямоугольник. */
+      background: #1a1a2e;
       color: var(--text);
       font-family: "IBM Plex Sans", -apple-system, BlinkMacSystemFont, sans-serif;
       -webkit-font-smoothing: antialiased;
-      /* Резиновое перетягивание (overscroll bounce) на iOS тянет страницу
-         за пределы документа и на миг показывает то, что физически лежит
-         "за" ней — а фон сплэша (#1a1a2e) и фон html/body (var(--bg),
-         #0d0d0d) не совпадают, отсюда чужой тёмный прямоугольник при
-         скролле выше самого верха. Проще отключить сам эффект. */
       overscroll-behavior-y: none;
     }
 
@@ -6048,6 +6049,30 @@
       }
 
       window.__lenis = lenis;
+
+      // ── Гасим резиновое перетягивание (overscroll bounce) вручную ──
+      // overscroll-behavior в CSS часто игнорируется встроенными браузерами
+      // (например, Telegram in-app browser — WKWebView со своим нативным
+      // UIScrollView.bounces, который не всегда слушает CSS). Ловим тач руками:
+      // если пользователь тянет вниз, когда скролл уже в самом верху (или
+      // вверх, когда уже в самом низу), гасим событие — классический приём
+      // из времён до overscroll-behavior.
+      let touchStartY = 0;
+      document.addEventListener('touchstart', (e) => {
+        if (e.touches && e.touches.length) touchStartY = e.touches[0].clientY;
+      }, { passive: true });
+
+      document.addEventListener('touchmove', (e) => {
+        if (!e.touches || !e.touches.length) return;
+        const y = e.touches[0].clientY;
+        const deltaY = y - touchStartY;
+        const doc = document.documentElement;
+        const atTop = doc.scrollTop <= 0;
+        const atBottom = doc.scrollTop + doc.clientHeight >= doc.scrollHeight - 1;
+        if ((atTop && deltaY > 0) || (atBottom && deltaY < 0)) {
+          e.preventDefault();
+        }
+      }, { passive: false });
     })();
 
     // ── ABOUT STICKY TIMELINE (только десктоп — на мобильном это линейный список,
