@@ -40,13 +40,7 @@
     html, body {
       width: 100%;
       overflow-x: clip;
-      /* Резиновое перетягивание (overscroll bounce) на iOS/Telegram-webview —
-         нативное поведение UIScrollView, overscroll-behavior там часто
-         игнорируется и эффект всё равно тянется. Раз сам bounce не убрать
-         через CSS в этом окружении — убираем то, что делает его заметным:
-         фон совпадает с фоном сплэша (первый экран документа), поэтому
-         при растяжении сверху видно тот же цвет, а не чужой прямоугольник. */
-      background: #1a1a2e;
+      background: var(--bg);
       color: var(--text);
       font-family: "IBM Plex Sans", -apple-system, BlinkMacSystemFont, sans-serif;
       -webkit-font-smoothing: antialiased;
