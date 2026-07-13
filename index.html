@@ -6833,44 +6833,39 @@
         if (!target) return;
         e.preventDefault();
 
-        const rectBefore = target.getBoundingClientRect();
-        const scrollYBefore = window.scrollY;
-        const lines = [
-          'клик: #' + id + ' -> ищем #' + (titleId || id),
-          'найден: ' + (target ? target.tagName + (target.id ? '#' + target.id : '') : 'НЕТ'),
-          'rect.top (от края экрана): ' + Math.round(rectBefore.top),
-          'scrollY до клика: ' + Math.round(scrollYBefore),
-          'цель по документу: ' + Math.round(rectBefore.top + scrollYBefore),
-          'lenis: ' + (window.__lenis ? 'есть' : 'нет'),
-        ];
-        navDebugEl.textContent = 'nav-debug:\n' + lines.join('\n') + '\n(доскроллит через ~1с...)';
-        setTimeout(() => {
-          const rectAfter = target.getBoundingClientRect();
-          navDebugEl.textContent = 'nav-debug:\n' + lines.join('\n') +
-            '\nscrollY после: ' + Math.round(window.scrollY) +
-            '\nrect.top после: ' + Math.round(rectAfter.top) +
-            (Math.abs(rectAfter.top) > 5 ? '\n!!! НЕ на заголовке (rect.top должен быть ~0)' : '\nOK — попали на заголовок');
-        }, 1000);
-        // Нативный scrollIntoView двигает scrollTop напрямую, а Lenis (на
-        // мобиле) может в этот же момент доигрывать свою собственную инерцию
-        // от предыдущего скролла и на следующем кадре откатить позицию к
-        // СВОЕЙ старой цели — отсюда "иногда попадает не туда". Если Lenis
-        // активен, скроллим через него самого, чтобы не было двух хозяев
-        // одной позиции скролла.
-        if (window.__lenis) {
-          // Lenis считает целевую позицию как rect.top + СВОЙ внутренний
-          // animatedScroll, а не реальный scrollTop страницы. Если где-то
-          // до этого скролл двигали напрямую (window.scrollTo, закрытие
-          // оверлея кейса и т.п.) и Lenis не успел пересинхронизироваться —
-          // его animatedScroll устаревший, и цель считается неверно (отсюда
-          // "то попадает, то нет"). resize() принудительно подтягивает
-          // animatedScroll к реальному scrollTop прямо перед прыжком.
-          window.__lenis.resize();
-          if (typeof ScrollTrigger !== 'undefined') ScrollTrigger.refresh();
-          window.__lenis.scrollTo(target, { offset: 0 });
-        } else {
-          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        // ВЫЯСНИЛИ через дебаг-бейдж: расчёт цели и сам прыжок были верны —
+        // scrollY после прыжка почти точно совпадал с посчитанной целью, но
+        // rect.top заголовка после прыжка был далеко не 0. Значит абсолютная
+        // позиция самого заголовка в документе МЕНЯЕТСЯ уже ПОСЛЕ прыжка
+        // (что-то на странице догружается/дорастает по высоте). Вместо того
+        // чтобы искать точную причину, делаем скролл самокорректирующимся:
+        // прыгаем, ждём, проверяем попадание и, если не попали — прыгаем
+        // повторно на уже устоявшуюся позицию.
+        function jumpTo(cb) {
+          if (window.__lenis) {
+            window.__lenis.resize();
+            if (typeof ScrollTrigger !== 'undefined') ScrollTrigger.refresh();
+            window.__lenis.scrollTo(target, { offset: 0, onComplete: cb });
+          } else {
+            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            setTimeout(cb, 500);
+          }
         }
+
+        let attempts = 0;
+        function attemptJump() {
+          attempts++;
+          jumpTo(() => {
+            const rect = target.getBoundingClientRect();
+            const offBy = Math.round(rect.top);
+            navDebugEl.textContent = 'nav-debug: #' + id + ' попытка ' + attempts +
+              ', rect.top=' + offBy + (Math.abs(offBy) > 5 ? ' — не попали, пробуем ещё' : ' — OK');
+            if (Math.abs(offBy) > 5 && attempts < 4) {
+              attemptJump();
+            }
+          });
+        }
+        attemptJump();
       });
     });
 
