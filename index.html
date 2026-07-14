@@ -4187,30 +4187,28 @@
       .splash {
         height: 100svh;
         min-height: 540px;
-        /* Нативный sticky (как на десктопе и как у Flow Party) вместо
-           ручного JS-переключателя fixed/absolute — тот переключатель
-           отставал от реального скролла на кадр и на обратном скролле
-           давал видимый разрыв (обнажался фон страницы). У sticky такой
-           рассинхронизации в принципе быть не может — браузер решает
-           это синхронно с рендером, а не скриптом. */
+        /* На мобиле сплэш всегда position:fixed — без sticky и без
+           переключения классов. Его движение считает одна непрерывная
+           JS-формула (см. updateSplashHeader): пока скролл меньше порога
+           (высота контейнера минус высота сплэша) — сплэш стоит на месте;
+           после порога — уезжает вверх ровно на столько же, на сколько
+           проскроллили сверх порога. Момент окончания движения математически
+           совпадает с началом Hero (тот же контейнер, тот же scroll),
+           поэтому разрыв или "зависшее" состояние невозможны в принципе —
+           это не два независимых механизма, которые могут разъехаться,
+           а один расчёт. */
+        position: fixed;
+        inset: 0;
+        width: 100%;
         z-index: 90;
       }
 
-      /* На мобиле 250vh (как на десктопе) — это очень долгий скролл
-         только чтобы "отпустить" сплеш. Сокращаем секцию, чтобы фото/имя
-         раскрывались быстрее и не ощущались отдельным долгим экраном. */
+      /* Высота контейнера = высота сплэша + запас на "держим, пока не
+         раскроется фото". Сам сплэш из потока выведен (position:fixed),
+         поэтому контейнер просто резервирует нужную дистанцию скролла —
+         никакого лишнего пустого пространства в вёрстке нет. */
       .splash-container {
         height: 140svh !important;
-        /* Sticky при отклеивании возвращает элемент в его "естественное"
-           место в потоке — а это верх контейнера, не низ. Из-за этого
-           между 100svh сплэша и 140svh контейнера оставался неприкрытый
-           хвост в 40svh (пустота перед Hero). flex-end чинит именно это:
-           "естественное" место становится низом контейнера, так что
-           после отклеивания сплэш сразу оказывается там, где нужно —
-           без разрыва. */
-        display: flex;
-        flex-direction: column;
-        justify-content: flex-end;
       }
 
       .splash-bg-text { transform: translateY(-5%); }
@@ -6422,8 +6420,11 @@
         const p = scrollable > 0 ? Math.min(Math.max(scrolled / scrollable, 0), 1) : 0;
         const exitProgress = Math.min(Math.max((p - 0.82) / 0.18, 0), 1);
 
+        // На мобиле transform сплэша полностью считает updateSplashHeader
+        // (см. блок SPLASH + HEADER ниже) — там же встроена логика
+        // "не уезжать, пока фото не показалось". Эта функция там transform
+        // не трогает вообще, чтобы не спорить с ней за один и тот же стиль.
         if (window.matchMedia('(max-width: 760px)').matches) {
-          splash.style.transform = 'none';
           return;
         }
 
@@ -6509,31 +6510,37 @@
         contactsObserver.observe(contactsSection);
       }
 
-      // Позиционирование сплеша на мобиле теперь чистый CSS position:sticky
-      // (как на десктопе и как у Flow Party) — никакого JS-переключателя
-      // fixed/absolute больше нет, здесь только расчёт появления фото/
-      // имени и хедера по прогрессу скролла.
+      // На мобиле сплэш всегда position:fixed (см. CSS) — им управляет
+      // ОДНА непрерывная формула здесь: пока scrolled <= pinDistance, сплэш
+      // стоит на месте (translateY(0)); после — уезжает вверх ровно на
+      // (scrolled - pinDistance)px. pinDistance = высота контейнера минус
+      // высота сплэша — та же самая величина, что определяет длину
+      // резервного скролла в CSS, поэтому момент, когда сплэш полностью
+      // уезжает (scrolled === containerHeight), математически совпадает
+      // с началом Hero. Никакой стыковки двух независимых механизмов —
+      // один расчёт, один источник истины, разрыв невозможен по построению.
       //
-      // ВАЖНО: порог "когда фото должно быть видно" считаем из ЖИВОЙ
-      // геометрии тех же элементов, которыми управляет sticky (getBoundingClientRect
-      // контейнера и сплэша прямо сейчас), а не из закэшированной высоты
-      // контейнера + window.innerHeight. Это та же самая математика, что
-      // использует браузер для решения "отпускать sticky или нет" — раньше
-      // это были два независимых приближения одного порога, которые могли
-      // разъезжаться (окно, адресная строка iOS, момент замера при загрузке).
-      // Теперь источник истины один.
+      // Появление фото полностью завершается на 0.7 от pinDistance — то
+      // есть заведомо раньше, чем на 1.0 (момент начала движения), поэтому
+      // сплэш физически не может начать уезжать, пока фото не показалось
+      // целиком.
       let _rafSplash = null;
       function updateSplashHeader() {
         _rafSplash = null;
         const containerRect = splashContainer.getBoundingClientRect();
         const splashRect = splash.getBoundingClientRect();
         const scrolled  = -containerRect.top;
-        const splashEnd = Math.max(containerRect.height - splashRect.height, 1);
-        const revealStart = splashEnd * 0.04;
-        const revealEnd = splashEnd * 0.75;
+        const pinDistance = Math.max(containerRect.height - splashRect.height, 1);
+        const revealStart = pinDistance * 0.04;
+        const revealEnd = pinDistance * 0.7;
         const photoProgress = Math.min(Math.max((scrolled - revealStart) / (revealEnd - revealStart), 0), 1);
         if (photo) photo.style.opacity = photoProgress;
         if (label) label.style.opacity = photoProgress;
+
+        if (isMobile) {
+          const releaseAmount = Math.max(0, scrolled - pinDistance);
+          splash.style.transform = releaseAmount > 0 ? `translateY(${-releaseAmount}px)` : 'none';
+        }
 
         const navRevealPoint = containerRect.height - 20;
         if (scrolled >= navRevealPoint) {
