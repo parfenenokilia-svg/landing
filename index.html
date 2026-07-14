@@ -4187,6 +4187,13 @@
       .splash {
         height: 100svh;
         min-height: 540px;
+        /* Нативный sticky (как на десктопе и как у Flow Party) вместо
+           ручного JS-переключателя fixed/absolute — тот переключатель
+           отставал от реального скролла на кадр и на обратном скролле
+           давал видимый разрыв (обнажался фон страницы). У sticky такой
+           рассинхронизации в принципе быть не может — браузер решает
+           это синхронно с рендером, а не скриптом. */
+        z-index: 90;
       }
 
       /* На мобиле 250vh (как на десктопе) — это очень долгий скролл
@@ -4194,24 +4201,6 @@
          раскрывались быстрее и не ощущались отдельным долгим экраном. */
       .splash-container {
         height: 140vh !important;
-      }
-
-      .splash.mobile-pinned {
-        position: fixed;
-        inset: 0;
-        width: 100%;
-        z-index: 90;
-        transform: none !important;
-      }
-
-      .splash.mobile-released {
-        position: absolute;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        top: auto;
-        width: 100%;
-        transform: none !important;
       }
 
       .splash-bg-text { transform: translateY(-5%); }
@@ -6529,13 +6518,10 @@
         contactsObserver.observe(contactsSection);
       }
 
-      // Защёлка состояния "отпущен": один раз перейдя в released, не
-      // возвращаемся в pinned из-за небольшого пересчёта splashEnd — только
-      // если пользователь реально проскроллил обратно почти к началу.
-      // Без этого любое колебание containerH могло резко вернуть сплеш в
-      // position:fixed поверх уже пройденного контента.
-      let splashReleased = false;
-
+      // Позиционирование сплеша на мобиле теперь чистый CSS position:sticky
+      // (как на десктопе и как у Flow Party) — никакого JS-переключателя
+      // fixed/absolute больше нет, здесь только расчёт появления фото/
+      // имени и хедера по прогрессу скролла.
       let _rafSplash = null;
       function updateSplashHeader() {
         _rafSplash = null;
@@ -6546,15 +6532,6 @@
         const photoProgress = Math.min(Math.max((scrolled - revealStart) / (revealEnd - revealStart), 0), 1);
         if (photo) photo.style.opacity = photoProgress;
         if (label) label.style.opacity = photoProgress;
-
-        if (isMobile) {
-          if (!splashReleased && scrolled >= splashEnd) splashReleased = true;
-          if (splashReleased && scrolled < splashEnd * 0.5) splashReleased = false;
-          splash.classList.toggle('mobile-pinned', !splashReleased);
-          splash.classList.toggle('mobile-released', splashReleased);
-        } else {
-          splash.classList.remove('mobile-pinned', 'mobile-released');
-        }
 
         const navRevealPoint = containerH - 20;
         if (scrolled >= navRevealPoint) {
