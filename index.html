@@ -4226,31 +4226,23 @@
         min-height: 540px;
       }
 
-      /* Возвращено к исторически стабильной версии: сплэш переключается
-         между двумя классами через JS (см. updateSplashHeader), а не
-         остаётся постоянно position:fixed. Пока держим экран — fixed
-         (mobile-pinned); как только отпустили — absolute (mobile-released),
-         полностью выходит из fixed-слоя WebKit до конца скролла страницы. */
+      /* Историческая версия (переключение классов на кэшированном пороге)
+         восстановлена и проверена побайтово — капсула в Telegram всё равно
+         прыгала, а чёрная полоса при обратном скролле вернулась. Значит
+         капсула не зависит от этого механизма вовсе. Оставляем архитектуру
+         без чёрной полосы: сплэш всегда position:fixed, "отпускание"
+         считает translateY одна непрерывная JS-формула (см.
+         updateSplashHeader) на живых getBoundingClientRect — без кэша,
+         без рассинхронизации порога. */
       .splash-container {
         height: 140svh !important;
       }
 
-      .splash.mobile-pinned {
+      .splash {
         position: fixed;
         inset: 0;
         width: 100%;
         z-index: 90;
-        transform: none !important;
-      }
-
-      .splash.mobile-released {
-        position: absolute;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        top: auto;
-        width: 100%;
-        transform: none !important;
       }
 
       .splash-bg-text { transform: translateY(-5%); }
@@ -6576,51 +6568,30 @@
         contactsObserver.observe(contactsSection);
       }
 
-      // Возвращено к исторически стабильной версии: containerH кэшируется
-      // (offsetHeight), пересчитывается только на настоящий resize/
-      // orientationchange/load — НЕ на каждый кадр скролла. Раньше здесь
-      // стоял getBoundingClientRect() на двух элементах каждый scroll-тик —
-      // это принудительный layout reflow на каждый кадр, ровно то, чего
-      // мы сознательно избегали для contactsSection (см. IntersectionObserver
-      // выше). В момент, когда капсула Telegram снова начала прыгать,
-      // этот forced-reflow-per-frame был единственным местом на странице,
-      // где он остался — возможная причина лишнего джанка, мешающего
-      // системной анимации капсулы. per-frame считаем только дешёвый
-      // window.scrollY, как было в стабильной версии.
-      let containerH = splashContainer.offsetHeight;
-      function recalcContainerH() {
-        containerH = splashContainer.offsetHeight;
-      }
-      window.addEventListener('resize', recalcContainerH, { passive: true });
-      window.addEventListener('orientationchange', function() {
-        setTimeout(recalcContainerH, 200);
-      }, { passive: true });
-      window.addEventListener('load', recalcContainerH);
-
-      // Защёлка состояния "отпущен": один раз перейдя в released, не
-      // возвращаемся в pinned из-за небольшого пересчёта splashEnd — только
-      // если пользователь реально проскроллил обратно почти к началу.
-      let splashReleased = false;
+      // Историческая версия (кэш containerH + классы pinned/released)
+      // проверена побайтово и не убрала капсулу в Telegram, зато вернула
+      // чёрную полосу при обратном скролле. Значит капсула не зависит от
+      // этого механизма. Оставляем architecture без чёрной полосы: сплэш
+      // всегда position:fixed, одна непрерывная JS-формула на живых
+      // getBoundingClientRect (без кэша, без риска рассинхронизации порога).
       let _rafSplash = null;
       function updateSplashHeader() {
         _rafSplash = null;
-        const scrolled  = window.scrollY;
-        const splashEnd = Math.max(containerH - window.innerHeight, 1);
-        const revealStart = splashEnd * 0.04;
-        const revealEnd = splashEnd * 0.5;
+        const containerRect = splashContainer.getBoundingClientRect();
+        const splashRect = splash.getBoundingClientRect();
+        const scrolled  = -containerRect.top;
+        const pinDistance = Math.max(containerRect.height - splashRect.height, 1);
+        const revealStart = pinDistance * 0.04;
+        const revealEnd = pinDistance * 0.7;
         const photoProgress = Math.min(Math.max((scrolled - revealStart) / (revealEnd - revealStart), 0), 1);
         if (photo) photo.style.opacity = photoProgress;
 
         if (isMobile) {
-          if (!splashReleased && scrolled >= splashEnd) splashReleased = true;
-          if (splashReleased && scrolled < splashEnd * 0.5) splashReleased = false;
-          splash.classList.toggle('mobile-pinned', !splashReleased);
-          splash.classList.toggle('mobile-released', splashReleased);
-        } else {
-          splash.classList.remove('mobile-pinned', 'mobile-released');
+          const releaseAmount = Math.max(0, scrolled - pinDistance);
+          splash.style.transform = releaseAmount > 0 ? `translateY(${-releaseAmount}px)` : 'none';
         }
 
-        const navRevealPoint = containerH - 20;
+        const navRevealPoint = containerRect.height - 20;
         if (scrolled >= navRevealPoint) {
           if (header) header.classList.add('visible');
           if (navScrim) navScrim.classList.add('visible');
