@@ -6537,6 +6537,27 @@
 
       if (!splashContainer || !splash) return;
 
+      // Жёстко фиксируем размер фото в px через JS вместо svh/%/vh —
+      // если WebKit во время анимации капсулы криво пересчитывает ЛЮБЫЕ
+      // viewport-единицы (а мы весь день натыкаемся именно на такие баги),
+      // CSS-подход в принципе ненадёжен. Пиксельное значение, выставленное
+      // один раз, капсула физически не может пересчитать — обновляем
+      // только на реальный resize/orientationchange (по изменению ширины,
+      // не высоты, как и с текстом на сплэше выше).
+      if (photo && window.matchMedia('(max-width: 760px)').matches) {
+        let lastWidthForPhoto = window.innerWidth;
+        function lockPhotoHeight() {
+          const h = Math.round(window.innerHeight * 0.62);
+          photo.style.height = h + 'px';
+        }
+        lockPhotoHeight();
+        window.addEventListener('resize', () => {
+          if (window.innerWidth === lastWidthForPhoto) return;
+          lastWidthForPhoto = window.innerWidth;
+          lockPhotoHeight();
+        }, { passive: true });
+      }
+
       // Фото скрыто изначально
       if (photo) { photo.style.opacity = '0'; photo.style.transition = 'none'; }
 
