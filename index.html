@@ -6108,23 +6108,6 @@
       }, { passive: false });
     })();
 
-    // ── ANTI-CAPSULE NUDGE (эксперимент, только мобила) ──────────────
-    // Гипотеза: у joinflowparty.com адрес-бар всегда свёрнут и никогда не
-    // разворачивается обратно — соответственно, у WebKit просто нет
-    // момента для глючной анимации сворачивания/разворачивания (баг
-    // проявляется именно в момент самой анимации, не в статичном
-    // состоянии). Известный приём — держать scrollY хотя бы на 1px,
-    // никогда не давая странице вернуться ровно к нулю, чем провоцируется
-    // повторное разворачивание адрес-бара при скролле к самому верху.
-    (function() {
-      if (!window.matchMedia('(max-width: 760px)').matches) return;
-      function nudge() {
-        if (window.scrollY === 0) window.scrollTo(0, 1);
-      }
-      window.addEventListener('load', nudge);
-      window.addEventListener('scroll', nudge, { passive: true });
-    })();
-
     // ── ABOUT STICKY TIMELINE (только десктоп — на мобильном это линейный список,
     // см. IIFE "ABOUT MOBILE TIMELINE" ниже) ──
     setTimeout(() => {
