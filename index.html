@@ -6568,6 +6568,19 @@
       // есть заведомо раньше, чем на 1.0 (момент начала движения), поэтому
       // сплэш физически не может начать уезжать, пока фото не показалось
       // целиком.
+      // Пока сплэш "держим" (pinned), он живёт в fixed-слое WebKit — это
+      // нужно только на время самого пина. Как только реально отпустили,
+      // полностью выводим его из position:fixed в position:absolute
+      // (bottom:0 внутри position:relative контейнера) — тогда до конца
+      // скролла страницы в fixed-слое остаются только header/lang/burger,
+      // как было в исторически стабильной версии (без капсульного бага).
+      // bottom:0 у absolute даёт top-край ровно на pinDistance от начала
+      // контейнера — то есть ровно там, где сплэш и находился в момент
+      // отпускания, поэтому переключение не даёт скачка ни на пиксель.
+      // Небольшой гистерезис (возврат в pinned только если проскроллили
+      // обратно ниже половины pinDistance) — чтобы не дребезжало ровно на
+      // границе переключения.
+      let splashReleased = false;
       let _rafSplash = null;
       function updateSplashHeader() {
         _rafSplash = null;
@@ -6581,8 +6594,24 @@
         if (photo) photo.style.opacity = photoProgress;
 
         if (isMobile) {
-          const releaseAmount = Math.max(0, scrolled - pinDistance);
-          splash.style.transform = releaseAmount > 0 ? `translateY(${-releaseAmount}px)` : 'none';
+          const wasReleased = splashReleased;
+          if (!splashReleased && scrolled >= pinDistance) splashReleased = true;
+          if (splashReleased && scrolled < pinDistance * 0.5) splashReleased = false;
+
+          // Пишем в стиль только в момент реального переключения состояния —
+          // не на каждый кадр скролла, чтобы не гонять лишний style recalc.
+          if (splashReleased !== wasReleased) {
+            if (splashReleased) {
+              splash.style.position = 'absolute';
+              splash.style.top = 'auto';
+              splash.style.bottom = '0';
+            } else {
+              splash.style.position = '';
+              splash.style.top = '';
+              splash.style.bottom = '';
+            }
+            splash.style.transform = 'none';
+          }
         }
 
         const navRevealPoint = containerRect.height - 20;
