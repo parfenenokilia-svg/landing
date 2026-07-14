@@ -4003,7 +4003,9 @@
         /* Явно фиксируем высоту хедера, чтобы подложка (header::before,
            inset:0) занимала ровно зону с кнопками/меню, а не расползалась
            вниз из-за унаследованных правил .nav-row из старой раскладки. */
-        height: 62px;
+        /* Кнопки без отступа сверху (top:0 у бургера) — подложка ровно
+           по их высоте (40px), без лишнего "воздуха" снизу. */
+        height: 40px;
         overflow: hidden;
       }
       /* НАШЁЛ ПОДТВЕРЖДЁННЫЙ БАГ (iOS 26, Apple Community / GitHub issues):
@@ -4044,7 +4046,7 @@
 
       .lang {
         position: fixed;
-        top: 11px;
+        top: 3px;
         right: var(--mobile-pad);
         z-index: 310;
         margin: 0;
@@ -4063,14 +4065,15 @@
          крепим к экрану напрямую, а не к панели. */
       .nav-overlay-close {
         position: fixed;
-        top: 8px;
+        top: 0;
         z-index: 320;
       }
 
       /* Хамбургер (40px) выше, чем пилюли (34px) — центр по вертикали
-         совпадает, только если top отличается на разницу высот/2 (3px) */
+         совпадает, только если top отличается на разницу высот/2 (3px).
+         Бургер стоит вплотную к самому верху экрана (top:0). */
       .nav-burger-wrap {
-        top: 8px;
+        top: 0;
       }
 
       .nav-burger {
@@ -4085,7 +4088,7 @@
 
       .nav-ctas {
         position: fixed;
-        top: 11px;
+        top: 3px;
         left: var(--mobile-pad);
         z-index: 250;
         display: flex;
