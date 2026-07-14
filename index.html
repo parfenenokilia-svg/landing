@@ -6848,14 +6848,22 @@
         // чтобы искать точную причину, делаем скролл самокорректирующимся:
         // прыгаем, ждём, проверяем попадание и, если не попали — прыгаем
         // повторно на уже устоявшуюся позицию.
-        function jumpTo(cb) {
+        // Фикс-хедер лежит поверх страницы — если приземлиться ровно на
+        // rect.top:0, заголовок секции окажется под ним. Оставляем зазор.
+        const HEADER_CLEARANCE = window.matchMedia('(max-width: 760px)').matches ? 78 : 90;
+
+        function jumpTo(cb, instant) {
           if (window.__lenis) {
             window.__lenis.resize();
             if (typeof ScrollTrigger !== 'undefined') ScrollTrigger.refresh();
-            window.__lenis.scrollTo(target, { offset: 0, onComplete: cb });
+            // Повторную корректировку (когда первый прыжок чуть промахнулся
+            // из-за остаточного сдвига разметки) делаем мгновенной, без
+            // анимации — иначе видно, как страница "доезжает" вторым рывком
+            // с задержкой.
+            window.__lenis.scrollTo(target, { offset: -HEADER_CLEARANCE, immediate: !!instant, onComplete: cb });
           } else {
-            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            setTimeout(cb, 500);
+            target.scrollIntoView({ behavior: instant ? 'auto' : 'smooth', block: 'start' });
+            setTimeout(() => { window.scrollBy(0, -HEADER_CLEARANCE); cb(); }, instant ? 0 : 500);
           }
         }
 
@@ -6867,9 +6875,11 @@
         let attempts = 0;
         function attemptJump() {
           attempts++;
+          // Первый прыжок — плавный (как и должно быть при обычной навигации).
+          // Любая коррекция после него — мгновенная, без анимации.
           jumpTo(() => {
             const rect = target.getBoundingClientRect();
-            const offBy = Math.round(rect.top);
+            const offBy = Math.round(rect.top - HEADER_CLEARANCE);
             navDebugEl.textContent = 'nav-debug: #' + id + ' попытка ' + attempts +
               ', rect.top=' + offBy + (Math.abs(offBy) > 5 ? ' — не попали, пробуем ещё' : ' — OK');
             if (Math.abs(offBy) > 5 && attempts < 4) {
@@ -6877,7 +6887,7 @@
             } else {
               window.__menuNavInProgress = false;
             }
-          });
+          }, attempts > 1);
         }
         attemptJump();
       });
