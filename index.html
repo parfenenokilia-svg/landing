@@ -6595,8 +6595,12 @@
 
         if (isMobile) {
           const wasReleased = splashReleased;
-          if (!splashReleased && scrolled >= pinDistance) splashReleased = true;
-          if (splashReleased && scrolled < pinDistance * 0.5) splashReleased = false;
+          // Без "мёртвой зоны": режим всегда строго соответствует текущему
+          // scrolled. Широкий гистерезис (возврат только после отката за
+          // половину pinDistance) создавал промежуток, где absolute уже
+          // включен, а видимая позиция ещё не совпадает с тем, что должно
+          // быть на экране — отсюда чёрная полоса при обратном скролле.
+          splashReleased = scrolled >= pinDistance;
 
           // Пишем в стиль только в момент реального переключения состояния —
           // не на каждый кадр скролла, чтобы не гонять лишний style recalc.
