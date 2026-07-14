@@ -4200,7 +4200,7 @@
          только чтобы "отпустить" сплеш. Сокращаем секцию, чтобы фото/имя
          раскрывались быстрее и не ощущались отдельным долгим экраном. */
       .splash-container {
-        height: 140vh !important;
+        height: 140svh !important;
       }
 
       .splash-bg-text { transform: translateY(-5%); }
@@ -6528,7 +6528,7 @@
         const scrolled  = window.scrollY;
         const splashEnd = Math.max(containerH - window.innerHeight, 1);
         const revealStart = splashEnd * 0.04;
-        const revealEnd = splashEnd * 0.5;
+        const revealEnd = splashEnd * 0.75;
         const photoProgress = Math.min(Math.max((scrolled - revealStart) / (revealEnd - revealStart), 0), 1);
         if (photo) photo.style.opacity = photoProgress;
         if (label) label.style.opacity = photoProgress;
