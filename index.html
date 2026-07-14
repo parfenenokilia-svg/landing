@@ -6481,10 +6481,33 @@
 
       // Фото скрыто изначально
       if (photo) { photo.style.opacity = '0'; photo.style.transition = 'none'; }
-      if (label) { label.style.opacity = '0'; label.style.transition = 'none'; }
 
       // Hint GPU for photo composite
       if (photo) photo.style.willChange = 'opacity';
+
+      // Значок "↓ scroll" — подсказка, не привязана к прогрессу появления
+      // фото. Скрыт с самого начала; если пользователь за 2 секунды не
+      // начал скроллить — плавно появляется. Как только скролл начался
+      // (в любой момент) — прячется и больше не появляется.
+      if (label) {
+        label.style.opacity = '0';
+        label.style.transition = 'opacity 0.5s ease';
+        let scrollHintShown = false;
+        let scrollStarted = false;
+        const scrollHintTimer = setTimeout(function() {
+          if (!scrollStarted) {
+            scrollHintShown = true;
+            label.style.opacity = '1';
+          }
+        }, 2000);
+        window.addEventListener('scroll', function onFirstScroll() {
+          if (scrollStarted) return;
+          scrollStarted = true;
+          clearTimeout(scrollHintTimer);
+          if (scrollHintShown) label.style.opacity = '0';
+          window.removeEventListener('scroll', onFirstScroll);
+        }, { passive: true });
+      }
 
       const contactsSection = document.getElementById('contacts');
       const langEl = document.querySelector('.lang');
@@ -6535,7 +6558,6 @@
         const revealEnd = pinDistance * 0.7;
         const photoProgress = Math.min(Math.max((scrolled - revealStart) / (revealEnd - revealStart), 0), 1);
         if (photo) photo.style.opacity = photoProgress;
-        if (label) label.style.opacity = photoProgress;
 
         if (isMobile) {
           const releaseAmount = Math.max(0, scrolled - pinDistance);
