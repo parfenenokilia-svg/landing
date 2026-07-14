@@ -4662,141 +4662,107 @@
          дублирующая маленькая подпись над описанием не нужна */
       .artifact-label { display: none; }
 
-      /* Редакционный вид вместо рамки-бокса: цитата — главный элемент,
-         фото уменьшено до подписи, разделение между записями — тонкая
-         линия сверху (как в списке), а не контур вокруг каждой карточки */
+      /* Карусель в десктопном стиле карточек вместо плоского списка:
+         каждая карточка — уменьшенная копия десктопной (рамка, круглый
+         аватар и имя по центру), карточки идут в горизонтальный ряд со
+         скролл-снапом. Ширина карточки (82vw) меньше экрана — с краю
+         всегда видно "подглядывающий" кусок соседней карточки, это и
+         даёт понять, что можно свайпнуть дальше. */
       .recommend-grid {
         display: flex;
-        flex-direction: column;
-        gap: 0;
-        overflow: visible;
-        padding: 0;
-        margin: 0;
+        gap: 14px;
+        overflow-x: auto;
+        overflow-y: visible;
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
+        padding: 6px var(--mobile-pad) 10px;
+        margin: 0 calc(var(--mobile-pad) * -1);
       }
+      .recommend-grid::-webkit-scrollbar { display: none; }
 
       .recommend-tile {
+        flex: 0 0 82vw;
+        max-width: 320px;
+        scroll-snap-align: center;
         opacity: 1;
         transform: none;
-        border: none;
-        border-top: 1px solid var(--line-bright);
+        border: 1px solid var(--line-bright);
         border-radius: 0;
-        background: transparent;
-        padding: 28px 0;
-        text-align: left;
-      }
-
-      .recommend-tile:first-child {
-        border-top: none;
-        padding-top: 0;
+        background: var(--surface);
+        padding: 28px 16px 52px;
+        text-align: center;
       }
 
       .recommend-tile.active {
-        background: transparent;
-        box-shadow: none;
+        border-color: var(--accent);
+        box-shadow: 0 0 20px var(--accent-glow);
+        background: rgba(56, 189, 248, 0.05);
       }
 
-      .recommend-quote {
-        display: block;
-        font-family: "IBM Plex Sans", -apple-system, BlinkMacSystemFont, sans-serif;
-        font-size: 19px;
-        line-height: 1.42;
-        color: var(--text);
-        text-align: left;
-        margin-bottom: 20px;
-      }
+      /* Цитата остаётся скрытой на карточке, как на десктопе — текст
+         открывается в .recommend-drawer снизу под каруселью по клику */
+      .recommend-quote { display: none; }
 
       .recommend-tile-head {
-        display: flex;
-        align-items: center;
-        gap: 12px;
+        display: grid;
+        gap: 10px;
+        justify-items: center;
         padding: 0;
-        justify-items: initial;
-        text-align: left;
+        text-align: center;
       }
 
       .avatar-lg {
-        width: 64px;
-        height: 64px;
-        flex-shrink: 0;
+        width: 112px;
+        height: 112px;
       }
 
       .recommend-name-role {
-        flex: 1;
-        min-width: 0;
-        display: flex;
-        flex-direction: column;
-        gap: 2px;
+        display: contents;
       }
 
-      /* Имя в одну строку: шрифт мягко уменьшается под шириной колонки
-         (vw-часть clamp), длинные имена (имя+фамилия) не переносятся */
       .recommend-name .name-break {
         display: none;
       }
       .recommend-name {
-        font-size: clamp(18px, 5.5vw, 22px);
-        line-height: 1.2;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
+        font-size: clamp(22px, 6vw, 28px);
+        line-height: 1.05;
+        white-space: normal;
+        overflow: visible;
+        text-overflow: clip;
         max-width: 100%;
-        text-align: left;
+        text-align: center;
       }
 
-      /* Роль в одну строку — карточка на всю ширину экрана, места достаточно */
       .recommend-role {
-        font-size: 14px;
-        max-width: 100%;
+        font-size: 15px;
+        max-width: 22ch;
         min-height: 0;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
+        white-space: normal;
+        overflow: visible;
+        text-overflow: clip;
         padding: 0;
-        text-align: left;
+        text-align: center;
+        margin: 0 auto;
       }
 
       .recommend-row {
-        position: static;
-        margin-left: 8px;
+        position: absolute;
+        left: 50%;
+        bottom: 12px;
+        transform: translateX(-50%);
+        margin: 0;
       }
 
-      /* ::after — псевдоэлемент самой .recommend-tile, а не строки с
-         аватаром, из-за этого не попадал в общий flex-ряд и наезжал на
-         иконку Telegram. Прячем его и используем настоящий .recommend-expand
-         внутри строки — та же логика +/× через ::before на реальном span */
-      .recommend-tile::after,
-      .recommend-tile.active::after {
-        content: none;
+      .recommend-tile::after {
+        right: 12px;
+        bottom: 8px;
       }
 
-      .recommend-expand {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        flex-shrink: 0;
-        margin-left: 8px;
-        width: 36px;
-        height: 36px;
-      }
-
-      .recommend-expand::before {
-        content: "+";
-        font-family: "Oswald", sans-serif;
-        font-size: 36px;
-        font-weight: 700;
-        line-height: 1;
-        color: #38bdf8;
-        animation: splashPulse 1.6s ease-in-out infinite;
-      }
-
-      .recommend-tile.active .recommend-expand::before {
-        content: "×";
-        animation: none;
-      }
+      .recommend-expand { display: none; }
 
       .recommend-drawer {
         display: block;
-        margin-top: 18px;
+        margin: 18px var(--mobile-pad) 0;
       }
 
       .contacts-header { margin-bottom: 28px; }
