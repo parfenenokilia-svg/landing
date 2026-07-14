@@ -6068,24 +6068,11 @@
       // после отпускания пальца — это touchInertiaMultiplier (дальность
       // проекции инерции) и syncTouchLerp (скорость доезда до неё).
       // Исторически подтверждённый стабильный конфиг (капсула в ТГ не
-      // прыгала) — syncTouchLerp:0.09, touchInertiaMultiplier:15. Мы
-      // побайтово воспроизвели этот код на живом устройстве, и капсула
-      // всё равно прыгала — значит дело не в конфиге как таковом.
-      // Единственное, что принципиально не пробовали: отключить
-      // syncTouch ИМЕННО внутри Telegram (не влияя на обычный Safari/
-      // Chrome, где текущий конфиг и так приемлем). Детект best-effort —
-      // Telegram iOS in-app browser не всегда содержит "Telegram" в UA
-      // для обычных внешних ссылок, поэтому проверяем и это, и наличие
-      // прокси-объектов, которые встраивает само приложение.
-      const isTelegramWebview = /Telegram/i.test(navigator.userAgent)
-        || !!window.TelegramWebviewProxy
-        || !!(window.Telegram && window.Telegram.WebApp);
-
-      const lenis = new Lenis(isTelegramWebview ? {
-        lerp: 0.09,
-        smoothWheel: false,
-        syncTouch: false,
-      } : {
+      // прыгала) — syncTouchLerp:0.09, touchInertiaMultiplier:15.
+      // Пробовали отключать syncTouch именно в Telegram (нативный тач) —
+      // стало хуже, не лучше. syncTouch:true универсально — по факту
+      // наименее плохой вариант из всех проверенных. Возвращаем.
+      const lenis = new Lenis({
         lerp: 0.09,
         smoothWheel: false,
         syncTouch: true,
