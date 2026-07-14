@@ -3382,6 +3382,14 @@
       flex-direction: column;
       max-width: 720px;
     }
+    /* Эта линия задумана как верхняя граница карточки в десктопном
+       "стопочном" скролле кейсов (см. .cs-card::before) — в полноэкранном
+       оверлее (мобильном и десктопном) стопки нет, и линия оказывается
+       не у дела, прямо над кнопкой "Назад". Убираем только в оверлее. */
+    #caseOverlayContent .cs-detail-body {
+      border-top: none;
+      padding-top: 0;
+    }
     .cs-detail-meta {
       grid-column: 1 / -1;
       font-family: "IBM Plex Sans", sans-serif;
@@ -3755,6 +3763,12 @@
       color: var(--muted);
       text-transform: uppercase;
       margin-bottom: 0;
+    }
+    /* После border-bottom у .cs-detail-meta не было отступа до следующего
+       блока ("Контекст") — линия шла вплотную к заголовку. Симметрично
+       отступу ДО линии (padding-bottom:20px у .cs-detail-meta). */
+    .cs-detail-meta + .cs-detail-section {
+      margin-top: 32px;
     }
     .cs-detail-divider {
       border: none;
@@ -4438,7 +4452,7 @@
         padding: 0 !important;
       }
 
-      .cs-detail-title { font-size: clamp(34px, 11vw, 52px); }
+      .cs-detail-title { font-size: clamp(34px, 11vw, 52px); line-height: calc(1em + 5px); }
       .cs-detail-label { font-size: clamp(26px, 8vw, 40px); }
 
       .cs-detail-text,
