@@ -6472,25 +6472,6 @@
       if (photo) { photo.style.opacity = '0'; photo.style.transition = 'none'; }
       if (label) { label.style.opacity = '0'; label.style.transition = 'none'; }
 
-      let containerH = splashContainer.offsetHeight;
-      function recalcContainerH() {
-        containerH = splashContainer.offsetHeight;
-      }
-      window.addEventListener('resize', recalcContainerH, { passive: true });
-      window.addEventListener('orientationchange', function() {
-        setTimeout(recalcContainerH, 200);
-      }, { passive: true });
-      // ВАЖНО: раньше здесь висел ещё и слушатель visualViewport.resize —
-      // на iOS он стреляет ПРЯМО ВО ВРЕМЯ обычного скролла (когда прячется/
-      // появляется адресная строка), не только при осознанном ресайзе. Из-за
-      // этого containerH пересчитывался на лету, splashEnd сдвигался, и уже
-      // "отпущенный" (проскрolленный мимо) сплеш иногда резко возвращался в
-      // position:fixed — страница визуально прыгала назад посреди скролла.
-      // Отсюда и баг "всё само скачет туда-сюда", пойманный на записи экрана.
-      // Пересчитываем только на настоящий resize/orientationchange/load —
-      // этого достаточно, а мидскролльных скачков больше не будет.
-      window.addEventListener('load', recalcContainerH);
-
       // Hint GPU for photo composite
       if (photo) photo.style.willChange = 'opacity';
 
@@ -6522,18 +6503,29 @@
       // (как на десктопе и как у Flow Party) — никакого JS-переключателя
       // fixed/absolute больше нет, здесь только расчёт появления фото/
       // имени и хедера по прогрессу скролла.
+      //
+      // ВАЖНО: порог "когда фото должно быть видно" считаем из ЖИВОЙ
+      // геометрии тех же элементов, которыми управляет sticky (getBoundingClientRect
+      // контейнера и сплэша прямо сейчас), а не из закэшированной высоты
+      // контейнера + window.innerHeight. Это та же самая математика, что
+      // использует браузер для решения "отпускать sticky или нет" — раньше
+      // это были два независимых приближения одного порога, которые могли
+      // разъезжаться (окно, адресная строка iOS, момент замера при загрузке).
+      // Теперь источник истины один.
       let _rafSplash = null;
       function updateSplashHeader() {
         _rafSplash = null;
-        const scrolled  = window.scrollY;
-        const splashEnd = Math.max(containerH - window.innerHeight, 1);
+        const containerRect = splashContainer.getBoundingClientRect();
+        const splashRect = splash.getBoundingClientRect();
+        const scrolled  = -containerRect.top;
+        const splashEnd = Math.max(containerRect.height - splashRect.height, 1);
         const revealStart = splashEnd * 0.04;
         const revealEnd = splashEnd * 0.75;
         const photoProgress = Math.min(Math.max((scrolled - revealStart) / (revealEnd - revealStart), 0), 1);
         if (photo) photo.style.opacity = photoProgress;
         if (label) label.style.opacity = photoProgress;
 
-        const navRevealPoint = containerH - 20;
+        const navRevealPoint = containerRect.height - 20;
         if (scrolled >= navRevealPoint) {
           if (header) header.classList.add('visible');
           if (navScrim) navScrim.classList.add('visible');
