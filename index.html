@@ -2773,13 +2773,26 @@
       width: 100%;
       height: 100vh;
       height: 100dvh; /* iOS Safari: не включает адрес-бар → нет прыжка при скролле */
-      background: #1a1a2e;
+      background: transparent;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       overflow: hidden;
       z-index: 10;
+    }
+    /* Тот же паттерн, что для header/.nav-ctas/.lang и body::after: фон
+       НЕ на самом position:fixed/sticky элементе, а на дочернем слое.
+       На мобиле .splash — единственный оставшийся полноэкранный
+       (inset:0) fixed-элемент с background прямо на себе, пока держим
+       пин, — ровно тот паттерн, который мы сами определили как корень
+       iOS26-капсульного бага (см. комментарий у body::after). Переносим. */
+    .splash::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      background: #1a1a2e;
     }
 
     /* Большой фоновый текст */
