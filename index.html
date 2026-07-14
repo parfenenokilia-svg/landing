@@ -1721,6 +1721,21 @@
 
     @media (max-width: 760px) {
       html, body { overflow-x: hidden; }
+      /* Обход бага WebKit iOS 26 (bugs.webkit.org #297779): fixed/sticky
+         элементы дёргаются при сворачивании/разворачивании системной панели,
+         когда скроллится сам document/html. Скроллящимся делаем body —
+         html больше не скроллится вообще. См. __pageScrollY/__pageScrollTo/
+         __onPageScroll в начале основного скрипта — весь JS, который читал
+         window.scrollY/window.scrollTo/scroll на window, переведён на них. */
+      html {
+        overflow: hidden;
+        height: 100%;
+      }
+      body {
+        overflow-y: auto;
+        height: 100%;
+        -webkit-overflow-scrolling: touch;
+      }
       .wrap {
         max-width: 100%;
         padding-left: 22px;
@@ -5074,6 +5089,52 @@
   </footer>
 
   <script>
+    // ── SCROLL BRIDGE (html/body scroll-container, только для мобилы) ──
+    // Баг WebKit iOS 26 (bugs.webkit.org #297779): fixed/sticky-элементы
+    // "дёргаются" при сворачивании/разворачивании системной панели браузера,
+    // когда скроллится document/html. Обходной приём — сделать скроллящимся
+    // не html, а body (см. CSS в мобильном медиа-запросе: html{overflow:hidden},
+    // body{overflow-y:auto}). Чтобы не переписывать всю логику скролла
+    // (GSAP ScrollTrigger, меню, сплэш, IntersectionObserver) под два разных
+    // API, даём везде единый доступ через эти функции — одинаково работают
+    // и на десктопе (реально скроллится window), и на мобиле (скроллится body).
+    function __pageScrollY() {
+      return window.scrollY || document.body.scrollTop || document.documentElement.scrollTop || 0;
+    }
+    function __pageScrollTo(y) {
+      window.scrollTo(0, y);
+      document.body.scrollTop = y;
+    }
+    function __onPageScroll(fn, opts) {
+      window.addEventListener('scroll', fn, opts);
+      document.body.addEventListener('scroll', fn, opts);
+    }
+    function __offPageScroll(fn, opts) {
+      window.removeEventListener('scroll', fn, opts);
+      document.body.removeEventListener('scroll', fn, opts);
+    }
+    window.__pageScrollY = __pageScrollY;
+    window.__pageScrollTo = __pageScrollTo;
+    window.__onPageScroll = __onPageScroll;
+    window.__offPageScroll = __offPageScroll;
+
+    // GSAP ScrollTrigger по умолчанию слушает scroll на window. На мобиле,
+    // когда html не скроллится, там scroll не стреляет вообще — поэтому
+    // пробрасываем позицию через scrollerProxy и вручную дёргаем
+    // ScrollTrigger.update() при реальном скролле body.
+    if (typeof ScrollTrigger !== 'undefined') {
+      ScrollTrigger.scrollerProxy(window, {
+        scrollTop(value) {
+          if (arguments.length) { __pageScrollTo(value); return; }
+          return __pageScrollY();
+        },
+        getBoundingClientRect() {
+          return { top: 0, left: 0, width: window.innerWidth, height: window.innerHeight };
+        }
+      });
+      document.body.addEventListener('scroll', function() { ScrollTrigger.update(); }, { passive: true });
+    }
+
     const data = {
       ru: {
         brand: "Илья Парфененок",
@@ -6092,7 +6153,9 @@
         if (e.target.closest && e.target.closest('[data-lenis-prevent]')) return;
         const y = e.touches[0].clientY;
         const deltaY = y - touchStartY;
-        const doc = document.documentElement;
+        // Скроллится теперь body (html — overflow:hidden, см. SCROLL BRIDGE
+        // вверху скрипта), поэтому границы скролла проверяем по body, а не html.
+        const doc = document.body;
         const atTop = doc.scrollTop <= 0;
         const atBottom = doc.scrollTop + doc.clientHeight >= doc.scrollHeight - 1;
         if ((atTop && deltaY > 0) || (atBottom && deltaY < 0)) {
@@ -6427,7 +6490,7 @@
 
       function applyTransform() {
         rafId = null;
-        const scrolled = window.scrollY;
+        const scrolled = __pageScrollY();
         if (scrolled === lastScrolled) return;
         lastScrolled = scrolled;
 
@@ -6451,7 +6514,7 @@
 
       splash.style.transformOrigin = 'center top';
 
-      window.addEventListener('scroll', function() {
+      __onPageScroll(function() {
         if (!rafId) rafId = requestAnimationFrame(applyTransform);
       }, { passive: true });
     })();
@@ -6514,12 +6577,12 @@
             label.style.opacity = '1';
           }
         }, 2000);
-        window.addEventListener('scroll', function onFirstScroll() {
+        __onPageScroll(function onFirstScroll() {
           if (scrollStarted) return;
           scrollStarted = true;
           clearTimeout(scrollHintTimer);
           if (scrollHintShown) label.style.opacity = '0';
-          window.removeEventListener('scroll', onFirstScroll);
+          __offPageScroll(onFirstScroll);
         }, { passive: true });
       }
 
@@ -6594,7 +6657,7 @@
         }
       }
 
-      window.addEventListener('scroll', function() {
+      __onPageScroll(function() {
         if (!_rafSplash) _rafSplash = requestAnimationFrame(updateSplashHeader);
       }, { passive: true });
       updateSplashHeader();
@@ -6875,10 +6938,10 @@
 
         function settle() {
           const rect = target.getBoundingClientRect();
-          const desiredY = Math.max(0, window.scrollY + rect.top - HEADER_CLEARANCE);
-          window.scrollTo(0, desiredY);
+          const desiredY = Math.max(0, __pageScrollY() + rect.top - HEADER_CLEARANCE);
+          __pageScrollTo(desiredY);
 
-          const y = window.scrollY;
+          const y = __pageScrollY();
           if (lastY !== null && Math.abs(y - lastY) < 1) {
             stableFrames++;
           } else {
@@ -7407,12 +7470,12 @@
             // Запоминаем, откуда открыли кейс, чтобы «Назад» вернул
             // на ту же карточку, а не на сплеш-экран (scrollTo(0,0) сбросит
             // позицию, если её не восстановить явно при закрытии).
-            document.body.dataset.caseReturnScrollY = window.scrollY;
+            document.body.dataset.caseReturnScrollY = __pageScrollY();
             document.querySelectorAll('.splash-container, header, .lang, #navOverlay, main.wrap, #qa, #contacts, footer.footer').forEach(el => {
               el.dataset.caseHiddenDisplay = el.style.display;
               el.style.display = 'none';
             });
-            window.scrollTo(0, 0);
+            __pageScrollTo(0);
           }
 
           gsap.fromTo(overlay, { opacity: 0 }, { opacity: 1, duration: 0.4 });
@@ -7450,7 +7513,7 @@
                 const y = parseFloat(document.body.dataset.caseReturnScrollY) || 0;
                 delete document.body.dataset.caseReturnScrollY;
                 if (window.ScrollTrigger) ScrollTrigger.refresh();
-                window.scrollTo(0, y);
+                __pageScrollTo(y);
               }
             }});
           }
