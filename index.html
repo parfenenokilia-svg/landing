@@ -3881,6 +3881,12 @@
       white-space: nowrap;
       width: fit-content;
       transition: opacity 0.2s;
+      /* Без сброса appearance Safari дорисовывает поверх свою нативную
+         "капсулу" кнопки — из-за этого рядом с текстом появлялся лишний
+         прямоугольник. */
+      appearance: none;
+      -webkit-appearance: none;
+      border-radius: 0;
     }
     .cs-expand-btn:hover { opacity: 0.7; }
     .cs-expand-block {
@@ -6039,28 +6045,21 @@
       if (typeof Lenis === 'undefined') return;
       if (!window.matchMedia('(max-width: 760px)').matches) return;
 
-      // Native touch (как у joinflowparty.com) даёт лучший скролл, но не
-      // убирает капсулу на нашей странице — проверили это отдельно, все
-      // найденные CSS-отличия (header/nav-ctas/lang фон-на-себе,
-      // body::after, viewport-fit=cover, scroll-behavior) уже исправлены,
-      // и капсула всё равно ломает интерфейс при native touch. Единственное,
-      // что реально убирает капсулу — синхронизация тача через Lenis.
-      // Берём лучший сбалансированный конфиг из уже проверенных вариантов.
-      // Капсула фиксится syncTouch:true как таковым, а "слишком быстро"
-      // после отпускания пальца — это touchInertiaMultiplier (дальность
-      // проекции инерции) и syncTouchLerp (скорость доезда до неё).
-      // syncTouchLerp:0.07 давал слишком долгий "хвост" доката — в самом
-      // конце, когда шаг между кадрами становится меньше пикселя, это
-      // ощущается как мелкая дрожь из-за округления. Подняли до 0.09, потом
-      // до 0.12 — дрожь становилась всё слабее, но не исчезала полностью,
-      // поэтому подняли ещё раз, до 0.15.
+      // syncTouch:true (перехват тача через Lenis) чинил капсульный баг
+      // iOS, но одновременно ломал скролл внутри Telegram in-app browser —
+      // у него свой встроенный обработчик touchstart/touchmove (нужен для
+      // жеста "смахнуть вниз, чтобы свернуть браузер"), и два независимых
+      // перехватчика тача конфликтуют — скролл дёргается и лагает.
+      // За время сессии капсульный баг закрыт точечными CSS-фиксами
+      // (фон хедера/lang/nav-ctas/оверлея кейса на отдельном ::before-слое
+      // вместо фона на самом fixed/sticky элементе) — тестируем гипотезу,
+      // что агрессивный перехват тача через Lenis больше не нужен. Оставляем
+      // Lenis только для сглаживания колеса (на мобиле неактуально) и для
+      // lenis.stop()/start() в оверлее кейса — тач полностью нативный, как
+      // у joinflowparty.com.
       const lenis = new Lenis({
         lerp: 0.09,
         smoothWheel: false,
-        syncTouch: true,
-        syncTouchLerp: 0.15,
-        touchInertiaMultiplier: 15,
-        touchMultiplier: 1,
       });
 
       if (typeof gsap !== 'undefined') {
@@ -7384,6 +7383,13 @@
           overlayContent.innerHTML = detail.innerHTML;
           overlayContent.querySelectorAll('.cs-expand-block[id]').forEach(el => { el.id = 'overlay-' + el.id; });
           overlayContent.querySelectorAll('.cs-expand-btn[data-target]').forEach(el => { el.setAttribute('data-target', 'overlay-' + el.getAttribute('data-target')); });
+          // На всякий случай принудительно сворачиваем все AB-блоки при
+          // каждом открытии карточки — независимо от того, что могло
+          // остаться от предыдущего просмотра.
+          overlayContent.querySelectorAll('.cs-expand-block').forEach(el => { el.style.display = 'none'; });
+          overlayContent.querySelectorAll('.cs-expand-btn').forEach(el => {
+            el.textContent = getLabel('развернуть ↓', 'expand ↓', lang);
+          });
           overlay.style.display = 'block';
           overlay.scrollTop = 0;
           document.body.style.overflow = 'hidden';
