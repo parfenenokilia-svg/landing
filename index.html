@@ -6248,11 +6248,18 @@
           // max-height анимируется до реальной высоты контента (а не до
           // фиксированного большого значения), иначе рост выглядит рывком
           function openArtifact() {
+            // Пока идёт программный скролл по клику в меню (например, в
+            // "Фидбэк" мимо "Обо мне"), это раскрытие меняет высоту
+            // документа прямо во время прыжка — цель уезжает, скролл
+            // как будто спотыкается и "довисает" на середине пути.
+            // При переходе по меню просто не трогаем текст — пролетаем мимо.
+            if (window.__menuNavInProgress) return;
             artifact.style.maxHeight = artifact.scrollHeight + 'px';
             artifact.classList.add('mob-in');
             scheduleRefresh();
           }
           function closeArtifact() {
+            if (window.__menuNavInProgress) return;
             artifact.style.maxHeight = '0px';
             artifact.classList.remove('mob-in');
             scheduleRefresh();
@@ -6852,6 +6859,11 @@
           }
         }
 
+        // Пока едем к цели по клику в меню, не даём таймлайну "Обо мне"
+        // раскрывать текст артефактов (см. openArtifact/closeArtifact) —
+        // именно это раньше двигало высоту документа прямо во время прыжка.
+        window.__menuNavInProgress = true;
+
         let attempts = 0;
         function attemptJump() {
           attempts++;
@@ -6862,6 +6874,8 @@
               ', rect.top=' + offBy + (Math.abs(offBy) > 5 ? ' — не попали, пробуем ещё' : ' — OK');
             if (Math.abs(offBy) > 5 && attempts < 4) {
               attemptJump();
+            } else {
+              window.__menuNavInProgress = false;
             }
           });
         }
