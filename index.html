@@ -6875,8 +6875,10 @@
         let attempts = 0;
         function attemptJump() {
           attempts++;
-          // Первый прыжок — плавный (как и должно быть при обычной навигации).
-          // Любая коррекция после него — мгновенная, без анимации.
+          // Анимированный (плавный) прыжок Lenis на большую дистанцию едет
+          // долго и на глаз выглядит так, будто застревает на промежуточной
+          // секции — это и была причина ощущения "лага". Ведём сразу и
+          // мгновенно, без анимации, никакого промежуточного "доскролла".
           jumpTo(() => {
             const rect = target.getBoundingClientRect();
             const offBy = Math.round(rect.top - HEADER_CLEARANCE);
@@ -6887,7 +6889,7 @@
             } else {
               window.__menuNavInProgress = false;
             }
-          }, attempts > 1);
+          }, true);
         }
         attemptJump();
       });
