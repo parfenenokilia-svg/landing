@@ -6822,15 +6822,9 @@
       contacts: 'contactsTitle',
     };
 
-    // ВРЕМЕННЫЙ ДИАГНОСТИЧЕСКИЙ БЕЙДЖ — убрать после того, как разберёмся
-    // с промахами навигации меню. Текстом, чтобы можно было скопировать.
-    const navDebugEl = document.createElement('pre');
-    navDebugEl.id = 'navDebugBadge';
-    navDebugEl.style.cssText = 'position:fixed;left:8px;bottom:8px;z-index:99999;max-width:calc(100vw - 16px);' +
-      'background:rgba(0,0,0,0.85);color:#0f0;font:11px/1.4 monospace;padding:8px 10px;' +
-      'border-radius:8px;white-space:pre-wrap;word-break:break-all;user-select:text;-webkit-user-select:text;';
-    navDebugEl.textContent = 'nav-debug: жду клик по меню...';
-    document.body.appendChild(navDebugEl);
+    // Фикс-хедер лежит поверх страницы — если приземлиться ровно на
+    // rect.top:0, заголовок секции окажется под ним. Оставляем зазор.
+    const HEADER_CLEARANCE = window.matchMedia('(max-width: 760px)').matches ? 78 : 90;
 
     document.querySelectorAll('a.nav-flip-link[href^="#"]').forEach((link) => {
       link.addEventListener('click', (e) => {
@@ -6840,58 +6834,45 @@
         if (!target) return;
         e.preventDefault();
 
-        // ВЫЯСНИЛИ через дебаг-бейдж: расчёт цели и сам прыжок были верны —
-        // scrollY после прыжка почти точно совпадал с посчитанной целью, но
-        // rect.top заголовка после прыжка был далеко не 0. Значит абсолютная
-        // позиция самого заголовка в документе МЕНЯЕТСЯ уже ПОСЛЕ прыжка
-        // (что-то на странице догружается/дорастает по высоте). Вместо того
-        // чтобы искать точную причину, делаем скролл самокорректирующимся:
-        // прыгаем, ждём, проверяем попадание и, если не попали — прыгаем
-        // повторно на уже устоявшуюся позицию.
-        // Фикс-хедер лежит поверх страницы — если приземлиться ровно на
-        // rect.top:0, заголовок секции окажется под ним. Оставляем зазор.
-        const HEADER_CLEARANCE = window.matchMedia('(max-width: 760px)').matches ? 78 : 90;
+        // Простой и надёжный способ, без Lenis/ScrollTrigger в расчёте:
+        // на каждом кадре меряем реальное положение заголовка и ставим
+        // scrollTo напрямую. Если что-то на странице ещё меняет разметку
+        // (например, ScrollTrigger только что что-то раскрыл) — на
+        // следующем кадре просто скорректируемся ещё раз. Останавливаемся,
+        // когда позиция не меняется 3 кадра подряд. На глаз — мгновенный
+        // прыжок, без видимой "остановки на полпути".
+        window.__menuNavInProgress = true;
+        if (window.__lenis) window.__lenis.stop();
 
-        function jumpTo(cb, instant) {
-          if (window.__lenis) {
-            window.__lenis.resize();
-            if (typeof ScrollTrigger !== 'undefined') ScrollTrigger.refresh();
-            // Повторную корректировку (когда первый прыжок чуть промахнулся
-            // из-за остаточного сдвига разметки) делаем мгновенной, без
-            // анимации — иначе видно, как страница "доезжает" вторым рывком
-            // с задержкой.
-            window.__lenis.scrollTo(target, { offset: -HEADER_CLEARANCE, immediate: !!instant, onComplete: cb });
+        let stableFrames = 0;
+        let lastY = null;
+        let framesLeft = 60; // защита от бесконечного цикла (~1с при 60fps)
+
+        function settle() {
+          const rect = target.getBoundingClientRect();
+          const desiredY = Math.max(0, window.scrollY + rect.top - HEADER_CLEARANCE);
+          window.scrollTo(0, desiredY);
+
+          const y = window.scrollY;
+          if (lastY !== null && Math.abs(y - lastY) < 1) {
+            stableFrames++;
           } else {
-            target.scrollIntoView({ behavior: instant ? 'auto' : 'smooth', block: 'start' });
-            setTimeout(() => { window.scrollBy(0, -HEADER_CLEARANCE); cb(); }, instant ? 0 : 500);
+            stableFrames = 0;
+          }
+          lastY = y;
+          framesLeft--;
+
+          if (stableFrames >= 3 || framesLeft <= 0) {
+            window.__menuNavInProgress = false;
+            if (window.__lenis) {
+              window.__lenis.resize();
+              window.__lenis.start();
+            }
+          } else {
+            requestAnimationFrame(settle);
           }
         }
-
-        // Пока едем к цели по клику в меню, не даём таймлайну "Обо мне"
-        // раскрывать текст артефактов (см. openArtifact/closeArtifact) —
-        // именно это раньше двигало высоту документа прямо во время прыжка.
-        window.__menuNavInProgress = true;
-
-        let attempts = 0;
-        function attemptJump() {
-          attempts++;
-          // Анимированный (плавный) прыжок Lenis на большую дистанцию едет
-          // долго и на глаз выглядит так, будто застревает на промежуточной
-          // секции — это и была причина ощущения "лага". Ведём сразу и
-          // мгновенно, без анимации, никакого промежуточного "доскролла".
-          jumpTo(() => {
-            const rect = target.getBoundingClientRect();
-            const offBy = Math.round(rect.top - HEADER_CLEARANCE);
-            navDebugEl.textContent = 'nav-debug: #' + id + ' попытка ' + attempts +
-              ', rect.top=' + offBy + (Math.abs(offBy) > 5 ? ' — не попали, пробуем ещё' : ' — OK');
-            if (Math.abs(offBy) > 5 && attempts < 4) {
-              attemptJump();
-            } else {
-              window.__menuNavInProgress = false;
-            }
-          }, true);
-        }
-        attemptJump();
+        requestAnimationFrame(settle);
       });
     });
 
