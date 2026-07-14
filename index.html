@@ -4237,8 +4237,17 @@
       }
 
       .splash {
+        /* top/left/right явно, БЕЗ bottom (не inset:0) — иначе height:100svh
+           выше конкурирует с bottom:0 за высоту бокса (over-constrained),
+           и если WebKit в этом случае трактует конфликт не по спеке, высота
+           .splash может плавать вместе с реальной высотой вьюпорта во время
+           анимации капсулы — а с ней и всё, что размерено в % от .splash
+           (например, .splash-photo: height:80%). bottom остаётся auto,
+           height:100svh — единственный источник высоты. */
         position: fixed;
-        inset: 0;
+        top: 0;
+        left: 0;
+        right: 0;
         width: 100%;
         z-index: 90;
       }
@@ -5952,7 +5961,16 @@
       }, 220);
     }
 
+    // iOS стреляет 'resize' прямо во время анимации системной капсулы
+    // браузера/Telegram (меняется высота видимой области, не ширина).
+    // Без проверки это пересчитывало scaleX() имени на сплэше в момент
+    // движения капсулы — сам текст визуально дёргался/менялся в размере
+    // синхронно с ней. Пересчитываем только если реально поменялась
+    // ширина экрана (поворот/ресайз), а не высота.
+    let __splashFitLastWidth = window.innerWidth;
     window.addEventListener('resize', () => {
+      if (window.innerWidth === __splashFitLastWidth) return;
+      __splashFitLastWidth = window.innerWidth;
       clearTimeout(window.__splashFitTimer);
       window.__splashFitTimer = setTimeout(fitSplashNames, 120);
     });
