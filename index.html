@@ -6115,27 +6115,38 @@
       // если пользователь тянет вниз, когда скролл уже в самом верху (или
       // вверх, когда уже в самом низу), гасим событие — классический приём
       // из времён до overscroll-behavior.
+      // В самом Telegram это же гашение, похоже, обрывает доезд инерции
+      // резко прямо у подвала (жалоба "доезжает резко именно в Telegram") —
+      // там своя логика упора в границу, и наш guard, рассчитанный на
+      // Safari/Chrome, там просто режет доезд вместо мягкого гашения.
+      // Отключаем guard именно в Telegram, оставляем как есть везде ещё.
+      const isTelegramWebview = /Telegram/i.test(navigator.userAgent)
+        || !!window.TelegramWebviewProxy
+        || !!(window.Telegram && window.Telegram.WebApp);
+
       let touchStartY = 0;
       document.addEventListener('touchstart', (e) => {
         if (e.touches && e.touches.length) touchStartY = e.touches[0].clientY;
       }, { passive: true });
 
-      document.addEventListener('touchmove', (e) => {
-        if (!e.touches || !e.touches.length) return;
-        // Пока открыт оверлей кейса, скролл документа заморожен на 0 —
-        // guard решил бы, что мы "всегда наверху страницы", и блокировал
-        // бы любой свайп внутри оверлея. Пропускаем элементы со своим
-        // собственным скроллом (тот же маркер, что понимает и Lenis).
-        if (e.target.closest && e.target.closest('[data-lenis-prevent]')) return;
-        const y = e.touches[0].clientY;
-        const deltaY = y - touchStartY;
-        const doc = document.documentElement;
-        const atTop = doc.scrollTop <= 0;
-        const atBottom = doc.scrollTop + doc.clientHeight >= doc.scrollHeight - 1;
-        if ((atTop && deltaY > 0) || (atBottom && deltaY < 0)) {
-          e.preventDefault();
-        }
-      }, { passive: false });
+      if (!isTelegramWebview) {
+        document.addEventListener('touchmove', (e) => {
+          if (!e.touches || !e.touches.length) return;
+          // Пока открыт оверлей кейса, скролл документа заморожен на 0 —
+          // guard решил бы, что мы "всегда наверху страницы", и блокировал
+          // бы любой свайп внутри оверлея. Пропускаем элементы со своим
+          // собственным скроллом (тот же маркер, что понимает и Lenis).
+          if (e.target.closest && e.target.closest('[data-lenis-prevent]')) return;
+          const y = e.touches[0].clientY;
+          const deltaY = y - touchStartY;
+          const doc = document.documentElement;
+          const atTop = doc.scrollTop <= 0;
+          const atBottom = doc.scrollTop + doc.clientHeight >= doc.scrollHeight - 1;
+          if ((atTop && deltaY > 0) || (atBottom && deltaY < 0)) {
+            e.preventDefault();
+          }
+        }, { passive: false });
+      }
     })();
 
     // ── ABOUT STICKY TIMELINE (только десктоп — на мобильном это линейный список,
@@ -6601,6 +6612,14 @@
         const contactsObserver = new IntersectionObserver(function(entries) {
           const entry = entries[0];
           onContacts = entry.isIntersecting && entry.boundingClientRect.top < header.offsetHeight;
+          // IntersectionObserver срабатывает асинхронно и может сработать
+          // уже ПОСЛЕ того, как скролл закончился (например, мгновенный
+          // прыжок по клику в меню) — тогда событий scroll больше нет, и
+          // цвет хедера никогда не обновится, если полагаться только на
+          // updateSplashHeader ниже. Применяем сразу же и здесь тоже.
+          header.classList.toggle('on-contacts', onContacts);
+          if (langEl) langEl.classList.toggle('on-contacts', onContacts);
+          if (navScrim) navScrim.classList.toggle('on-contacts', onContacts);
         }, { rootMargin: `-${header.offsetHeight}px 0px 0px 0px`, threshold: 0 });
         contactsObserver.observe(contactsSection);
       }
