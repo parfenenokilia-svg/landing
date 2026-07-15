@@ -4688,7 +4688,10 @@
         transform: none;
         border: 1px solid var(--line-bright);
         border-radius: 0;
-        background: var(--surface);
+        background: transparent;
+        /* Небольшое неоновое голубое свечение по рамке вместо серой
+           заливки-подложки — сама карточка прозрачная. */
+        box-shadow: 0 0 10px rgba(56, 189, 248, 0.15);
         padding: 28px 16px 52px;
         text-align: center;
       }
@@ -4696,7 +4699,7 @@
       .recommend-tile.active {
         border-color: var(--accent);
         box-shadow: 0 0 20px var(--accent-glow);
-        background: rgba(56, 189, 248, 0.05);
+        background: transparent;
       }
 
       /* Цитата остаётся скрытой на карточке, как на десктопе — текст
@@ -4747,15 +4750,18 @@
 
       .recommend-row {
         position: absolute;
-        left: 50%;
+        left: 16px;
         bottom: 12px;
-        transform: translateX(-50%);
+        transform: none;
         margin: 0;
       }
 
+      /* "+" крупнее — визуально сопоставим по размеру с кружком Telegram
+         (36px), но остаётся просто текстовым глифом, без круглой обводки */
       .recommend-tile::after {
-        right: 12px;
-        bottom: 8px;
+        right: 14px;
+        bottom: 2px;
+        font-size: 46px;
       }
 
       .recommend-expand { display: none; }
@@ -5027,7 +5033,7 @@
       <span class="section-mega-title" id="recommendationsTitle" style="margin-left:calc(-1 * max(24px, calc(50vw - 556px)) + 24px);">ФИДБЭК</span>
       <span class="section-mega-label" style="margin-left:calc(-1 * max(24px, calc(50vw - 556px)) + 24px);">коллеги и менеджеры о работе со мной</span>
       <div class="recommend-grid-wrap">
-        <div class="recommend-grid" id="recommendGrid"></div>
+        <div class="recommend-grid" id="recommendGrid" data-lenis-prevent></div>
       </div>
       <article class="recommend-drawer" id="recommendDrawer">
         <div class="recommend-drawer-side" id="recommendDrawerSide"></div>
