@@ -4052,6 +4052,31 @@
         background: rgba(13, 13, 13, 0.55);
       }
 
+      /* Адаптация хедера под цвет блока "Контакты" (.on-contacts) нужна
+         только на десктопе, где хедер визуально наезжает на этот блок.
+         На мобиле хедер — тонкая полоска сверху, на контакты не наезжает,
+         поэтому здесь просто отменяем адаптацию и держим обычный тёмный
+         вид всегда, независимо от секции под ним. */
+      header.on-contacts::before {
+        background: rgba(13, 13, 13, 0.55);
+      }
+      header.on-contacts .brand {
+        color: var(--text);
+      }
+      header.on-contacts .nav-cta,
+      .lang.on-contacts .nav-cta {
+        color: var(--text);
+        border-color: rgba(240, 237, 232, 0.5);
+        background: rgba(13, 13, 13, 0.75);
+      }
+      header.on-contacts .nav-cta.primary {
+        color: var(--accent);
+        border-color: var(--accent);
+      }
+      .nav-scrim.on-contacts {
+        background: linear-gradient(to bottom, rgba(13,13,13,0.55), rgba(13,13,13,0));
+      }
+
       .lang {
         will-change: transform;
         transform: translateZ(0);
