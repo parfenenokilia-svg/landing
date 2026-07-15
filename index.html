@@ -6121,13 +6121,18 @@
       // Пробовали отключать syncTouch именно в Telegram (нативный тач) —
       // стало хуже, не лучше. syncTouch:true универсально — по факту
       // наименее плохой вариант из всех проверенных. Возвращаем.
+      // Приглушили по просьбе: чуть туже и медленнее — touchMultiplier
+      // снижает отклик на движение пальца (меньше едет на тот же свайп),
+      // touchInertiaMultiplier снижает дальность инерционного доката после
+      // отпускания. syncTouchLerp не трогаем — за него уже отдельно боролись
+      // с дрожью в хвосте доката.
       const lenis = new Lenis({
         lerp: 0.09,
         smoothWheel: false,
         syncTouch: true,
         syncTouchLerp: 0.09,
-        touchInertiaMultiplier: 15,
-        touchMultiplier: 1,
+        touchInertiaMultiplier: 11,
+        touchMultiplier: 0.85,
       });
 
       if (typeof gsap !== 'undefined') {
