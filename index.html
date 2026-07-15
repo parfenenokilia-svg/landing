@@ -5624,6 +5624,27 @@
           if (typeof ScrollTrigger !== 'undefined') {
             setTimeout(() => ScrollTrigger.refresh(), 550);
           }
+          // Когда открываемая карточка ниже закрывшейся (или на мобиле,
+          // где фикс-хедер перекрывает верх экрана), схлопывание соседних
+          // карточек сдвигает контент вверх, и заголовок только что
+          // открытой карточки может уехать под хедер. Вместо того чтобы
+          // ждать конца transition и потом резко доскролливать (выглядит
+          // как два отдельных рывка) — держим заголовок на месте КАЖДЫЙ
+          // кадр всё время transition (~0.5с), компенсируя сдвиг синхронно
+          // с самой анимацией аккордеона. Визуально заголовок как будто
+          // вообще не двигается, а не "прыгает после".
+          if (!isOpen) {
+            const headerClearance = window.matchMedia('(max-width: 760px)').matches ? 78 : 100;
+            const pinStart = performance.now();
+            const pinDuration = 550;
+            (function pinHeadPosition(now) {
+              const rect = head.getBoundingClientRect();
+              if (rect.top < headerClearance) {
+                window.scrollBy(0, rect.top - headerClearance);
+              }
+              if (now - pinStart < pinDuration) requestAnimationFrame(pinHeadPosition);
+            })(pinStart);
+          }
         });
       });
     }
