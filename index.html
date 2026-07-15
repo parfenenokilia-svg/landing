@@ -4146,6 +4146,15 @@
         gap: 3px;
       }
 
+      /* Расстояние между центрами линий = высота линии (2px) + gap.
+         На мобиле gap уменьшен до 3px (было 4px на десктопе), а сдвиг
+         крайних линий при сложении в "×" (translateY) остался десктопным
+         (6px, под gap:4px) — из-за этого на мобиле крест получался
+         перекошенным (несовпадение на 1px с каждой стороны). Пересчитано
+         под мобильный gap: 2px + 3px = 5px. */
+      .nav-burger.open .burger-lines span:nth-child(1) { transform: translateY(5px) rotate(45deg); }
+      .nav-burger.open .burger-lines span:nth-child(3) { transform: translateY(-5px) rotate(-45deg); }
+
       .nav-ctas {
         position: fixed;
         top: 3px;
@@ -4890,9 +4899,6 @@
 
   <!-- Overlay menu -->
   <div class="nav-overlay" id="navOverlay" aria-hidden="true">
-    <button class="nav-overlay-close" onclick="closeNavMenu()" aria-label="Закрыть меню">
-      <span></span><span></span>
-    </button>
     <ul class="nav-overlay-links">
       <li>
         <a href="#cases" class="nav-flip-link" onclick="closeNavMenu()">
