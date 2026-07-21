@@ -4517,6 +4517,20 @@
         will-change: transform;
         transform: translateZ(0);
       }
+      /* Крестик теперь живёт вне #caseOverlay (см. комментарий у самой
+         кнопки), поэтому transform выше на него не влияет. На мобиле
+         текст кейса при скролле проходит под ним — даём непрозрачную
+         тёмную подложку-кружок, как у обычной плавающей кнопки закрытия
+         (ровно тот же паттерн, что у крестика "закрыть" в сторис или
+         лайтбоксах), а не прозрачный крестик поверх текста. */
+      #caseOverlayCloseX {
+        background: rgba(13, 13, 13, 0.85) !important;
+        border-radius: 50%;
+        width: 38px !important;
+        height: 38px !important;
+        top: 14px !important;
+        right: 14px !important;
+      }
 
       .cs-detail-body,
       .cs-detail-inner {
@@ -7490,6 +7504,8 @@
           });
           overlay.style.display = 'block';
           overlay.scrollTop = 0;
+          const closeXBtn = document.getElementById('caseOverlayCloseX');
+          if (closeXBtn) closeXBtn.style.display = 'flex';
           document.body.style.overflow = 'hidden';
           // overflow:hidden на body не останавливает Lenis — он сам
           // управляет скроллом на JS-уровне и продолжит крутить страницу
@@ -7539,6 +7555,8 @@
           if (closedViaX || closedViaBackdrop) {
             gsap.to(overlay, { opacity: 0, duration: 0.3, onComplete: () => {
               overlay.style.display = 'none';
+              const closeXBtn2 = document.getElementById('caseOverlayCloseX');
+              if (closeXBtn2) closeXBtn2.style.display = 'none';
               document.body.style.overflow = '';
               overlay.style.opacity = 1;
               if (window.__lenis) window.__lenis.start();
@@ -7658,9 +7676,15 @@
 
   </script>
   <div id="caseOverlay" data-lenis-prevent style="display:none; position:fixed; inset:0; z-index:1000; background:#0d0d0d; overflow-y:auto; cursor:pointer;">
-    <button id="caseOverlayCloseX" aria-label="Закрыть" style="position:fixed; top:20px; right:24px; z-index:1001; width:40px; height:40px; border:none; background:transparent; color:rgba(240,237,232,0.85); font-size:28px; line-height:1; cursor:pointer;">×</button>
     <div id="caseOverlayContent" style="padding: 64px 48px; max-width: 900px; margin: 0 auto; cursor:default;"></div>
   </div>
+  <!-- Вынесен из #caseOverlay намеренно: на мобиле у оверлея есть
+       transform (см. правку под iOS-репейнт-баг), а любой transform на
+       родителе создаёт новый containing block для position:fixed потомков —
+       крестик "уезжал" со скроллом внутри оверлея вместо того, чтобы
+       быть прибитым к экрану. Как отдельный сосед — не зависит от того,
+       что происходит с transform/overflow внутри оверлея. -->
+  <button id="caseOverlayCloseX" aria-label="Закрыть" style="display:none; align-items:center; justify-content:center; position:fixed; top:20px; right:24px; z-index:1001; width:40px; height:40px; border:none; background:transparent; color:rgba(240,237,232,0.85); font-size:28px; line-height:1; cursor:pointer;">×</button>
 
 </body>
 </html>
