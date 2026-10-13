@@ -15,7 +15,7 @@
   </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=IBM+Plex+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&family=IBM+Plex+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
   <style>
     :root {
       --bg: #0d0d0d;
@@ -5323,6 +5323,49 @@
     /* Полный отзыв в раскрытой карточке */
     .recommend-drawer, .recommend-drawer p { color: rgba(13,13,13,0.85) !important; }
 
+    /* ═══════════ ЖИВЫЕ ДЕТАЛИ (десктоп) ═══════════ */
+    @media (hover: hover) and (pointer: fine) {
+      html.fx-cursor, html.fx-cursor body, html.fx-cursor a, html.fx-cursor button,
+      html.fx-cursor .cs-card, html.fx-cursor .recommend-tile, html.fx-cursor [onclick],
+      html.fx-cursor .svc-row, html.fx-cursor .qa-punk-row { cursor: none !important; }
+      html.fx-cursor input, html.fx-cursor textarea { cursor: text !important; }
+
+      .cursor {
+        left: 0 !important; top: 0 !important;
+        width: 10px; height: 10px;
+        background: #ffffff;
+        mix-blend-mode: difference;
+        display: flex; align-items: center; justify-content: center;
+        transition: width 0.4s cubic-bezier(0.22,1,0.36,1), height 0.4s cubic-bezier(0.22,1,0.36,1),
+                    background-color 0.25s ease, opacity 0.25s ease;
+        opacity: 0;
+      }
+      html.fx-cursor .cursor { opacity: 1; }
+      .cursor.hover { width: 46px; height: 46px; background: #ffffff; }
+      .cursor.click { background: #ffffff; }
+      .cursor.label { width: 108px; height: 108px; mix-blend-mode: normal; background: #f4f4f2; }
+      .cursor.label.ink { background: #0d0d0d; }
+      .cursor-label {
+        font-family: "IBM Plex Sans", sans-serif;
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #0d0d0d;
+        opacity: 0;
+        transform: scale(0.8);
+        transition: opacity 0.2s ease, transform 0.35s cubic-bezier(0.22,1,0.36,1);
+        white-space: nowrap;
+      }
+      .cursor.label .cursor-label { opacity: 1; transform: scale(1); }
+      .cursor.label.ink .cursor-label { color: #f4f4f2; }
+
+      .fx-mag { will-change: transform; }
+    }
+
+    /* Буквы крупных заголовков: вес меняется плавно */
+    .fx-ch { display: inline-block; font-weight: inherit; }
+
   
     /* Портрет на сплэше: обработан заранее (ЧБ, резкость), фильтр не нужен */
     .splash-photo { max-width: 78vw; filter: none !important; }
@@ -7189,7 +7232,7 @@
     // 1. Custom cursor
     (function() {
       const cursor = document.getElementById('cursor');
-      if (!cursor || window.matchMedia('(hover: none)').matches) return;
+      if (true) return; // курсор управляется блоком «Живые детали»
       let cx = window.innerWidth / 2, cy = window.innerHeight / 2;
       let raf;
       document.addEventListener('mousemove', (e) => {
@@ -8368,6 +8411,152 @@
           });
         }).observe(overlay, { attributes: true, attributeFilter: ['style'] });
       }
+    })();
+
+    // ═══════════ ЖИВЫЕ ДЕТАЛИ ═══════════
+    (function() {
+      if (typeof gsap === 'undefined') return;
+      const RM = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const FINE = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+      const lang = () => (window.currentLang || document.documentElement.lang || 'ru').slice(0, 2);
+
+      // ── 2. Заголовки разделов проявляются снизу через маску ──
+      const TITLES = ['#casesHeroTitle', '#recommendationsTitle', '#aboutTitle', '#servicesTitle', '#qaTitle', '#contactsTitle'];
+      if (!RM && typeof ScrollTrigger !== 'undefined') {
+        TITLES.forEach(sel => {
+          const el = document.querySelector(sel);
+          if (!el) return;
+          gsap.fromTo(el,
+            { clipPath: 'inset(0% 0% 100% 0%)', yPercent: 35 },
+            { clipPath: 'inset(-25% -5% -15% -5%)', yPercent: 0, duration: 1.1, ease: 'expo.out',
+              scrollTrigger: { trigger: el, start: 'top 88%', toggleActions: 'play none none reverse' } });
+        });
+      }
+
+      if (!FINE) return;
+
+      // ── 1. Курсор ──
+      const cur = document.getElementById('cursor');
+      if (cur) {
+        document.documentElement.classList.add('fx-cursor');
+        cur.innerHTML = '<span class="cursor-label"></span>';
+        const lbl = cur.querySelector('.cursor-label');
+        let mx = innerWidth / 2, my = innerHeight / 2, x = mx, y = my, running = false;
+        const loop = () => {
+          x += (mx - x) * 0.22; y += (my - y) * 0.22;
+          cur.style.transform = `translate3d(${x}px, ${y}px, 0) translate(-50%, -50%)`;
+          if (Math.abs(mx - x) + Math.abs(my - y) > 0.1) requestAnimationFrame(loop); else running = false;
+        };
+        const LABELS = { card: { ru: 'Смотреть', en: 'View' }, rec: { ru: 'Читать', en: 'Read' } };
+        const HOVER = 'a, button, [onclick], .svc-row-head, .svc-row, .qa-punk-row, .nav-flip-link, .tg-link, .contact';
+        document.addEventListener('mousemove', (e) => {
+          mx = e.clientX; my = e.clientY;
+          if (!running) { running = true; requestAnimationFrame(loop); }
+          const t = e.target;
+          let btn = t.closest(HOVER);
+          const cardEl = t.closest('#csCards .cs-card');
+          if (!btn && cardEl) {
+            const cb = cardEl.querySelector('.cs-btn');
+            const rb = cb && cb.getBoundingClientRect();
+            if (rb && mx > rb.left - 14 && mx < rb.right + 14 && my > rb.top - 14 && my < rb.bottom + 14) btn = cb;
+          }
+          const card = !btn && cardEl;
+          const rec = !btn && t.closest('.recommend-tile');
+          if (card || rec) {
+            lbl.textContent = (card ? LABELS.card : LABELS.rec)[lang() === 'en' ? 'en' : 'ru'];
+            cur.classList.add('label'); cur.classList.toggle('ink', !!rec); cur.classList.remove('hover');
+          } else {
+            cur.classList.remove('label', 'ink');
+            cur.classList.toggle('hover', !!btn);
+          }
+        }, { passive: true });
+        document.addEventListener('mouseleave', () => { cur.style.opacity = '0'; });
+        document.addEventListener('mouseenter', () => { cur.style.opacity = ''; });
+        document.addEventListener('mousedown', () => gsap.to(cur, { scale: 0.85, duration: 0.15 }));
+        document.addEventListener('mouseup', () => gsap.to(cur, { scale: 1, duration: 0.4, ease: 'elastic.out(1, 0.5)' }));
+        // клик по карточке кейса открывает кейс, как кнопка «Смотреть»
+        document.addEventListener('click', (e) => {
+          if (e.target.closest('a, button, [data-expand]')) return;
+          const card = e.target.closest('#csCards .cs-card');
+          const b = card && card.querySelector('[data-expand]');
+          if (b) b.click();
+        });
+      }
+
+      // ── 1. Магнитные кнопки ──
+      const MAG = '.cs-btn, #navContactBtn, .lang .nav-cta, .nav-burger, .contact, .tg-link';
+      if (!RM) {
+        let active = null;
+        document.addEventListener('mousemove', (e) => {
+          const el = e.target.closest(MAG);
+          if (active && active !== el) {
+            gsap.to(active, { x: 0, y: 0, duration: 0.7, ease: 'elastic.out(1, 0.45)' });
+            active = null;
+          }
+          if (!el) return;
+          active = el; el.classList.add('fx-mag');
+          const r = el.getBoundingClientRect();
+          const dx = e.clientX - (r.left + r.width / 2), dy = e.clientY - (r.top + r.height / 2);
+          gsap.to(el, { x: dx * 0.28, y: dy * 0.38, duration: 0.45, ease: 'power3.out' });
+        }, { passive: true });
+      }
+
+      // ── 3. Крупные заголовки «дышат» под курсором ──
+      if (RM) return;
+      const BREATH = ['#heroTitle', '#casesHeroTitle', '#recommendationsTitle', '#aboutTitle', '#servicesTitle', '#qaTitle', '#contactsTitle'];
+      const W_MAX = 700, W_MIN = 480, RADIUS = 240;
+      const items = [];
+      function split(el) {
+        el.__fxSplitting = true;
+        const walk = (node) => {
+          [...node.childNodes].forEach(n => {
+            if (n.nodeType === 3 && n.textContent.length) {
+              const frag = document.createDocumentFragment();
+              [...n.textContent].forEach(ch => {
+                if (ch === ' ' || ch === '\n') { frag.appendChild(document.createTextNode(ch)); return; }
+                const s = document.createElement('span'); s.className = 'fx-ch'; s.textContent = ch; frag.appendChild(s);
+              });
+              n.replaceWith(frag);
+            } else if (n.nodeType === 1 && !n.classList.contains('fx-ch') && n.tagName !== 'BR') walk(n);
+          });
+        };
+        walk(el);
+        el.__fxSplitting = false;
+        el.__chars = [...el.querySelectorAll('.fx-ch')].map(s => ({ s, w: W_MAX }));
+      }
+      BREATH.forEach(sel => {
+        const el = document.querySelector(sel);
+        if (!el) return;
+        split(el);
+        items.push(el);
+        new MutationObserver(() => { if (!el.__fxSplitting && !el.querySelector('.fx-ch')) split(el); })
+          .observe(el, { childList: true, characterData: true, subtree: true });
+      });
+      let px = -9999, py = -9999, ticking = false;
+      function frame() {
+        let moving = false;
+        items.forEach(el => {
+          const r = el.getBoundingClientRect();
+          const near = py > r.top - 60 && py < r.bottom + 60 && px > r.left - 120 && px < r.right + 120 && r.bottom > 0 && r.top < innerHeight;
+          (el.__chars || []).forEach(c => {
+            let target = W_MAX;
+            if (near) {
+              const cr = c.s.getBoundingClientRect();
+              const d = Math.hypot(px - (cr.left + cr.width / 2), py - (cr.top + cr.height / 2));
+              const k = Math.max(0, 1 - d / RADIUS);
+              target = W_MIN + (W_MAX - W_MIN) * (k * k * (3 - 2 * k));
+            }
+            const nw = c.w + (target - c.w) * 0.16;
+            if (Math.abs(nw - c.w) > 0.5) { moving = true; c.w = nw; c.s.style.fontWeight = Math.round(nw); }
+            else if (c.w !== target) { c.w = target; c.s.style.fontWeight = target; }
+          });
+        });
+        if (moving) requestAnimationFrame(frame); else ticking = false;
+      }
+      const kick = () => { if (!ticking) { ticking = true; requestAnimationFrame(frame); } };
+      document.addEventListener('mousemove', (e) => { px = e.clientX; py = e.clientY; kick(); }, { passive: true });
+      window.addEventListener('scroll', kick, { passive: true });
+      document.addEventListener('mouseleave', () => { px = py = -9999; kick(); });
     })();
 
   </script>
