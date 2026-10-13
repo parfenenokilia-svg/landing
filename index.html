@@ -4939,7 +4939,7 @@
       .scroll-stage { height: 55svh !important; }
       .tl-artifact {
         position: absolute !important;
-        top: 236px !important;
+        top: 282px !important;
         left: 0 !important;
         right: 0 !important;
         width: auto !important;
@@ -5091,6 +5091,25 @@
       font-size: 15px;
       line-height: 1.4;
       color: rgba(244,244,242,0.72);
+    }
+
+    @media (min-width: 761px) {
+      /* Десктоп: главная цифра справа, на месте прежних номеров */
+      .cs-card-content { position: static; max-width: min(56%, 720px); }
+      .cs-card-top { margin-top: 56px; }
+      /* Таймлайн: пять этапов помещаются в экран */
+      .tl-agr-name { font-size: min(clamp(44px, 5.2vw, 80px), 7.4vh); }
+      .tl-agr-line { height: 20px; margin: 4px 0 4px 5px; }
+      .cs-big {
+        position: absolute;
+        right: 64px;
+        bottom: 116px;
+        align-items: flex-end;
+        text-align: right;
+        margin: 0;
+      }
+      .cs-big-v { font-size: clamp(120px, 13vw, 200px); }
+      .cs-big-l { font-size: 16px; max-width: 24ch; }
     }
 
     /* Раскрытие кейса */
@@ -5327,14 +5346,6 @@
 
 
 <!-- CASES HERO -->
-    <section id="now" class="now-section" aria-labelledby="nowTitle">
-      <div class="now-head">
-        <h2 class="section-mega-title" id="nowTitle">Сейчас</h2>
-        <p class="section-mega-label" id="nowLabel">над чем работаю</p>
-      </div>
-      <ol class="now-list" id="nowList"></ol>
-      <p class="now-open" id="nowOpen"></p>
-    </section>
 <div class="cs-hero" id="casesHero">
   <h1 class="hero-v2-title" id="casesHeroTitle">КЕЙСЫ</h1>
 </div>
@@ -5406,6 +5417,14 @@
                 <span class="tl-agr-name">EDTECH</span>
                 <span class="tl-agr-year">2023–2026</span>
               </div>
+              <div class="tl-agr-line"></div>
+            </div>
+            <div class="tl-agr-item" data-idx="4">
+              <div class="tl-agr-dot"></div>
+              <div class="tl-agr-content">
+                <span class="tl-agr-name">СЕЙЧАС</span>
+                <span class="tl-agr-year">с 2026</span>
+              </div>
             </div>
           </div>
 
@@ -5426,6 +5445,10 @@
             <div class="artifact-label">EDTECH</div>
             <p class="artifact-text">Полноценная работа с digital-продуктами: продакт-менеджер в Lerna, затем продакт-оунер в Skillbox. Запускал продукты с нуля и растил выручку действующих через growth-эксперименты, отвечая за линейку с оборотом в несколько миллионов рублей в месяц. Управленческий опыт прошлых лет превратился в системную работу с метриками и данными.</p>
           </div>
+          <div class="tl-artifact" data-idx="4">
+            <div class="artifact-label">СЕЙЧАС</div>
+            <p class="artifact-text">Отвечаю за образовательное направление в рекрутинговом агентстве Talentgrator: запускаю онлайн-курсы для специалистов игровой индустрии, от стратегии и программы до поиска авторов и выхода на продажи. Параллельно работаю продуктовым ментором в акселераторах 2080 Ventures MVP Lab и Sber500 × Disrupt, где помогаю командам проверять гипотезы и собирать MVP.</p>
+          </div>
 
         </div><!-- /about-sticky-inner -->
         </div><!-- /about-sticky -->
@@ -5436,6 +5459,7 @@
           <div class="scroll-stage" data-idx="1" style="height:50vh;"></div>
           <div class="scroll-stage" data-idx="2" style="height:50vh;"></div>
           <div class="scroll-stage" data-idx="3" style="height:50vh;"></div>
+          <div class="scroll-stage" data-idx="4" style="height:50vh;"></div>
         </div>
 
       </div><!-- /about-sticky-wrap -->
@@ -5636,7 +5660,8 @@
           { name: "ИВЕНТ", year: "2012–2019", text: "Семь лет в индустрии: от хелпера до ивент-продюсера. Каждый месяц новый B2B заказчик, новый концепт, новые цели мероприятия. Научился управлять людьми, бюджетами и ожиданиями клиентов в условиях высокой неопределённости с минимальным правом на ошибку. Эта база работает и в продуктовых запусках." },
           { name: "РОСТЕХ", year: "2019–2021", text: "Работал над программой поддержки технологических стартапов. Здесь впервые начал смотреть на продукт глазами пользователя: проектировал путь участника, отслеживал удовлетворённость, проводил кастдевы. Параллельно погрузился в устройство технологических стартапов и логику привлечения инвестиций. Узнал, как думают фаундеры, что ожидают от продукта и с какими ошибками сталкиваются." },
           { name: "СКОЛКОВО", year: "2021–2022", text: "Управлял образовательной программой для 200+ участников по заказу Минобрнауки. Методология Сколково строится на том, чтобы смотреть на один и тот же продукт через разные оптики одновременно: исполнителей, стейкхолдеров, рынка. Этот подход хорошо мне запомнился, регулярно применяю его в работе. Плюс получил яркий опыт работы с B2G." },
-          { name: "EDTECH", year: "2023–2026", text: "Полноценная работа с digital-продуктами: продакт-менеджер в Lerna, затем продакт-оунер в Skillbox. Запускал продукты с нуля и растил выручку действующих через growth-эксперименты, отвечая за линейку с оборотом в несколько миллионов рублей в месяц. Управленческий опыт прошлых лет превратился в системную работу с метриками и данными." }
+          { name: "EDTECH", year: "2023–2026", text: "Полноценная работа с digital-продуктами: продакт-менеджер в Lerna, затем продакт-оунер в Skillbox. Запускал продукты с нуля и растил выручку действующих через growth-эксперименты, отвечая за линейку с оборотом в несколько миллионов рублей в месяц. Управленческий опыт прошлых лет превратился в системную работу с метриками и данными." },
+          { name: "СЕЙЧАС", year: "с 2026", text: "Отвечаю за образовательное направление в рекрутинговом агентстве Talentgrator: запускаю онлайн-курсы для специалистов игровой индустрии, от стратегии и программы до поиска авторов и выхода на продажи. Параллельно работаю продуктовым ментором в акселераторах 2080 Ventures MVP Lab и Sber500 × Disrupt, где помогаю командам проверять гипотезы и собирать MVP." }
         ]
       },
       en: {
@@ -5792,7 +5817,8 @@
           { name: "EVENTS", year: "2012–2019", text: "Seven years in the industry: from assistant to event producer. Every month brought a new B2B client, a new concept, new event goals. I learned to manage people, budgets, and client expectations under high uncertainty with little room for error. That foundation carries over directly into product launches." },
           { name: "ROSTEC", year: "2019–2021", text: "Worked on a technology startup support program. This is where I first started looking at a product through the user's eyes: designing participant journeys, tracking satisfaction, running customer interviews. I also went deep into how technology startups work and how investment logic operates — understanding what founders expect from a product and where they typically go wrong." },
           { name: "SKOLKOVO", year: "2021–2022", text: "Managed an educational program for 200+ participants commissioned by the Ministry of Education. SKOLKOVO's methodology is built on examining the same product through multiple lenses simultaneously: the executor's, the stakeholder's, and the market's. I use this approach regularly. It also gave me direct experience working in a B2G context." },
-          { name: "EDTECH", year: "2023–2026", text: "Full product work with digital products: product manager at Lerna, then product owner at Skillbox. I launched products from scratch and grew revenue in existing ones through growth experiments, managing a line with monthly turnover in the millions. The management experience from previous years became systematic work with metrics and data." }
+          { name: "EDTECH", year: "2023–2026", text: "Full product work with digital products: product manager at Lerna, then product owner at Skillbox. I launched products from scratch and grew revenue in existing ones through growth experiments, managing a line with monthly turnover in the millions. The management experience from previous years became systematic work with metrics and data." },
+          { name: "NOW", year: "since 2026", text: "I lead the education track at Talentgrator, a recruitment agency, launching online courses for games industry specialists, from strategy and curriculum to finding authors and going to market. I also work as a product mentor at the 2080 Ventures MVP Lab and Sber500 × Disrupt accelerators, helping teams test hypotheses and build an MVP." }
         ]
       }
     };
@@ -7765,7 +7791,7 @@
 
       function renderCsCards(lang) {
         lang = lang || window.currentLang || 'ru';
-        const ORDER = [1, 3, 2, 0, 4];
+        const ORDER = [1, 3, 2, 0];
         const CASES = ORDER.map(k => getCases(lang)[k]);
         cardsEl.innerHTML = '';
         dotsEl.innerHTML = '';
@@ -8011,7 +8037,7 @@
     (function() {
       if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') return;
       const services = document.getElementById('recommendations');
-      const lastCard = document.querySelector('.cs-card[data-idx="4"]');
+      const lastCard = document.querySelector('.cs-card:last-child');
       if (!services || !lastCard) return;
 
       // Раньше эта анимация была причиной жалоб "экспертиза наезжает" —
@@ -8103,13 +8129,6 @@
 
       if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') return;
 
-      // ── Блок «Сейчас»: строки появляются по очереди ──
-      if (!RM) {
-        gsap.from('#nowList .now-item, #nowOpen', {
-          opacity: 0, y: 24, duration: 0.7, ease: 'expo.out', stagger: 0.09,
-          scrollTrigger: { trigger: '#now', start: 'top 70%', toggleActions: 'play none none reverse' }
-        });
-      }
 
       // ── Сплэш: строки имени расходятся, пока проявляется фото ──
       const sc = document.querySelector('.splash-container');
