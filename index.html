@@ -5000,6 +5000,208 @@
     /* Контраст второстепенного текста на светлом фоне ≥ 4.5:1 */
     #contacts .contacts-subtext, #contacts p { color: #4a4a4a; }
 
+  
+    /* ═══════════ UPGRADE ═══════════ */
+
+    /* Шапка: CV переехал в меню */
+    #navCvBtn { display: none !important; }
+
+    /* ── Блок «Сейчас» ── */
+    .now-section {
+      position: relative;
+      z-index: 21;
+      background: #0d0d0d;
+      margin-left: calc(-50vw + 50%);
+      margin-right: calc(-50vw + 50%);
+      width: 100vw;
+      padding: 140px max(24px, calc(50vw - 556px)) 120px;
+      box-sizing: border-box;
+    }
+    .now-head { margin-bottom: 56px; }
+    .now-list { list-style: none; margin: 0; padding: 0; border-top: 1px solid rgba(244,244,242,0.14); }
+    .now-item {
+      display: grid;
+      grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+      gap: 32px;
+      padding: 28px 0;
+      border-bottom: 1px solid rgba(244,244,242,0.14);
+    }
+    .now-org {
+      margin: 0;
+      font-family: "Oswald", sans-serif;
+      font-weight: 700;
+      font-size: clamp(24px, 2.6vw, 36px);
+      line-height: 1.05;
+      letter-spacing: 0;
+      color: #f4f4f2;
+      text-wrap: balance;
+    }
+    .now-text {
+      margin: 0;
+      font-family: "IBM Plex Sans", sans-serif;
+      font-size: clamp(16px, 1.3vw, 19px);
+      line-height: 1.6;
+      color: rgba(244,244,242,0.72);
+      max-width: 60ch;
+      text-wrap: pretty;
+    }
+    .now-open {
+      margin: 40px 0 0;
+      max-width: 52ch;
+      font-family: "IBM Plex Sans", sans-serif;
+      font-size: clamp(18px, 1.6vw, 22px);
+      line-height: 1.5;
+      color: #f4f4f2;
+      text-wrap: pretty;
+    }
+
+    /* ── Кейсы: фото отдельным слоем, цвет в фокусе, главная цифра ── */
+    .cs-media {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      background-size: cover;
+      background-position: center;
+      transform-origin: 50% 60%;
+      filter: grayscale(1);
+      transition: filter 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+      will-change: transform;
+    }
+    .cs-card.in-focus .cs-media { filter: grayscale(0); }
+    .cs-shade {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      background: linear-gradient(to top, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.55) 55%, rgba(0,0,0,0.3) 100%);
+      pointer-events: none;
+    }
+    .cs-card-hero { position: relative; z-index: 2; }
+    .cs-num { display: none !important; }
+    .cs-big { display: flex; flex-direction: column; gap: 6px; margin-bottom: 20px; }
+    .cs-big-v {
+      font-family: "Oswald", sans-serif;
+      font-weight: 700;
+      font-size: clamp(72px, 9vw, 96px);
+      line-height: 0.9;
+      color: #f4f4f2;
+      font-variant-numeric: tabular-nums;
+    }
+    .cs-big-l {
+      font-family: "IBM Plex Sans", sans-serif;
+      font-size: 15px;
+      line-height: 1.4;
+      color: rgba(244,244,242,0.72);
+    }
+
+    /* Раскрытие кейса */
+    .cs-morph {
+      position: fixed;
+      inset: 0;
+      z-index: 999;
+      overflow: hidden;
+      pointer-events: none;
+      will-change: clip-path;
+    }
+    .cs-morph-media {
+      position: absolute;
+      inset: 0;
+      background-size: cover;
+      background-position: center;
+    }
+    .cs-morph-shade {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(13,13,13,0.96), rgba(13,13,13,0.82));
+      opacity: 0;
+    }
+    .cs-morph-media { transform-origin: 50% 60%; }
+
+    /* ── Фидбэк: диагональный край переехал сюда, портреты в цвет в фокусе ── */
+    #services::before { display: none; }
+    #recommendations::before {
+      content: "";
+      position: absolute;
+      top: -200px;
+      left: 0;
+      width: 100%;
+      height: 200px;
+      background: #121214;
+      clip-path: polygon(0 200px, 100% 0, 100% 200px);
+      pointer-events: none;
+      z-index: 6;
+    }
+    .avatar-lg { transition: filter 0.9s cubic-bezier(0.22, 1, 0.36, 1); }
+    .recommend-tile.in-focus .avatar-lg,
+    .recommend-tile:hover .avatar-lg { filter: grayscale(0) !important; }
+
+    @media (max-width: 760px) {
+      .now-section { padding: 96px var(--mobile-pad, 20px) 88px; }
+      .now-head { margin-bottom: 36px; }
+      .now-item { grid-template-columns: 1fr; gap: 10px; padding: 22px 0; }
+      .now-open { margin-top: 28px; }
+
+      .cs-hero { min-height: 0 !important; padding-top: 64px !important; }
+      .cs-big { margin-bottom: 14px; }
+      .cs-big-v { font-size: clamp(64px, 20vw, 88px); }
+
+      #recommendations::before { top: -64px; height: 64px; clip-path: polygon(0 64px, 100% 0, 100% 64px); }
+
+      /* Фидбэк: карточки друг под другом, у каждой видна цитата */
+      .recommend-grid {
+        flex-direction: column !important;
+        flex-wrap: nowrap !important;
+        overflow: visible !important;
+        scroll-snap-type: none !important;
+        gap: 16px !important;
+        padding-bottom: 0 !important;
+      }
+      .recommend-tile {
+        display: flex !important;
+        flex-direction: column;
+        width: 100% !important;
+        min-width: 0 !important;
+        max-width: none !important;
+        flex: 0 0 auto !important;
+      }
+      .recommend-quote {
+        display: block !important;
+        order: 2;
+        margin: 0 !important;
+        padding: 0 20px 24px !important;
+        font-family: "IBM Plex Sans", sans-serif;
+        font-style: normal;
+        font-size: 16px;
+        line-height: 1.6;
+        color: rgba(244,244,242,0.82);
+        text-align: center;
+        text-wrap: pretty;
+      }
+      .recommend-scroll-hint-head { display: none !important; }
+
+      /* Таймлайн: тонкая линия прогресса через точки */
+      .tl-agr { position: relative; }
+      .tl-agr::before, .tl-agr::after {
+        content: "";
+        position: absolute;
+        left: 4.5px;
+        top: 14px;
+        bottom: 14px;
+        width: 1px;
+        pointer-events: none;
+      }
+      .tl-agr::before { background: rgba(244,244,242,0.14); }
+      .tl-agr::after {
+        background: #f4f4f2;
+        transform-origin: top;
+        transform: scaleY(var(--tl-p, 0));
+      }
+      .tl-agr-dot { position: relative; z-index: 1; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .cs-media, .avatar-lg { transition: none; }
+    }
+
   </style>
 </head>
 <body>
@@ -5063,8 +5265,8 @@
         </a>
       </li>
       <li>
-        <a href="#services" class="nav-flip-link" onclick="closeNavMenu()">
-          <div class="nav-flip-inner"><span data-nav="services">ЭКСПЕРТИЗА</span><span data-nav="services">ЭКСПЕРТИЗА</span></div>
+        <a href="#recommendations" class="nav-flip-link" onclick="closeNavMenu()">
+          <div class="nav-flip-inner"><span data-nav="recommendations">ФИДБЭК</span><span data-nav="recommendations">ФИДБЭК</span></div>
         </a>
       </li>
       <li>
@@ -5073,8 +5275,8 @@
         </a>
       </li>
       <li>
-        <a href="#recommendations" class="nav-flip-link" onclick="closeNavMenu()">
-          <div class="nav-flip-inner"><span data-nav="recommendations">ФИДБЭК</span><span data-nav="recommendations">ФИДБЭК</span></div>
+        <a href="#services" class="nav-flip-link" onclick="closeNavMenu()">
+          <div class="nav-flip-inner"><span data-nav="services">ЭКСПЕРТИЗА</span><span data-nav="services">ЭКСПЕРТИЗА</span></div>
         </a>
       </li>
       <li>
@@ -5085,6 +5287,11 @@
       <li>
         <a href="#contacts" class="nav-flip-link" onclick="closeNavMenu()">
           <div class="nav-flip-inner"><span data-nav="contacts">КОНТАКТЫ</span><span data-nav="contacts">КОНТАКТЫ</span></div>
+        </a>
+      </li>
+      <li>
+        <a href="cv-ru.pdf" download="Ilia_Parfenenok_CV_RU.pdf" class="nav-flip-link nav-cv-link" id="navMenuCv" onclick="closeNavMenu()">
+          <div class="nav-flip-inner"><span>СКАЧАТЬ CV</span><span>СКАЧАТЬ CV</span></div>
         </a>
       </li>
     </ul>
@@ -5115,6 +5322,14 @@
 
 
 <!-- CASES HERO -->
+    <section id="now" class="now-section" aria-labelledby="nowTitle">
+      <div class="now-head">
+        <h2 class="section-mega-title" id="nowTitle">Сейчас</h2>
+        <p class="section-mega-label" id="nowLabel">над чем работаю</p>
+      </div>
+      <ol class="now-list" id="nowList"></ol>
+      <p class="now-open" id="nowOpen"></p>
+    </section>
 <div class="cs-hero" id="casesHero">
   <h1 class="hero-v2-title" id="casesHeroTitle">КЕЙСЫ</h1>
 </div>
@@ -5128,12 +5343,17 @@
   </div>
 </div>
 
-    <section id="services" class="punk-section" style="background:#121214;margin-left:calc(-50vw + 50%);margin-right:calc(-50vw + 50%);width:100vw;position:relative;z-index:6;padding-left:max(24px, calc(50vw - 556px));padding-right:max(24px, calc(50vw - 556px));box-sizing:border-box;">
-      <span class="section-mega-title" id="servicesTitle">ЭКСПЕР-<br>ТИЗА</span>
-      <span class="section-mega-label">мои компетенции и их влияние на бизнес</span>
-      <div class="services-accordion" id="servicesGrid"></div>
+    <section id="recommendations" class="punk-section" style="background:#121214;margin-left:calc(-50vw + 50%);margin-right:calc(-50vw + 50%);width:100vw;position:relative;overflow:visible;z-index:6;padding-left:max(24px, calc(50vw - 556px));padding-right:max(24px, calc(50vw - 556px));box-sizing:border-box;">
+      <span class="section-mega-title" id="recommendationsTitle" style="margin-left:calc(-1 * max(24px, calc(50vw - 556px)) + 24px);">ФИДБЭК</span>
+      <span class="section-mega-label" style="margin-left:calc(-1 * max(24px, calc(50vw - 556px)) + 24px);">коллеги и менеджеры о работе со мной</span>
+      <div class="recommend-grid-wrap">
+        <div class="recommend-grid" id="recommendGrid" data-lenis-prevent></div>
+      </div>
+      <article class="recommend-drawer" id="recommendDrawer">
+        <div class="recommend-drawer-side" id="recommendDrawerSide"></div>
+        <div class="recommend-drawer-text" id="recommendDrawerText"></div>
+      </article>
     </section>
-
     <section id="about" class="punk-section" style="position:relative;background:#0d0d0d;overflow:visible;padding:0;">
 
       <!-- 1. Статичная шапка -->
@@ -5216,18 +5436,13 @@
       </div><!-- /about-sticky-wrap -->
 
     </section>
-
-    <section id="recommendations" class="punk-section" style="background:#121214;margin-left:calc(-50vw + 50%);margin-right:calc(-50vw + 50%);width:100vw;position:relative;overflow:visible;z-index:6;padding-left:max(24px, calc(50vw - 556px));padding-right:max(24px, calc(50vw - 556px));box-sizing:border-box;">
-      <span class="section-mega-title" id="recommendationsTitle" style="margin-left:calc(-1 * max(24px, calc(50vw - 556px)) + 24px);">ФИДБЭК</span>
-      <span class="section-mega-label" style="margin-left:calc(-1 * max(24px, calc(50vw - 556px)) + 24px);">коллеги и менеджеры о работе со мной</span>
-      <div class="recommend-grid-wrap">
-        <div class="recommend-grid" id="recommendGrid" data-lenis-prevent></div>
-      </div>
-      <article class="recommend-drawer" id="recommendDrawer">
-        <div class="recommend-drawer-side" id="recommendDrawerSide"></div>
-        <div class="recommend-drawer-text" id="recommendDrawerText"></div>
-      </article>
+    <section id="services" class="punk-section" style="background:#121214;margin-left:calc(-50vw + 50%);margin-right:calc(-50vw + 50%);width:100vw;position:relative;z-index:6;padding-left:max(24px, calc(50vw - 556px));padding-right:max(24px, calc(50vw - 556px));box-sizing:border-box;">
+      <span class="section-mega-title" id="servicesTitle">ЭКСПЕР-<br>ТИЗА</span>
+      <span class="section-mega-label">мои компетенции и их влияние на бизнес</span>
+      <div class="services-accordion" id="servicesGrid"></div>
     </section>
+
+
 
   </main>
 
@@ -5334,46 +5549,26 @@
         ],
         servicesTitle: "Экспертиза",
         services: [
-          {
-            title: "Вайбкодинг и прототипирование",
-            body: "Собираю рабочие прототипы и MVP-продукты самостоятельно, без разработчика и дизайнера — от идеи до деплоя.",
-            list: ["Сборка MVP-лендингов и веб-приложений через AI-генерацию", "Деплой и базовая настройка на Vercel", "Работа с React, HTML/CSS на уровне уверенного редактирования", "Проверяю гипотезы и собираю прототипы без зависимости от разработчика"]
-          },
-          {
-            title: "Запуски продуктов 0→1",
-            body: "Запускаю digital-продукты с нуля: от гипотезы до первых продаж и масштабирования.",
-            list: ["Анализ ЦА, емкости рынка и конкурентов", "Просчет юнит-экономики", "Проектирование CJM и структуры воронки", "Сокращаю time-to-market и довожу продукт до первых продаж"]
-          },
-          {
-            title: "Продуктовый маркетинг и GTM",
-            body: "Упаковываю продукт для рынка и выстраиваю путь от идеи до первых продаж с фокусом на позиционирование и конверсию.",
-            list: ["Разработка позиционирования и ценностного предложения на основе JTBD и сегментации ЦА", "Создание и оптимизация лендингов и креативов по данным и боли аудитории", "Проектирование pre-sale этапа и механик первых продаж", "Go-to-market стратегия: каналы, аудитория, сообщение, сроки", "Вывожу продукт на рынок так, чтобы он был понят и востребован"]
-          },
-          {
-            title: "Аналитика",
-            body: "Работаю с данными воронки и метриками, чтобы находить узкие места и обосновывать решения.",
-            list: ["Анализ маркетинговых метрик: CR1, CPL, CAC, ROMI", "Анализ коммерческих метрик: CR2, ARPU, выручка, маржинальность", "Анализ продуктовых метрик: Retention, CSAT, NPS", "Формулировка гипотез на основе данных и проверка через эксперименты", "Работа с Power BI, Mixpanel, Google Analytics и аналитикой LMS", "Принимаю решения на основе цифр, а не ощущений"]
-          },
-          {
-            title: "Рост и масштабирование",
-            body: "Работаю с существующими продуктами и нахожу точки роста в конверсиях и выручке.",
-            list: ["Оптимизация воронок и пользовательского пути", "Пересборка лендингов и креативов по данным и боли ЦА", "Апсейлы и кросс-сейлы", "Поднимаю выручку с текущим трафиком за счет роста конверсий"]
-          },
-          {
-            title: "Discovery и пользователи",
-            body: "Помогаю бизнесу принимать решения на основе данных и реального поведения пользователей.",
-            list: ["Кастдев-интервью и прослушка сделок", "Проверка гипотез через A/B-тесты и MVP-лендинги", "Анализ узких мест пути пользователя", "Снижаю риски ошибочных решений до запуска и раскапываю инсайты в существующих продуктах"]
-          },
-          {
-            title: "Delivery и проектное управление",
-            body: "Веду продукт от постановки задачи до выхода на рынок, координируя команды и управляя сроками.",
-            list: ["Планирование спринтов и приоритизация бэклога в таск-трекерах", "Координация подрядчиков, дизайна, разработки и контента", "Управление бюджетом и операционной частью запуска", "Контроль сроков и качества на каждом этапе", "Довожу до результата без потери качества и сроков"]
-          },
-          {
-            title: "Кросс-функциональное управление",
-            body: "Беру ownership продукта и довожу изменения до бизнес-результата.",
-            list: ["Работа с продажами, маркетингом, дизайном, разработкой", "Синхронизация команд вокруг общей цели", "Создание единого инфополя по продукту", "Создаю единое инфополе и управляю процессами"]
-          }
+        {
+          title: "Запуски с нуля",
+          body: "Довожу новый продукт от гипотезы до первых продаж: исследование аудитории, позиционирование, CJM, лендинг и выход на рынок.",
+          list: ["Курс «Как продавать на Uzum Market»: запуск с нуля и рост выручки в 6 раз за два квартала", "Курс «Инвестиции в криптовалюту»: выручка в 3 раза выше плана в первые три месяца", "Fatigue Lab: прототип сервиса для интерпретации анализов крови, собранный без разработчика", "Курс по Uzum Market стал одним из основных источников B2C-выручки Lerna в Узбекистане."]
+        },
+        {
+          title: "Рост выручки существующих продуктов",
+          body: "Нахожу узкие места воронки и вместе с маркетингом и продажами проверяю гипотезы на лендингах, в пресейле и в продажах.",
+          list: ["Линейка «Личные финансы»: CR1 с 6 до 8%, CR2 с 7 до 10% при сопоставимом объёме лидов", "Uzum Market: CR1 с 5 до 11%, CR2 с 7 до 12%, CSAT с 72 до 91%", "Рентабельная выручка линейки «Личные финансы» выросла на 40%."]
+        },
+        {
+          title: "Проверка гипотез до вложений",
+          body: "Проверяю спрос через MVP до того, как компания тратит бюджет на производство.",
+          list: ["Локализация курсов на узбекский язык: тест пяти направлений через MVP-лендинги и рекламу", "Гипотеза не подтвердилась, и Lerna не потратила бюджет на масштабную локализацию контента."]
+        },
+        {
+          title: "Образовательные программы",
+          body: "Запускаю и веду образовательные продукты для государственных заказчиков, корпораций и B2C-рынка.",
+          list: ["Сколково: программа для 200+ участников по заказу Минобрнауки, средняя оценка 9,7 из 10", "Ростех: образовательный трек и конкурс технологических проектов, выстроенные с нуля", "Сейчас отвечаю за образовательное направление в Talentgrator."]
+        }
         ],
         aboutTitle: "Обо мне",
         about: [
@@ -5395,6 +5590,7 @@
             role: "Директор по развитию бизнеса, Lerna",
             avatar: "edita.jpeg",
             tg: "https://t.me/editaanciferova",
+          lead: "Он оперативно разобрался в продуктовых и коммерческих метриках бизнеса и начал системно влиять на них через структурированную работу с гипотезами и данными.",
             text: "Илья работал с нами в Lerna (Skillbox CIS) по направлению Узбекистана, отвечая за развитие продукта на этом рынке и взаимодействуя с головным офисом в Минске.<br><br>Несмотря на то, что на момент прихода у Ильи не было опыта в EdTech, он быстро погрузился в специфику отрасли и уже в первые месяцы начал показывать заметные результаты. Он оперативно разобрался в продуктовых и коммерческих метриках бизнеса и начал системно влиять на них через структурированную работу с гипотезами и данными.<br><br>Работая удалённо, Илья проявил высокий уровень самостоятельности и ответственности. Он эффективно координировал кросс-функциональную команду, удерживал фокус на измеримом результате и выстраивал взаимодействие между продуктом, маркетингом и продажами. Также он выстроил продуктивную коммуникацию с локальными партнёрами и регулярно предлагал идеи, которые усиливали продукт и его позиционирование на рынке.<br><br>Считаю Илью ценным продуктовым специалистом с выраженным бизнес-мышлением. Он способен быстро адаптироваться к новым условиям, самостоятельно вести направление и последовательно влиять на ключевые показатели бизнеса. Рекомендую его как профессионала, способного усиливать продукт и масштабировать результаты."
           },
           {
@@ -5402,6 +5598,7 @@
             role: "Программный директор, Skillbox",
             avatar: "nikolay.jpg",
             tg: "https://t.me/smirnov606",
+          lead: "По итогам этой работы конверсии и выручка линейки заметно выросли, а пользовательский опыт и качество продукта стали сильнее.",
             text: "Илья работал в моей команде над развитием линейки «Личные финансы» и отвечал за рост продуктовых и коммерческих показателей. На старте перед ним стояла задача улучшить результаты линейки, где прежние офферы и сценарии перестали давать нужный эффект.<br><br>Его сильная сторона — глубокое погружение в продукт и системная работа с гипотезами. Илья быстро разобрался в проблемных зонах воронки, пересобрал упаковку и офферы, выстроил взаимодействие между продуктом, маркетингом и продажами и обеспечил внедрение решений в работу команды.<br><br>По итогам этой работы конверсии и выручка линейки заметно выросли, а пользовательский опыт и качество продукта стали сильнее.<br><br>Отдельно отмечу его ответственность, фокус на результате и надёжность в удалённом формате: он соблюдает договорённости, держит дедлайны и устойчиво работает на бизнес-цели."
           },
           {
@@ -5409,17 +5606,18 @@
             role: "Методист, Skillbox",
             avatar: "katya.jpg",
             tg: "https://t.me/katya_turkevich",
+          lead: "Рекомендую Илью как зрелого и думающего продакта, который сочетает стратегическое мышление и внимание к деталям.",
             text: "Работала с Ильей на курсах по инвестициям и трейдингу и могу сказать, что это продакт, которому действительно не всё равно на продукт.<br><br>Он глубоко погружается в детали: от структуры программы до пользовательского пути и воронки. В работе с экспертами умеет аргументированно отстаивать позицию, когда речь идёт о качестве и ценности для пользователя, при этом остаётся конструктивным и открытым к диалогу.<br><br>В командной работе Илья сфокусирован на результате: задаёт точные вопросы и помогает смотреть на продукт шире. Его решения опираются на данные и понимание аудитории.<br><br>Рекомендую Илью как зрелого и думающего продакта, который сочетает стратегическое мышление и внимание к деталям."
           }
         ],
         qa: [
-          ["Что я ищу?", "Роль Product Manager / Growth Product Manager или PMM. Интересна позиция с прямым влиянием на выручку через аналитику и работу с коммерческими, продуктовыми и маркетинговыми метриками."],
-          ["Какой формат работы и локация?", "Полный день, удаленный формат. Живу в Италии и открыт к международным командам."],
+          ["К чему я открыт?", "К менторству и консультациям по запуску и росту продуктов, к выступлениям и подкастам, к новым проектам и знакомству с коллегами из продукта и EdTech."],
+          ["Где я живу и как работаю?", "Живу в Италии и работаю удалённо с командами из разных стран."],
           ["Какими языками я владею?", "Русский — родной, английский — B2, итальянский — А2."],
           ["Чем я увлекаюсь?", "4 года регулярных силовых тренировок, бега и нутрициологии — долгосрочная работа без мгновенных результатов, где прогресс измеряется в цифрах. Также играю на классической гитаре в технике фингерстайл: одновременно удерживаю ритм, гармонию и мелодию как независимые слои."]
         ],
         contactsTitle: "КОНТАКТЫ",
-        contactsText: "Рассматриваю роли PM / Growth PM / PMM. Полный день, удалённо.",
+        contactsText: "Пишите в Telegram или на почту: менторство, консультация, выступление, проект или просто знакомство.",
         footer: "2026 Илья Парфененок. Сделано с любовью к продуктам.",
         heroSub: "ЗАПУСКАЮ И РАЗВИВАЮ B2C ПРОДУКТЫ С ФОКУСОМ НА ВЫРУЧКУ.<br><span class=\"hero-sub-line2\">10+ ЛЕТ ПРОЕКТНОГО И ПРОДУКТОВОГО УПРАВЛЕНИЯ.</span>",
         servicesLabel: "мои компетенции и их влияние на бизнес",
@@ -5507,46 +5705,26 @@
         ],
         servicesTitle: "Expertise",
         services: [
-          {
-            title: "Vibe coding and prototyping",
-            body: "I build working prototypes and MVP products independently, without a developer or designer — from idea to deployment.",
-            list: ["Building MVP landing pages and web apps via AI generation", "Deployment and basic setup on Vercel", "Working with React, HTML/CSS at a confident editing level", "I validate hypotheses and build prototypes without depending on a developer"]
-          },
-          {
-            title: "0→1 product launches",
-            body: "I launch digital products from scratch: from hypothesis to first sales and scaling.",
-            list: ["Target audience, market size and competitor research", "Unit economics", "CJM and funnel design", "I reduce time-to-market and drive products to first sales"]
-          },
-          {
-            title: "Product marketing and GTM",
-            body: "I package a product for the market and build the path from idea to first sales with focus on positioning and conversion.",
-            list: ["Positioning and value proposition based on JTBD and audience segmentation", "Landing page and creative development and optimization based on data and user pain points", "Pre-sale stage and first-sales mechanics design", "Go-to-market strategy: channels, audience, message, timeline", "I bring products to market in a way that makes them understood and in demand"]
-          },
-          {
-            title: "Analytics",
-            body: "I work with funnel data and metrics to identify bottlenecks and support decisions with evidence.",
-            list: ["Marketing metrics: CR1, CPL, CAC, ROMI", "Commercial metrics: CR2, ARPU, revenue, margin", "Product metrics: Retention, CSAT, NPS", "Hypothesis formulation based on data and validation through experiments", "Working with Power BI, Mixpanel, Google Analytics and LMS analytics", "I make decisions based on numbers, not intuition"]
-          },
-          {
-            title: "Growth and scaling",
-            body: "I work with existing products and find growth opportunities in conversions and revenue.",
-            list: ["Funnel and user journey optimization", "Landing page and creative rebuild based on data and audience pain points", "Upsell and cross-sell mechanics", "I grow revenue with current traffic by improving conversion"]
-          },
-          {
-            title: "Discovery and user research",
-            body: "I help teams make decisions based on data and real user behavior.",
-            list: ["Customer interviews and sales call reviews", "Hypothesis validation through A/B tests and MVP landing pages", "User journey bottleneck analysis", "I reduce the risk of wrong decisions before launch and uncover insights in existing products"]
-          },
-          {
-            title: "Delivery and project management",
-            body: "I take a product from brief to market, coordinating teams and managing timelines.",
-            list: ["Sprint planning and backlog prioritization in task trackers", "Coordination of contractors, design, development and content", "Budget and operational management of the launch", "Timeline and quality control at every stage", "I deliver results without losing quality or deadlines"]
-          },
-          {
-            title: "Cross-functional management",
-            body: "I take ownership of the product and drive changes to measurable business outcomes.",
-            list: ["Working with sales, marketing, design, development", "Team alignment around a shared goal", "Building a shared product information field", "I manage processes end-to-end"]
-          }
+        {
+          title: "Launches from zero",
+          body: "I take a new product from hypothesis to first sales: audience research, positioning, CJM, landing page and go-to-market.",
+          list: ["“How to Sell on Uzum Market” course: launched from scratch, revenue grew 6x in two quarters", "“Crypto Investing” course: revenue 3x above plan in the first three months", "Fatigue Lab: a blood test interpretation prototype built without a developer", "The Uzum Market course became one of Lerna’s main sources of B2C revenue in Uzbekistan."]
+        },
+        {
+          title: "Revenue growth in existing products",
+          body: "I find funnel bottlenecks and test hypotheses on landing pages, pre-sale and sales together with marketing and sales teams.",
+          list: ["Personal Finance line: CR1 from 6 to 8%, CR2 from 7 to 10% with comparable lead volume", "Uzum Market: CR1 from 5 to 11%, CR2 from 7 to 12%, CSAT from 72 to 91%", "Profitable revenue of the Personal Finance line grew by 40%."]
+        },
+        {
+          title: "Testing hypotheses before investing",
+          body: "I validate demand with an MVP before the company spends budget on production.",
+          list: ["Localising courses into Uzbek: five directions tested with MVP landing pages and ads", "The hypothesis was not confirmed, and Lerna avoided spending on large-scale content localisation."]
+        },
+        {
+          title: "Education programmes",
+          body: "I launch and run education products for government clients, corporations and the B2C market.",
+          list: ["SKOLKOVO: a programme for 200+ participants commissioned by the Ministry of Science and Higher Education, average rating 9.7 out of 10", "Rostec: an education track and a technology project competition built from scratch", "I now lead the education track at Talentgrator."]
+        }
         ],
         aboutTitle: "About",
         about: [
@@ -5568,6 +5746,7 @@
             role: "Business Development Director, Lerna",
             avatar: "edita.jpeg",
             tg: "https://t.me/editaanciferova",
+          lead: "He rapidly understood the business's product and commercial metrics and began influencing them systematically through structured hypothesis work and data-driven execution.",
             text: "Ilia worked with us at Lerna (Skillbox CIS) on the Uzbekistan market, responsible for product development in that region and for coordination with the head office in Minsk.<br><br>Although Ilia had no prior EdTech experience when he joined, he quickly got to grips with the industry and was already delivering noticeable results in the first months. He rapidly understood the business's product and commercial metrics and began influencing them systematically through structured hypothesis work and data-driven execution.<br><br>Working remotely, Ilia showed a high level of autonomy and accountability. He coordinated the cross-functional team effectively, kept focus on measurable outcomes, and built smooth collaboration between product, marketing, and sales. He also established productive communication with local partners and consistently proposed ideas that strengthened the product and its market positioning.<br><br>I consider Ilia a valuable product specialist with strong business thinking. He adapts quickly to new conditions, can independently manage a product area, and consistently drives key business metrics. I recommend him as a professional who can strengthen products and scale results."
           },
           {
@@ -5575,6 +5754,7 @@
             role: "Program Director, Skillbox",
             avatar: "nikolay.jpg",
             tg: "https://t.me/smirnov606",
+          lead: "As a result, both conversion rates and line revenue improved significantly, and the user experience and product quality became stronger.",
             text: "Ilia worked in my team on developing the Personal Finance line, responsible for growing both product and commercial metrics. His initial task was to improve the line's results at a point where previous offers and conversion scenarios had stopped working.<br><br>His strongest side is deep product immersion and systematic hypothesis work. Ilia quickly identified the funnel's problem areas, rebuilt the packaging and offers, aligned product, marketing, and sales, and ensured the solutions were implemented in the team's day-to-day work.<br><br>As a result, both conversion rates and line revenue improved significantly, and the user experience and product quality became stronger.<br><br>I also want to note his accountability, focus on outcomes, and reliability in a remote setup: he keeps commitments, meets deadlines, and works steadily toward business goals."
           },
           {
@@ -5582,17 +5762,18 @@
             role: "Methodologist, Skillbox",
             avatar: "katya.jpg",
             tg: "https://t.me/katya_turkevich",
+          lead: "I recommend Ilia as a mature and thoughtful product manager who combines strategic thinking with attention to detail.",
             text: "I worked with Ilia on investment and trading courses, and I can say he is a product manager who genuinely cares about the product.<br><br>He goes deep into details — from curriculum structure to user journey and funnel logic. In working with experts, he can defend his position with clear arguments when product quality and user value are at stake, while staying constructive and open to dialogue.<br><br>In team collaboration, Ilia is focused on results: he asks precise questions and helps the team see the product from a broader perspective. His decisions are grounded in data and audience understanding.<br><br>I recommend Ilia as a mature and thoughtful product manager who combines strategic thinking with attention to detail."
           }
         ],
         qa: [
-          ["What am I looking for?", "A Product Manager, Growth Product Manager, or PMM role. Looking for a position with direct impact on revenue through analytics and work on commercial, product, and marketing metrics."],
-          ["Preferred work format and location?", "Full-time remote. I am based in Italy and open to international distributed teams."],
+          ["What am I open to?", "Mentoring and consulting on product launches and growth, talks and podcasts, new projects and meeting fellow product and EdTech people."],
+          ["Where am I based and how do I work?", "I live in Italy and work remotely with teams from different countries."],
           ["What languages do I speak?", "Russian — native, English — B2, Italian — A2."],
           ["What are my interests?", "4 years of regular strength training, running, and nutrition science — long-term work without instant results, where progress is measured in numbers. I also play classical guitar fingerstyle: simultaneously holding rhythm, harmony, and melody as independent layers."]
         ],
         contactsTitle: "CONTACTS",
-        contactsText: "Open to PM / Growth PM / PMM roles. Full-time, remote.",
+        contactsText: "Message me on Telegram or by email about mentoring, consulting, a talk, a project or just to connect.",
         footer: "2026 Ilia Parfenenok. Built with love for products.",
         heroSub: "I LAUNCH AND GROW B2C PRODUCTS WITH A FOCUS ON REVENUE.<br><span class=\"hero-sub-line2\">10+ YEARS OF PROJECT AND PRODUCT MANAGEMENT.</span>",
         servicesLabel: "my competencies and their impact on the business",
@@ -5854,7 +6035,7 @@
       if (activeRecommendationIndex !== null && activeRecommendationIndex > list.length - 1) activeRecommendationIndex = null;
       root.innerHTML = list.map((r, idx) => `
         <article class="recommend-tile ${idx === activeRecommendationIndex ? 'active' : ''}" data-idx="${idx}">
-          <blockquote class="recommend-quote">«${getQuoteSnippet(r.text)}»</blockquote>
+          <blockquote class="recommend-quote">«${r.lead || getQuoteSnippet(r.text)}»</blockquote>
           <div class="recommend-tile-head">
             <img class="avatar-lg" src="${r.avatar}" alt="${r.name}" onerror="this.style.display='none'">
             <div class="recommend-name-role">
@@ -6178,6 +6359,7 @@
       renderAbout(lang);
       renderRecommendations(lang);
       renderQa(lang);
+      if (window.renderNow) window.renderNow(lang);
       if (typeof window.rerenderCsCards === 'function') window.rerenderCsCards(lang);
       document.querySelectorAll('.lang button').forEach(btn => btn.classList.toggle('active', btn.dataset.lang === lang));
       localStorage.setItem('landing-lang', lang);
@@ -6426,7 +6608,7 @@
         // При входе в Рекомендации гасим последний активный этап (EDTECH) —
         // убираем подсветку точки и прячем текст-артефакт справа. При скролле
         // назад из Рекомендаций восстанавливаем последний этап как активный.
-        const recsForTimeline = document.getElementById('recommendations');
+        const recsForTimeline = document.getElementById('services');
         if (recsForTimeline) {
           ScrollTrigger.create({
             trigger: recsForTimeline,
@@ -6537,9 +6719,9 @@
     setTimeout(() => {
       if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') return;
 
-      const services = document.getElementById('services');
+      const services = document.getElementById('recommendations');
       const about    = document.getElementById('about');
-      const recs     = document.getElementById('recommendations');
+      const recs     = document.getElementById('services');
       if (!services || !about || !recs) return;
 
       const ease = 'cubic-bezier(0.23, 1, 0.32, 1)';
@@ -7578,7 +7760,8 @@
 
       function renderCsCards(lang) {
         lang = lang || window.currentLang || 'ru';
-        const CASES = getCases(lang);
+        const ORDER = [1, 3, 2, 0, 4];
+        const CASES = ORDER.map(k => getCases(lang)[k]);
         cardsEl.innerHTML = '';
         dotsEl.innerHTML = '';
 
@@ -7586,14 +7769,16 @@
           const card = document.createElement('div');
           card.className = 'cs-card';
           card.dataset.idx = i;
-          if (typeof CARD_IMGS !== 'undefined' && CARD_IMGS[i]) {
-            card.style.backgroundImage = `linear-gradient(to top, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.55) 60%, rgba(0,0,0,0.3) 100%), url(${CARD_IMGS[i]})`;
-            card.style.backgroundSize = 'cover';
-            card.style.backgroundPosition = 'center';
-          }
+          const imgSrc = (typeof CARD_IMGS !== 'undefined' && CARD_IMGS[ORDER[i]]) ? CARD_IMGS[ORDER[i]] : '';
+          const METRICS = {
+            ru: { 1: ['×6', 'выручка за 2 квартала'], 2: ['+40%', 'рентабельная выручка линейки'], 3: ['×3', 'выручка к плану за 3 месяца'] },
+            en: { 1: ['×6', 'revenue in 2 quarters'], 2: ['+40%', 'profitable revenue of the line'], 3: ['×3', 'revenue vs plan in 3 months'] }
+          };
+          const met = (METRICS[lang] || METRICS.ru)[ORDER[i]];
           const titleHtml = c.title.replace(/\n/g, '<br>');
           const numStr = String(i + 1).padStart(2, '0');
           card.innerHTML = `
+            ${imgSrc ? `<div class="cs-media" style="background-image:url(${imgSrc})"></div><div class="cs-shade"></div>` : ''}
             <div class="cs-card-hero">
               <div class="cs-card-top">
                 ${c.logoImg
@@ -7602,6 +7787,7 @@
                 <span class="cs-num">${numStr}</span>
               </div>
               <div class="cs-card-content">
+                ${met ? `<div class="cs-big"><span class="cs-big-v" data-v="${met[0]}">${met[0]}</span><span class="cs-big-l">${met[1]}</span></div>` : ''}
                 <h3 class="cs-title">${titleHtml}</h3>
                 <p class="cs-desc">${c.desc}</p>
                 <button class="cs-btn" data-expand="${i}">${getLabel('СМОТРЕТЬ', 'VIEW', lang)}</button>
@@ -7609,7 +7795,7 @@
             </div>
             <div class="cs-card-detail">
               <div class="cs-detail-body">
-                ${getDetail(i, lang)}
+                ${getDetail(ORDER[i], lang)}
               </div>
             </div>
           `;
@@ -7622,6 +7808,30 @@
 
         const cards = cardsEl.querySelectorAll('.cs-card');
         const dots  = dotsEl.querySelectorAll('.cs-dot');
+        // Фото: медленный наезд камеры, цвет в фокусе, счётчик главной цифры
+        const rmCases = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        cards.forEach((card) => {
+          const media = card.querySelector('.cs-media');
+          if (media && !rmCases) {
+            gsap.fromTo(media, { scale: 1.14 }, { scale: 1, ease: 'none',
+              scrollTrigger: { trigger: card, start: 'top bottom', end: 'bottom top', scrub: true } });
+          }
+          const big = card.querySelector('.cs-big-v');
+          let counted = false;
+          ScrollTrigger.create({
+            trigger: card, start: 'top 55%', end: 'bottom 45%',
+            toggleClass: { targets: card, className: 'in-focus' },
+            onEnter: () => {
+              if (!big || counted || rmCases) return;
+              counted = true;
+              const m = (big.dataset.v || '').match(/^([^0-9]*)([0-9]+)(.*)$/);
+              if (!m) return;
+              const o = { n: 0 };
+              gsap.to(o, { n: parseInt(m[2], 10), duration: 1.1, ease: 'expo.out',
+                onUpdate: () => { big.textContent = m[1] + Math.round(o.n) + m[3]; } });
+            }
+          });
+        });
 
         // Overlay
         cardsEl.addEventListener('click', (e) => {
@@ -7795,7 +8005,7 @@
     // ── SERVICES ENTRANCE — наезжает снизу поверх последней карточки ──
     (function() {
       if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') return;
-      const services = document.getElementById('services');
+      const services = document.getElementById('recommendations');
       const lastCard = document.querySelector('.cs-card[data-idx="4"]');
       if (!services || !lastCard) return;
 
@@ -7839,6 +8049,182 @@
       }
       window.addEventListener('scroll', () => { if (!raf) raf = requestAnimationFrame(upd); }, { passive: true });
       upd();
+    })();
+
+    // ═══════════ UPGRADE: блок «Сейчас», кейсы, фидбэк, движение ═══════════
+    (function() {
+      const RM = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const isM = () => window.matchMedia('(max-width: 760px)').matches;
+
+      // ── Блок «Сейчас» и пункт CV в меню ──
+      const NOW = {
+        ru: {
+          title: 'Сейчас', label: 'над чем работаю',
+          items: [
+            ['Talentgrator', 'Отвечаю за образовательное направление: запускаю онлайн-курсы для специалистов игровой индустрии.'],
+            ['2080 Ventures · MVP Lab', 'Ментор стартапов в акселерационной программе: помогаю командам собрать MVP и выйти к первым пользователям.'],
+            ['Sber500 × Disrupt', 'Продуктовый ментор команд акселератора.']
+          ],
+          open: 'Открыт к менторству и консультациям, выступлениям и подкастам, новым проектам и знакомству с коллегами.',
+          cv: 'Скачать CV'
+        },
+        en: {
+          title: 'Now', label: 'what I am working on',
+          items: [
+            ['Talentgrator', 'I lead the education track and launch online courses for games industry specialists.'],
+            ['2080 Ventures · MVP Lab', 'Startup mentor in an accelerator programme, helping teams build an MVP and reach their first users.'],
+            ['Sber500 × Disrupt', 'Product mentor for accelerator teams.']
+          ],
+          open: 'Open to mentoring and consulting, talks and podcasts, new projects and meeting fellow product people.',
+          cv: 'Download CV'
+        }
+      };
+      window.renderNow = function(lang) {
+        const d = NOW[lang] || NOW.ru;
+        const t = document.getElementById('nowTitle'); if (t) t.textContent = d.title;
+        const l = document.getElementById('nowLabel'); if (l) l.textContent = d.label;
+        const list = document.getElementById('nowList');
+        if (list) list.innerHTML = d.items.map(([org, txt]) =>
+          `<li class="now-item"><h3 class="now-org">${org}</h3><p class="now-text">${txt}</p></li>`).join('');
+        const o = document.getElementById('nowOpen'); if (o) o.textContent = d.open;
+        const cv = document.getElementById('navMenuCv');
+        if (cv) {
+          cv.setAttribute('href', lang === 'en' ? 'cv-en.pdf' : 'cv-ru.pdf');
+          cv.setAttribute('download', lang === 'en' ? 'Ilia_Parfenenok_CV_EN.pdf' : 'Ilia_Parfenenok_CV_RU.pdf');
+          cv.querySelectorAll('span').forEach(s => { s.textContent = d.cv.toUpperCase(); });
+        }
+      };
+      window.renderNow(window.currentLang || 'ru');
+
+      if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') return;
+
+      // ── Блок «Сейчас»: строки появляются по очереди ──
+      if (!RM) {
+        gsap.from('#nowList .now-item, #nowOpen', {
+          opacity: 0, y: 24, duration: 0.7, ease: 'expo.out', stagger: 0.09,
+          scrollTrigger: { trigger: '#now', start: 'top 70%', toggleActions: 'play none none reverse' }
+        });
+      }
+
+      // ── Сплэш: строки имени расходятся, пока проявляется фото ──
+      const sc = document.querySelector('.splash-container');
+      const nFirst = document.getElementById('splashNameFirst');
+      const nLast = document.getElementById('splashNameLast');
+      if (sc && nFirst && nLast && !RM) {
+        let raf = null;
+        const upd = () => {
+          raf = null;
+          const r = sc.getBoundingClientRect();
+          const pin = Math.max(r.height - window.innerHeight, 1);
+          const p = Math.min(Math.max(-r.top / (pin * 0.7), 0), 1);
+          const e = 1 - Math.pow(1 - p, 3);
+          const h = window.innerHeight;
+          nFirst.style.translate = `0 ${(-e * h * 0.07).toFixed(1)}px`;
+          nLast.style.translate = `0 ${(e * h * 0.05).toFixed(1)}px`;
+        };
+        window.addEventListener('scroll', () => { if (!raf) raf = requestAnimationFrame(upd); }, { passive: true });
+        upd();
+      }
+
+      // ── Hero: заголовок проявляется снизу через маску ──
+      const heroTitle = document.getElementById('heroTitle');
+      if (heroTitle && !RM) {
+        gsap.fromTo(heroTitle,
+          { clipPath: 'inset(0% 0% 100% 0%)', y: 48 },
+          { clipPath: 'inset(0% 0% 0% 0%)', y: 0, ease: 'none',
+            scrollTrigger: { trigger: '#heroWrap', start: 'top 92%', end: 'top 30%', scrub: 0.6 } });
+        gsap.fromTo('#heroSub',
+          { opacity: 0, y: 28 },
+          { opacity: 1, y: 0, ease: 'none',
+            scrollTrigger: { trigger: '#heroWrap', start: 'top 60%', end: 'top 10%', scrub: 0.6 } });
+      }
+
+      // ── Таймлайн на мобилке: линия прогресса ──
+      const tl = document.querySelector('.tl-agr');
+      if (tl && isM()) {
+        ScrollTrigger.create({
+          trigger: '.about-sticky-wrap', start: 'top top', end: 'bottom bottom',
+          onUpdate: self => tl.style.setProperty('--tl-p', self.progress.toFixed(3))
+        });
+      }
+
+      // ── Фидбэк: портреты проявляются в цвет, когда карточка в фокусе ──
+      const recGrid = document.getElementById('recommendGrid');
+      if (recGrid && 'IntersectionObserver' in window) {
+        const io = new IntersectionObserver(es => es.forEach(en => en.target.classList.toggle('in-focus', en.isIntersecting)),
+          { rootMargin: '-30% 0px -30% 0px', threshold: 0 });
+        const watch = () => recGrid.querySelectorAll('.recommend-tile').forEach(t => io.observe(t));
+        new MutationObserver(watch).observe(recGrid, { childList: true });
+        watch();
+      }
+
+      // ── Открытие кейса: карточка раскрывается на весь экран ──
+      const overlay = document.getElementById('caseOverlay');
+      let passThrough = false, morph = null, lastCard = null;
+      function cardBg(card) {
+        const m = card.querySelector('.cs-media');
+        return {
+          color: getComputedStyle(card).backgroundColor,
+          img: m ? m.style.backgroundImage : 'none'
+        };
+      }
+      function makeMorph(card) {
+        const bg = cardBg(card);
+        const el = document.createElement('div');
+        el.className = 'cs-morph';
+        el.style.backgroundColor = bg.color;
+        el.innerHTML = '<div class="cs-morph-media"></div><div class="cs-morph-shade"></div>';
+        el.querySelector('.cs-morph-media').style.backgroundImage = bg.img;
+        document.body.appendChild(el);
+        return el;
+      }
+      function rectInset(r) {
+        const vw = window.innerWidth, vh = window.innerHeight;
+        return `inset(${Math.max(r.top,0)}px ${Math.max(vw - r.right,0)}px ${Math.max(vh - r.bottom,0)}px ${Math.max(r.left,0)}px)`;
+      }
+      document.addEventListener('click', (e) => {
+        const btn = e.target.closest('#csCards [data-expand]');
+        if (!btn || passThrough || RM) return;
+        e.preventDefault(); e.stopPropagation();
+        const card = btn.closest('.cs-card');
+        lastCard = card;
+        if (morph) morph.remove();
+        morph = makeMorph(card);
+        const mMedia = morph.querySelector('.cs-morph-media');
+        const mShade = morph.querySelector('.cs-morph-shade');
+        const media0 = card.querySelector('.cs-media');
+        const s0 = media0 ? (gsap.getProperty(media0, 'scale') || 1) : 1;
+        gsap.fromTo(mMedia, { scale: s0 }, { scale: s0 * 1.12, duration: 0.6, ease: 'expo.inOut' });
+        gsap.fromTo(mShade, { opacity: 0 }, { opacity: 1, duration: 0.6, ease: 'power2.inOut' });
+        gsap.fromTo(morph, { clipPath: rectInset(card.getBoundingClientRect()) },
+          { clipPath: 'inset(0px 0px 0px 0px)', duration: 0.6, ease: 'expo.inOut',
+            onComplete: () => {
+              passThrough = true; btn.click(); passThrough = false;
+              setTimeout(() => { if (morph) { morph.remove(); morph = null; } }, 450);
+            } });
+      }, true);
+      document.addEventListener('click', (e) => {
+        if (RM || !overlay || overlay.style.display === 'none' || !lastCard) return;
+        const viaX = e.target.closest('#caseOverlayCloseX');
+        if (!viaX && e.target !== overlay) return;
+        if (morph) morph.remove();
+        morph = makeMorph(lastCard);
+        morph.style.clipPath = 'inset(0px 0px 0px 0px)';
+        gsap.set(morph.querySelector('.cs-morph-media'), { scale: 1.12 });
+        gsap.set(morph.querySelector('.cs-morph-shade'), { opacity: 1 });
+      }, true);
+      if (overlay) {
+        new MutationObserver(() => {
+          if (overlay.style.display !== 'none' || !morph || !lastCard) return;
+          requestAnimationFrame(() => {
+            const r = lastCard.getBoundingClientRect();
+            gsap.to(morph.querySelector('.cs-morph-media'), { scale: 1, duration: 0.55, ease: 'expo.inOut' });
+            gsap.to(morph.querySelector('.cs-morph-shade'), { opacity: 0, duration: 0.55, ease: 'power2.inOut' });
+            gsap.to(morph, { clipPath: rectInset(r), duration: 0.55, ease: 'expo.inOut',
+              onComplete: () => gsap.to(morph, { opacity: 0, duration: 0.2, onComplete: () => { if (morph) { morph.remove(); morph = null; } } }) });
+          });
+        }).observe(overlay, { attributes: true, attributeFilter: ['style'] });
+      }
     })();
 
   </script>
