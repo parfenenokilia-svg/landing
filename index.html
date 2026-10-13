@@ -5063,11 +5063,11 @@
       background-size: cover;
       background-position: center;
       transform-origin: 50% 60%;
-      filter: grayscale(1);
-      transition: filter 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+      /* Приглушённый цвет: фото остаются цветными, но не спорят с монохромом */
+      filter: saturate(0.38) brightness(0.82) contrast(1.06);
       will-change: transform;
     }
-    .cs-card.in-focus .cs-media { filter: grayscale(0); }
+    
     .cs-shade {
       position: absolute;
       inset: 0;
@@ -5112,6 +5112,50 @@
       .cs-big-l { font-size: 16px; max-width: 24ch; }
     }
 
+    /* Переход к кейсам: заголовок залипает, карточки наезжают поверх */
+    .cases-stage { position: relative; }
+    .cases-stage .cs-hero {
+      position: sticky !important;
+      top: 0;
+      z-index: 0;
+      height: 100vh;
+      height: 100svh;
+      min-height: 0 !important;
+      justify-content: center !important;
+      align-items: flex-start;
+      padding-top: 0 !important;
+      padding-bottom: 0 !important;
+      transform: none !important;
+      opacity: 1 !important;
+    }
+    .cases-stage .cs-outer { position: relative; z-index: 1; }
+
+    /* Hero: спокойная строка обычным регистром */
+    #heroSub, .hero-v2-slogan {
+      font-family: "IBM Plex Sans", sans-serif !important;
+      font-weight: 400 !important;
+      text-transform: none !important;
+      letter-spacing: 0 !important;
+      font-size: clamp(20px, 1.8vw, 26px) !important;
+      line-height: 1.45 !important;
+      color: #f4f4f2 !important;
+      max-width: 40ch;
+      text-wrap: balance;
+    }
+    @media (max-width: 760px) {
+      #heroSub, .hero-v2-slogan { margin-left: auto; margin-right: auto; }
+    }
+    #heroSub .hero-sub-line2 {
+      display: block;
+      margin-top: 18px;
+      font-size: clamp(14px, 1.1vw, 16px);
+      line-height: 1.5;
+      color: rgba(244,244,242,0.58);
+      text-wrap: wrap;
+      text-transform: none;
+      letter-spacing: 0.01em;
+    }
+
     /* Раскрытие кейса */
     .cs-morph {
       position: fixed;
@@ -5133,7 +5177,7 @@
       background: linear-gradient(to top, rgba(13,13,13,0.96), rgba(13,13,13,0.82));
       opacity: 0;
     }
-    .cs-morph-media { transform-origin: 50% 60%; }
+    .cs-morph-media { transform-origin: 50% 60%; filter: saturate(0.38) brightness(0.82) contrast(1.06); }
 
     /* ── Фидбэк: диагональный край переехал сюда, портреты в цвет в фокусе ── */
     #services::before { display: none; }
@@ -5149,9 +5193,7 @@
       pointer-events: none;
       z-index: 6;
     }
-    .avatar-lg { transition: filter 0.9s cubic-bezier(0.22, 1, 0.36, 1); }
-    .recommend-tile.in-focus .avatar-lg,
-    .recommend-tile:hover .avatar-lg { filter: grayscale(0) !important; }
+    .avatar-lg { filter: saturate(0.38) brightness(0.92) !important; }
 
     @media (max-width: 760px) {
       .now-section { padding: 96px var(--mobile-pad, 20px) 88px; }
@@ -5159,7 +5201,6 @@
       .now-item { grid-template-columns: 1fr; gap: 10px; padding: 22px 0; }
       .now-open { margin-top: 28px; }
 
-      .cs-hero { min-height: 0 !important; padding-top: 64px !important; }
       .cs-big { margin-bottom: 14px; }
       .cs-big-v { font-size: clamp(64px, 20vw, 88px); }
 
@@ -5217,9 +5258,7 @@
       .tl-agr-dot { position: relative; z-index: 1; }
     }
 
-    @media (prefers-reduced-motion: reduce) {
-      .cs-media, .avatar-lg { transition: none; }
-    }
+
 
   
     /* Портрет на сплэше: обработан заранее (ЧБ, резкость), фильтр не нужен */
@@ -5346,6 +5385,7 @@
 
 
 <!-- CASES HERO -->
+<div class="cases-stage">
 <div class="cs-hero" id="casesHero">
   <h1 class="hero-v2-title" id="casesHeroTitle">КЕЙСЫ</h1>
 </div>
@@ -5358,6 +5398,7 @@
     <div class="cs-dots" id="csDots"></div>
   </div>
 </div>
+</div><!-- /cases-stage -->
 
     <section id="recommendations" class="punk-section" style="background:#121214;margin-left:calc(-50vw + 50%);margin-right:calc(-50vw + 50%);width:100vw;position:relative;overflow:visible;z-index:6;padding-left:max(24px, calc(50vw - 556px));padding-right:max(24px, calc(50vw - 556px));box-sizing:border-box;">
       <span class="section-mega-title" id="recommendationsTitle" style="margin-left:calc(-1 * max(24px, calc(50vw - 556px)) + 24px);">ФИДБЭК</span>
@@ -5648,7 +5689,7 @@
         contactsTitle: "КОНТАКТЫ",
         contactsText: "Пишите в Telegram или на почту: менторство, консультация, выступление, проект или просто знакомство.",
         footer: "2026 Илья Парфененок. Сделано с любовью к продуктам.",
-        heroSub: "ЗАПУСКАЮ И РАЗВИВАЮ B2C ПРОДУКТЫ С ФОКУСОМ НА ВЫРУЧКУ.<br><span class=\"hero-sub-line2\">10+ ЛЕТ ПРОЕКТНОГО И ПРОДУКТОВОГО УПРАВЛЕНИЯ.</span>",
+        heroSub: "Запускаю образовательные продукты с нуля и довожу их до выручки.<br><span class=\"hero-sub-line2\">Lerna, Skillbox, Talentgrator. Продуктовый ментор в 2080 Ventures и Sber500.</span>",
         servicesLabel: "мои компетенции и их влияние на бизнес",
         aboutLabel: "путь от хелпера до продакта",
         aboutLead: "Сочетаю проектное и продуктовое управление. Мыслю метриками, юнит-экономикой и пользовательским опытом.",
@@ -5805,7 +5846,7 @@
         contactsTitle: "CONTACTS",
         contactsText: "Message me on Telegram or by email about mentoring, consulting, a talk, a project or just to connect.",
         footer: "2026 Ilia Parfenenok. Built with love for products.",
-        heroSub: "I LAUNCH AND GROW B2C PRODUCTS WITH A FOCUS ON REVENUE.<br><span class=\"hero-sub-line2\">10+ YEARS OF PROJECT AND PRODUCT MANAGEMENT.</span>",
+        heroSub: "I launch education products from scratch and take them to revenue.<br><span class=\"hero-sub-line2\">Lerna, Skillbox, Talentgrator. Product mentor at 2080 Ventures and Sber500.</span>",
         servicesLabel: "my competencies and their impact on the business",
         aboutLabel: "from helper to product manager",
         aboutLead: "I combine project and product management. I think in metrics, unit economics, and user experience.",
@@ -8010,7 +8051,7 @@
       // трансформацией по двум осям сразу. На мобиле оставляем только
       // лёгкий opacity/y без scale/rotate и без scrub (once по входу).
       const casesHeroMM = gsap.matchMedia();
-      casesHeroMM.add('(min-width: 0px)', () => {
+      casesHeroMM.add('(max-width: 0px)', () => {
         const isMH = window.matchMedia('(max-width: 760px)').matches;
         gsap.set(hero, isMH ? { transformOrigin: '50% 100%', scale: 0.94, rotateZ: 1.5, y: '4%' } : { transformOrigin: '50% 100%', scale: 0.88, rotateZ: 3, y: '6%' });
         gsap.to(hero, {
