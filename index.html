@@ -5260,6 +5260,69 @@
 
 
 
+    /* ═══════════ СВЕТЛЫЙ САЙТ: тёмные только кейсы ═══════════
+       Светлый фон: #f4f4f2, текст: #0d0d0d, второстепенный текст: #5c5c59
+       (контраст 6:1), линии: чернила 12–20%. Тёмная зона: кейсы. */
+    body { background: #f4f4f2; }
+    .splash-container { background: #0d0d0d; }
+
+    #heroWrap, .fp-slide, #hero,
+    #recommendations, #about, #services, #qa { background: #f4f4f2 !important; }
+    #recommendations::before { background: #f4f4f2; }
+
+    #heroTitle, #heroSub, #heroWrap li { color: #0d0d0d !important; }
+    #heroSub .hero-sub-line2 { color: rgba(13,13,13,0.58); }
+
+    #recommendationsTitle, #aboutTitle, #servicesTitle, #qaTitle { color: #0d0d0d !important; }
+    #recommendations .section-mega-label, #about .section-mega-label,
+    #services .section-mega-label, #qa .section-mega-label { color: #5c5c59 !important; }
+
+    /* Фидбэк */
+    .recommend-name { color: #0d0d0d !important; }
+    .recommend-role { color: #5c5c59 !important; }
+    .recommend-quote { color: rgba(13,13,13,0.82) !important; }
+    .recommend-tile { border-color: rgba(13,13,13,0.12); }
+    .recommend-tile::after { color: #0d0d0d; }
+    .tg-link { background: transparent !important; border-color: rgba(13,13,13,0.22) !important; }
+    @media (hover: hover) and (pointer: fine) {
+      .recommend-tile:hover {
+        border-color: rgba(13,13,13,0.22);
+        box-shadow: 0 16px 32px rgba(13,13,13,0.08);
+      }
+    }
+
+    /* Обо мне и таймлайн */
+    .about-lead-text, .artifact-text { color: #0d0d0d !important; }
+    .artifact-label { color: #5c5c59 !important; }
+    .tl-agr-item { color: rgba(13,13,13,0.16); }
+    .tl-agr-item.active { color: #0d0d0d; }
+    .tl-agr-item.past { color: rgba(13,13,13,0.4); }
+    .tl-agr-dot { background: rgba(13,13,13,0.18); }
+    .tl-agr-item.active .tl-agr-dot { background: #0d0d0d; box-shadow: none; }
+    .tl-agr-item.past .tl-agr-dot { background: rgba(13,13,13,0.4); }
+    .tl-agr-line { background: rgba(13,13,13,0.12); }
+    .tl-agr-item.past .tl-agr-line { background: #0d0d0d; }
+    .tl-agr::before { background: rgba(13,13,13,0.14) !important; }
+    .tl-agr::after { background: #0d0d0d !important; }
+
+    /* Экспертиза */
+    #servicesGrid { border-top-color: rgba(13,13,13,0.16) !important; }
+    .svc-row { border-bottom-color: rgba(13,13,13,0.16) !important; }
+    .svc-row-title, .svc-impact, #services li { color: #0d0d0d !important; }
+    .svc-row-desc, .svc-row-arrow { color: #5c5c59 !important; }
+    #services li::before { background: #0d0d0d !important; }
+    .svc-row.open .svc-row-title, .svc-row.open .svc-row-arrow { color: #0d0d0d !important; }
+
+    /* Q&A */
+    #qaGrid { border-top-color: rgba(13,13,13,0.16) !important; }
+    .qa-punk-row { border-bottom-color: rgba(13,13,13,0.16) !important; }
+    .qa-punk-q { color: #0d0d0d !important; }
+    .qa-punk-body, .qa-punk-plus { color: #5c5c59 !important; }
+    .qa-punk-row.open .qa-punk-q, .qa-punk-row.open .qa-punk-plus { color: #0d0d0d !important; }
+
+    /* Полный отзыв в раскрытой карточке */
+    .recommend-drawer, .recommend-drawer p { color: rgba(13,13,13,0.85) !important; }
+
   
     /* Портрет на сплэше: обработан заранее (ЧБ, резкость), фильтр не нужен */
     .splash-photo { max-width: 78vw; filter: none !important; }
@@ -5622,7 +5685,7 @@
         {
           title: "Запуски с нуля",
           body: "Довожу новый продукт от гипотезы до первых продаж: исследование аудитории, позиционирование, CJM, лендинг и выход на рынок.",
-          list: ["Курс «Как продавать на Uzum Market»: запуск с нуля и рост выручки в 6 раз за два квартала", "Курс «Инвестиции в криптовалюту»: выручка в 3 раза выше плана в первые три месяца", "Fatigue Lab: прототип сервиса для интерпретации анализов крови, собранный без разработчика", "Курс по Uzum Market стал одним из основных источников B2C-выручки Lerna в Узбекистане."]
+          list: ["Курс «Как продавать на Uzum Market»: запуск с нуля и рост выручки в 6 раз за два квартала", "Курс «Инвестиции в криптовалюту»: выручка в 3 раза выше плана в первые три месяца", "Курс по Uzum Market стал одним из основных источников B2C-выручки Lerna в Узбекистане."]
         },
         {
           title: "Рост выручки существующих продуктов",
@@ -5779,7 +5842,7 @@
         {
           title: "Launches from zero",
           body: "I take a new product from hypothesis to first sales: audience research, positioning, CJM, landing page and go-to-market.",
-          list: ["“How to Sell on Uzum Market” course: launched from scratch, revenue grew 6x in two quarters", "“Crypto Investing” course: revenue 3x above plan in the first three months", "Fatigue Lab: a blood test interpretation prototype built without a developer", "The Uzum Market course became one of Lerna’s main sources of B2C revenue in Uzbekistan."]
+          list: ["“How to Sell on Uzum Market” course: launched from scratch, revenue grew 6x in two quarters", "“Crypto Investing” course: revenue 3x above plan in the first three months", "The Uzum Market course became one of Lerna’s main sources of B2C revenue in Uzbekistan."]
         },
         {
           title: "Revenue growth in existing products",
@@ -7105,6 +7168,7 @@
           if (navScrim) navScrim.classList.remove('visible');
         }
 
+        if (window.__lightUnder) onContacts = window.__lightUnder();
         if (header) {
           header.classList.toggle('on-contacts', onContacts);
           if (langEl) langEl.classList.toggle('on-contacts', onContacts);
@@ -8126,6 +8190,20 @@
     // ═══════════ UPGRADE: блок «Сейчас», кейсы, фидбэк, движение ═══════════
     (function() {
       const RM = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      // ── Что сейчас под шапкой: светлый раздел или тёмный ──
+      const LIGHT = '#heroWrap, #recommendations, #about, #services, #qa, #contacts, footer';
+      window.__lightUnder = function() {
+        const h = document.querySelector('header');
+        const y = (h ? h.offsetHeight : 60) + 2;
+        const els = document.elementsFromPoint(window.innerWidth / 2, y);
+        for (const el of els) {
+          if (el.closest('header, .lang, .nav-scrim, .nav-burger-wrap, .nav-overlay, .cursor')) continue;
+          if (el.closest('.cases-stage')) return false;
+          return !!el.closest(LIGHT);
+        }
+        return false;
+      };
       const isM = () => window.matchMedia('(max-width: 760px)').matches;
 
       // ── Блок «Сейчас» и пункт CV в меню ──
