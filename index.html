@@ -5,8 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.18/dist/lenis.min.js"></script>
-  <title>Илья Парфененок — Product Manager</title>
+    <title>Илья Парфененок — Product Manager</title>
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-YJQMEHCP0S"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
@@ -4861,6 +4860,107 @@
       .cs-title { font-size: clamp(34px, 11vw, 48px); }
     }
 
+  
+    /* ═══════════ MOBILE v2 (≤760px): десктопная механика, настроенная под телефон ═══════════
+       Все высоты в svh: в Telegram и Safari панель браузера при скролле
+       меняет высоту окна, svh от неё не зависит, поэтому вёрстка не прыгает. */
+    @media (max-width: 760px) {
+      :root { --mobile-pad: 20px; }
+      /* clip вместо hidden: hidden отключает position: sticky */
+      html, body { overflow-x: clip; }
+      html { scroll-behavior: auto; }
+
+      /* Сплэш: залипает через sticky, уходит с наклоном как на десктопе */
+      .splash-container { height: 210svh !important; }
+      .splash {
+        position: sticky !important;
+        top: 0;
+        height: 100svh;
+        min-height: 0;
+        z-index: 1;
+      }
+      .splash-bg-text { transform: translateY(-4%); }
+
+      /* Hero: залипает, кейсы наезжают поверх */
+      .fp-section-wrap { min-height: 100svh; position: relative; z-index: 20; }
+      .fp-slide { position: sticky !important; top: 0; min-height: 100svh; }
+      .hero {
+        position: relative !important;
+        min-height: 100svh;
+        justify-content: center;
+        padding: 88px 0 40px;
+      }
+
+      /* Кейсы: полноэкранные карточки, въезжают поверх друг друга */
+      .cs-hero { min-height: 60svh; padding: 120px var(--mobile-pad) 40px !important; justify-content: flex-end; }
+      .cs-card-hero {
+        height: 100svh;
+        min-height: 0;
+        justify-content: flex-end;
+        padding: 96px var(--mobile-pad) 72px;
+      }
+
+      /* Обо мне: sticky-таймлайн в одну колонку */
+      #about { padding-left: 0 !important; padding-right: 0 !important; }
+      .about-header { padding: 64px 0 12px; }
+      .about-sticky {
+        position: sticky !important;
+        top: 0;
+        height: 100svh !important;
+        overflow: hidden;
+      }
+      .about-sticky-inner {
+        position: absolute !important;
+        top: 76px !important;
+        left: 0; right: 0; bottom: 0;
+        display: block !important;
+        padding: 16px 0 0 !important;
+      }
+      .tl-agr {
+        width: 100%;
+        padding-left: 0;
+        opacity: 1 !important;
+        transform: none !important;
+        gap: 4px;
+      }
+      .tl-agr-item, .tl-agr-item:first-child {
+        margin-top: 0 !important;
+        flex-direction: row;
+        align-items: center;
+        gap: 12px;
+        color: inherit;
+      }
+      .tl-agr-dot { width: 10px; height: 10px; margin: 0; flex-shrink: 0; }
+      .tl-agr-content { display: flex !important; align-items: baseline; gap: 10px !important; }
+      .tl-agr-name { font-size: clamp(30px, 9.5vw, 40px) !important; }
+      .tl-agr-year { font-size: 12px; }
+      .tl-agr-line { display: none !important; }
+      .scroll-stages { display: block !important; }
+      .scroll-stage { height: 55svh !important; }
+      .tl-artifact {
+        position: absolute !important;
+        top: 236px !important;
+        left: 0 !important;
+        right: 0 !important;
+        width: auto !important;
+        max-height: none !important;
+        overflow: visible !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        opacity: 0;
+        transform: translateY(16px);
+        transition: opacity 0.45s ease, transform 0.45s cubic-bezier(0.22,1,0.36,1) !important;
+        pointer-events: none;
+      }
+      .tl-artifact.visible { opacity: 1 !important; transform: translateY(0) !important; pointer-events: auto; }
+      .artifact-label { display: block !important; font-size: 12px; margin-bottom: 10px; }
+      .artifact-text { font-size: 16px; line-height: 1.55; padding: 0 0 0 14px; }
+
+      /* Единый левый край у заголовков секций */
+      .section-mega-title, .section-mega-label { padding-left: 0; padding-right: 0; }
+
+    }
+
   </style>
 </head>
 <body>
@@ -5965,7 +6065,8 @@
     function fitSplashLine(el) {
       if (!el) return;
       el.style.transform = 'none';
-      const targetWidth = window.innerWidth;
+      const edge = splashFitMQ.matches ? 14 : 0;
+      const targetWidth = window.innerWidth - edge * 2;
       const textWidth = el.getBoundingClientRect().width;
       if (!textWidth || !targetWidth) return;
 
@@ -5975,8 +6076,8 @@
 
       const rect = el.getBoundingClientRect();
       let shiftX = 0;
-      if (rect.right > targetWidth) shiftX = targetWidth - rect.right;
-      if (rect.left < 0) shiftX = Math.max(shiftX, -rect.left);
+      if (rect.right > window.innerWidth - edge) shiftX = (window.innerWidth - edge) - rect.right;
+      if (rect.left < edge) shiftX = Math.max(shiftX, edge - rect.left);
       if (shiftX !== 0) {
         el.style.transform = `scaleX(${scale}) translateX(${shiftX / scale}px)`;
       }
@@ -6122,6 +6223,7 @@
     // за дребезгом настоящего touch-инпута.
     (function() {
       if (typeof Lenis === 'undefined') return;
+      return; // нативный скролл: самый плавный в WKWebView (Telegram, Safari)
       if (!window.matchMedia('(max-width: 760px)').matches) return;
 
       // Native touch (как у joinflowparty.com) даёт лучший скролл, но не
@@ -6220,7 +6322,7 @@
       }
 
       const mm = gsap.matchMedia();
-      mm.add('(min-width: 761px)', () => {
+      mm.add('(min-width: 0px)', () => {
         const stages    = document.querySelectorAll('.scroll-stage');
         const tlItems   = document.querySelectorAll('.tl-agr-item');
         const artifacts = document.querySelectorAll('.tl-artifact');
@@ -6308,6 +6410,7 @@
     (function() {
       const tlAgr = document.querySelector('.tl-agr');
       if (!tlAgr) return;
+      return; // мобильный линейный таймлайн отключён, работает общий sticky
       if (typeof ScrollTrigger === 'undefined') return;
 
       // Каждое раскрытие/закрытие текста меняет высоту страницы, а
@@ -6410,7 +6513,8 @@
       // и без scrub (once по входу в вьюпорт), на десктопе — как было.
       const transitionsMM = gsap.matchMedia();
 
-      transitionsMM.add('(min-width: 761px)', () => {
+      const isMT = window.matchMedia('(max-width: 760px)').matches;
+      transitionsMM.add('(min-width: 0px)', () => {
         // Services проваливается по мере того, как сам блок покидает вьюпорт
         gsap.to(services, {
           scale: 0.85, opacity: 0, ease: 'none',
@@ -6421,17 +6525,17 @@
         gsap.set(about, { scale: 0.9, opacity: 0, y: 0 });
         gsap.to(about, {
           scale: 1, opacity: 1, y: 0, ease,
-          scrollTrigger: { trigger: about, start: 'top 90%', end: 'top 20%', scrub: 0.6 }
+          scrollTrigger: { trigger: about, start: isMT ? 'top 100%' : 'top 90%', end: isMT ? 'top 50%' : 'top 20%', scrub: 0.6 }
         });
 
         // Recs въезжает снизу — БЕЗ gsap.set, стартует из натурального положения
         gsap.from(recs, {
           scale: 0.9, opacity: 0, y: 80, ease,
-          scrollTrigger: { trigger: recs, start: 'top 90%', end: 'top 20%', scrub: 0.6 }
+          scrollTrigger: { trigger: recs, start: isMT ? 'top 100%' : 'top 90%', end: isMT ? 'top 70%' : 'top 20%', scrub: 0.6 }
         });
       });
 
-      transitionsMM.add('(max-width: 760px)', () => {
+      transitionsMM.add('(max-width: 0px)', () => {
         // Никакой отдельной анимации на сами секции #about/#recommendations
         // не вешаем: их прямые дочерние элементы УЖЕ проявляются через
         // общесайтовую систему .reveal (см. "Scroll-reveal with
@@ -6540,12 +6644,10 @@
         // (см. блок SPLASH + HEADER ниже) — там же встроена логика
         // "не уезжать, пока фото не показалось". Эта функция там transform
         // не трогает вообще, чтобы не спорить с ней за один и тот же стиль.
-        if (window.matchMedia('(max-width: 760px)').matches) {
-          return;
-        }
+        const isM = window.matchMedia('(max-width: 760px)').matches;
 
-        const scale      = 1 - exitProgress * 0.16;
-        const rotate     = exitProgress * 3;
+        const scale      = 1 - exitProgress * (isM ? 0.1 : 0.16);
+        const rotate     = exitProgress * (isM ? 2 : 3);
         const translateY = -exitProgress * 30;
 
         splash.style.transform = `scale(${scale}) rotate(${rotate}deg) translateY(${translateY}px)`;
@@ -6696,7 +6798,7 @@
         const photoProgress = Math.min(Math.max((scrolled - revealStart) / (revealEnd - revealStart), 0), 1);
         if (photo) photo.style.opacity = photoProgress;
 
-        if (isMobile) {
+        if (false && isMobile) {
           const releaseAmount = Math.max(0, scrolled - pinDistance);
           splash.style.transform = releaseAmount > 0 ? `translateY(${-releaseAmount}px)` : 'none';
         }
@@ -7584,14 +7686,14 @@
         // стоит примерно как opacity/y, но выглядит как на десктопе.
         const isMobileCards = window.matchMedia('(max-width: 760px)').matches;
         cards.forEach((card, i) => {
-          if (isMobileCards) {
+          if (false) {
             gsap.set(card, { transformOrigin: '50% 100%', opacity: 0, scale: 0.92, rotateZ: 2, y: 28 });
             gsap.to(card, {
               opacity: 1, scale: 1, rotateZ: 0, y: 0, duration: 0.6, ease: 'power2.out',
               scrollTrigger: { trigger: card, start: 'top 85%', toggleActions: 'play none none reverse' }
             });
           } else {
-            gsap.set(card, { transformOrigin: '50% 100%', scale: 0.88, rotateZ: 3, y: '6%' });
+            gsap.set(card, isMobileCards ? { transformOrigin: '50% 100%', scale: 0.94, rotateZ: 1.5, y: '4%' } : { transformOrigin: '50% 100%', scale: 0.88, rotateZ: 3, y: '6%' });
             gsap.to(card, {
               scale: 1, rotateZ: 0, y: '0%', ease: 'power2.out',
               scrollTrigger: { trigger: card, start: 'top bottom', end: 'top 60%', scrub: 0.8 }
@@ -7628,14 +7730,15 @@
       // трансформацией по двум осям сразу. На мобиле оставляем только
       // лёгкий opacity/y без scale/rotate и без scrub (once по входу).
       const casesHeroMM = gsap.matchMedia();
-      casesHeroMM.add('(min-width: 761px)', () => {
-        gsap.set(hero, { transformOrigin: '50% 100%', scale: 0.88, rotateZ: 3, y: '6%' });
+      casesHeroMM.add('(min-width: 0px)', () => {
+        const isMH = window.matchMedia('(max-width: 760px)').matches;
+        gsap.set(hero, isMH ? { transformOrigin: '50% 100%', scale: 0.94, rotateZ: 1.5, y: '4%' } : { transformOrigin: '50% 100%', scale: 0.88, rotateZ: 3, y: '6%' });
         gsap.to(hero, {
           scale: 1, rotateZ: 0, y: '0%', ease: 'power2.out',
           scrollTrigger: { trigger: hero, start: 'top bottom', end: 'top 60%', scrub: 0.8 }
         });
       });
-      casesHeroMM.add('(max-width: 760px)', () => {
+      casesHeroMM.add('(max-width: 0px)', () => {
         // Триггер раньше стоял на 'top 88%' — срабатывал, когда заголовок
         // только на 12% вошёл в кадр, к моменту показа анимация уже
         // отыгрывала и выглядела как её отсутствие. Сдвинули на 78% и
@@ -7661,7 +7764,7 @@
       // но это было наложением на баг с капсулой/тач-скроллом, которые
       // теперь починены (см. mobile-scroll-lessons.md). Возвращаем на
       // мобиле тот же эффект, что на десктопе.
-      gsap.set(services, { y: '30%' });
+      gsap.set(services, { y: window.matchMedia('(max-width: 760px)').matches ? '8%' : '30%' });
       gsap.to(services, {
         y: '0%',
         ease: 'none',
@@ -7672,6 +7775,17 @@
           scrub: 0.6,
         }
       });
+    })();
+
+    // ── MOBILE v2: стабилизация под iOS (Safari, Telegram) ──
+    // Панель браузера меняет высоту окна при скролле. Триггеры не
+    // пересчитываем на этот ресайз, высоты секций держим в svh.
+    (function() {
+      if (!window.matchMedia('(max-width: 760px)').matches) return;
+      if (typeof ScrollTrigger !== 'undefined') ScrollTrigger.config({ ignoreMobileResize: true });
+      const refresh = () => { if (typeof ScrollTrigger !== 'undefined') ScrollTrigger.refresh(); };
+      if (document.fonts && document.fonts.ready) document.fonts.ready.then(refresh);
+      window.addEventListener('load', refresh);
     })();
 
   </script>
