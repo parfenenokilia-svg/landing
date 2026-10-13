@@ -22,13 +22,13 @@
       --bg2: #141414;
       --surface: #1a1a1a;
       --surface2: #222222;
-      --text: #f0ede8;
+      --text: #f4f4f2;
       --muted: #888888;
       --line: #2e2e2e;
       --line-bright: #444444;
-      --accent: #38bdf8;
-      --accent-soft: rgba(56, 189, 248, 0.12);
-      --accent-glow: rgba(56, 189, 248, 0.22);
+      --accent: #f4f4f2;
+      --accent-soft: rgba(244,244,242, 0.12);
+      --accent-glow: rgba(244,244,242, 0.22);
       --maxw: 1160px;
       --radius: 0px;
       --shadow: 6px 6px 0 rgba(0, 0, 0, 0.5);
@@ -94,7 +94,7 @@
       pointer-events: auto;
     }
     header.on-contacts::before {
-      background: #f0ede8;
+      background: #f4f4f2;
     }
     .nav-scrim {
       position: fixed;
@@ -267,7 +267,7 @@
     }
     .nav-cta:hover {
       border-color: var(--accent);
-      background: rgba(56, 189, 248, 0.08);
+      background: rgba(244,244,242, 0.08);
       transform: scale(1.03);
     }
     .nav-cta.primary {
@@ -465,7 +465,7 @@
       top: 15px;
       width: 4px;
       height: 4px;
-      background: #141428;
+      background: #131315;
       border-radius: 1px;
     }
 
@@ -604,8 +604,8 @@
       color: #0d0d0d;
     }
     .btn.primary:hover {
-      background: #ffd04a;
-      border-color: #ffd04a;
+      background: #f4f4f2;
+      border-color: #f4f4f2;
       transform: scale(1.03);
     }
 
@@ -694,7 +694,7 @@
       left: 0;
       width: 100%;
       height: 200px;
-      background: #14131f;
+      background: #121214;
       clip-path: polygon(0 200px, 100% 0, 100% 200px);
       pointer-events: none;
       z-index: 6;
@@ -1397,8 +1397,8 @@
     @media (hover: hover) and (pointer: fine) {
       .recommend-tile:hover {
         transform: translateY(-6px);
-        border-color: rgba(56, 189, 248, 0.35);
-        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4), 0 0 16px rgba(56, 189, 248, 0.18);
+        border-color: rgba(244,244,242, 0.35);
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4), 0 0 16px rgba(244,244,242, 0.18);
       }
     }
 
@@ -1411,7 +1411,7 @@
       font-size: 40px;
       font-weight: 700;
       line-height: 1;
-      color: #38bdf8;
+      color: #f4f4f2;
       pointer-events: none;
       animation: splashPulse 1.6s ease-in-out infinite;
     }
@@ -1426,7 +1426,7 @@
     .recommend-tile.active {
       border-color: var(--accent);
       box-shadow: 0 0 20px var(--accent-glow);
-      background: rgba(56, 189, 248, 0.05);
+      background: rgba(244,244,242, 0.05);
     }
 
     /* Цитата-превью и .recommend-expand — только для мобильного
@@ -2225,8 +2225,8 @@
 
     /* Card colour themes */
     .case-card:nth-child(1) { background: var(--surface); }
-    .case-card:nth-child(2) { background: #1a1500; }
-    .case-card:nth-child(3) { background: #0d1a0d; }
+    .case-card:nth-child(2) { background: #16130b; }
+    .case-card:nth-child(3) { background: #0d140e; }
     .case-card:nth-child(4) { background: #0d0d1a; }
 
     .case-card-bg-num {
@@ -2311,7 +2311,7 @@
     }
     @keyframes caseArrowShimmer {
       0%, 100% { color: #ffffff; }
-      50% { color: #38bdf8; }
+      50% { color: #f4f4f2; }
     }
     @media (prefers-reduced-motion: reduce) {
       .case-card-arrow { animation: none; }
@@ -2515,7 +2515,7 @@
 
     /* Colour-block sections */
     .section-yellow {
-      background: #ffc72c;
+      background: #f4f4f2;
       color: #0d0d0d;
       margin: 0 -24px;
       padding: 84px 24px;
@@ -2665,7 +2665,7 @@
 
     /* Recommendations dark strip */
     #recommendations {
-      background: #14131f;
+      background: #121214;
     }
 
     /* QA punk — full-width rows */
@@ -2880,7 +2880,7 @@
       font-weight: 700;
       letter-spacing: 0.18em;
       text-transform: uppercase;
-      color: #38bdf8;
+      color: #f4f4f2;
       animation: splashPulse 1.6s ease-in-out infinite;
     }
     @keyframes splashPulse {
@@ -3015,7 +3015,7 @@
       color: #2a2a2a;
       transition: color 0.35s ease;
     }
-    .tl-agr-item.active { color: #f0ede8; }
+    .tl-agr-item.active { color: #f4f4f2; }
     .tl-agr-item.past   { color: #444; }
     .tl-agr-dot {
       width: 12px;
@@ -3027,8 +3027,8 @@
       transition: background 0.35s ease, box-shadow 0.35s ease;
     }
     .tl-agr-item.active .tl-agr-dot {
-      background: #38bdf8;
-      box-shadow: 0 0 16px rgba(56,189,248,0.5);
+      background: #f4f4f2;
+      box-shadow: 0 0 16px rgba(244,244,242,0.5);
     }
     .tl-agr-item.past .tl-agr-dot { background: #444; }
     .tl-agr-content {
@@ -3057,7 +3057,7 @@
       margin: 6px 0 6px 5px;
       transition: background 0.35s ease;
     }
-    .tl-agr-item.past .tl-agr-line { background: #38bdf8; }
+    .tl-agr-item.past .tl-agr-line { background: #f4f4f2; }
     .tl-artifact {
       position: absolute;
       right: 0;
@@ -3080,7 +3080,7 @@
       font-family: "IBM Plex Sans", sans-serif;
       font-size: 13px;
       letter-spacing: 0.12em;
-      color: #38bdf8;
+      color: #f4f4f2;
       text-transform: uppercase;
       margin-bottom: 12px;
     }
@@ -3089,7 +3089,7 @@
       font-size: clamp(18px, 1.8vw, 26px);
       line-height: 1.65;
       color: var(--text);
-      border-left: 2px solid #38bdf8;
+      border-left: 2px solid #f4f4f2;
       padding-left: 20px;
       padding-right: 64px;
       margin: 0;
@@ -3382,10 +3382,10 @@
       overflow: hidden;
     }
     .cs-card[data-idx="0"] { background: #0d0d0d; z-index: 1; }
-    .cs-card[data-idx="1"] { background: #2d2000; z-index: 2; }
-    .cs-card[data-idx="2"] { background: #0a2a10; z-index: 3; }
-    .cs-card[data-idx="3"] { background: #08082e; z-index: 4; }
-    .cs-card[data-idx="4"] { background: #2a0808; z-index: 5; }
+    .cs-card[data-idx="1"] { background: #16130b; z-index: 2; }
+    .cs-card[data-idx="2"] { background: #0d140e; z-index: 3; }
+    .cs-card[data-idx="3"] { background: #0e0e16; z-index: 4; }
+    .cs-card[data-idx="4"] { background: #170d0c; z-index: 5; }
     .cs-card::before { content:''; position:absolute; top:0; left:0; right:0; height:1px; background:rgba(255,255,255,0.2); }
     .cs-detail-body {
       border-top: 1px solid rgba(255,255,255,0.15);
@@ -4672,7 +4672,7 @@
       }
       .tl-agr-item.mob-active .tl-agr-dot {
         background: var(--accent);
-        box-shadow: 0 0 12px rgba(56,189,248,0.45);
+        box-shadow: 0 0 12px rgba(244,244,242,0.45);
       }
 
       .tl-agr-content {
@@ -4742,7 +4742,7 @@
         background: transparent;
         /* Небольшое неоновое голубое свечение по рамке вместо серой
            заливки-подложки — сама карточка прозрачная. */
-        box-shadow: 0 0 10px rgba(56, 189, 248, 0.15);
+        box-shadow: 0 0 10px rgba(244,244,242, 0.15);
         padding: 28px 16px 52px;
         text-align: center;
       }
@@ -4847,7 +4847,7 @@
         margin-top: 0;
         padding: 22px 0 34px;
         font-size: 13px;
-        background: #f0ede8;
+        background: #f4f4f2;
         color: #0d0d0d;
         border-top-color: rgba(13,13,13,0.15);
       }
@@ -4954,12 +4954,51 @@
       }
       .tl-artifact.visible { opacity: 1 !important; transform: translateY(0) !important; pointer-events: auto; }
       .artifact-label { display: block !important; font-size: 12px; margin-bottom: 10px; }
-      .artifact-text { font-size: 16px; line-height: 1.55; padding: 0 0 0 14px; }
+      .artifact-text { font-size: 16px; line-height: 1.6; padding: 0; }
 
       /* Единый левый край у заголовков секций */
       .section-mega-title, .section-mega-label { padding-left: 0; padding-right: 0; }
 
     }
+
+  
+    /* ═══════════ THEME: монохром ═══════════
+       Палитра: чернила #0d0d0d, светлый #f4f4f2 (нейтральный, без тёплого
+       оттенка), серые для второстепенного. Цветных акцентов нет: активные
+       состояния выделяются яркостью, начертанием и движением.
+       Сплэш и контакты светлые, середина страницы тёмная. */
+    .splash::before { background: #f4f4f2; }
+    .splash-bg-line, .splash-bg-line:last-child { color: #0d0d0d !important; }
+    .splash-label, .splash-label * { color: #0d0d0d !important; }
+    .splash-photo { filter: grayscale(1) contrast(1.04); }
+
+    /* Кнопка языка, пока она лежит на светлом сплэше */
+    body.on-light-splash .lang .nav-cta,
+    body.on-light-splash .lang .lang-btn {
+      color: #0d0d0d !important;
+      border-color: rgba(13,13,13,0.28) !important;
+      background: transparent !important;
+    }
+
+    /* Бургер на светлых контактах */
+    header.on-contacts .nav-burger,
+    .nav-burger-wrap.on-contacts .nav-burger { background: #0d0d0d; }
+    header.on-contacts .burger-lines span,
+    .nav-burger-wrap.on-contacts .burger-lines span { background: #f4f4f2; }
+
+    /* Кейсы: фото в монохроме, оттенок фона карточки едва заметен */
+    .cs-card { background-blend-mode: luminosity; }
+    .cs-num { color: rgba(244,244,242,0.07); }
+
+    /* Таймлайн: без цветной полосы и свечения */
+    .artifact-text { border-left: 0 !important; padding-left: 0 !important; }
+    .tl-agr-dot { box-shadow: none !important; }
+
+    /* Иконки соцсетей в общем монохроме */
+    .tg-link img, .contact img, .avatar-lg { filter: grayscale(1); }
+
+    /* Контраст второстепенного текста на светлом фоне ≥ 4.5:1 */
+    #contacts .contacts-subtext, #contacts p { color: #4a4a4a; }
 
   </style>
 </head>
@@ -5089,7 +5128,7 @@
   </div>
 </div>
 
-    <section id="services" class="punk-section" style="background:#14131f;margin-left:calc(-50vw + 50%);margin-right:calc(-50vw + 50%);width:100vw;position:relative;z-index:6;padding-left:max(24px, calc(50vw - 556px));padding-right:max(24px, calc(50vw - 556px));box-sizing:border-box;">
+    <section id="services" class="punk-section" style="background:#121214;margin-left:calc(-50vw + 50%);margin-right:calc(-50vw + 50%);width:100vw;position:relative;z-index:6;padding-left:max(24px, calc(50vw - 556px));padding-right:max(24px, calc(50vw - 556px));box-sizing:border-box;">
       <span class="section-mega-title" id="servicesTitle">ЭКСПЕР-<br>ТИЗА</span>
       <span class="section-mega-label">мои компетенции и их влияние на бизнес</span>
       <div class="services-accordion" id="servicesGrid"></div>
@@ -5178,7 +5217,7 @@
 
     </section>
 
-    <section id="recommendations" class="punk-section" style="background:#14131f;margin-left:calc(-50vw + 50%);margin-right:calc(-50vw + 50%);width:100vw;position:relative;overflow:visible;z-index:6;padding-left:max(24px, calc(50vw - 556px));padding-right:max(24px, calc(50vw - 556px));box-sizing:border-box;">
+    <section id="recommendations" class="punk-section" style="background:#121214;margin-left:calc(-50vw + 50%);margin-right:calc(-50vw + 50%);width:100vw;position:relative;overflow:visible;z-index:6;padding-left:max(24px, calc(50vw - 556px));padding-right:max(24px, calc(50vw - 556px));box-sizing:border-box;">
       <span class="section-mega-title" id="recommendationsTitle" style="margin-left:calc(-1 * max(24px, calc(50vw - 556px)) + 24px);">ФИДБЭК</span>
       <span class="section-mega-label" style="margin-left:calc(-1 * max(24px, calc(50vw - 556px)) + 24px);">коллеги и менеджеры о работе со мной</span>
       <div class="recommend-grid-wrap">
@@ -5198,7 +5237,7 @@
     <div class="qa-punk" id="qaGrid"></div>
   </section>
 
-  <section id="contacts" class="punk-section" style="background:#f0ede8;margin-left:calc(-50vw + 50%);margin-right:calc(-50vw + 50%);width:100vw;position:relative;z-index:6;padding-left:max(24px, calc(50vw - 556px));padding-right:max(24px, calc(50vw - 556px));box-sizing:border-box;padding-top:80px;padding-bottom:100px;">
+  <section id="contacts" class="punk-section" style="background:#f4f4f2;margin-left:calc(-50vw + 50%);margin-right:calc(-50vw + 50%);width:100vw;position:relative;z-index:6;padding-left:max(24px, calc(50vw - 556px));padding-right:max(24px, calc(50vw - 556px));box-sizing:border-box;padding-top:80px;padding-bottom:100px;">
       <div class="contacts-header">
         <div class="section-mega-title" id="contactsTitle">КОНТАКТЫ</div>
         <p class="contacts-subtext" id="contactsText">Рассматриваю роли PM / Growth PM / PMM. Полный день, удалённо.</p>
@@ -5209,8 +5248,8 @@
         </a>
         <a class="contact" href="mailto:parfenenok.ilia@gmail.com" aria-label="Email">
           <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <rect x="3" y="5" width="18" height="14" rx="2" stroke="#f0ede8" stroke-width="2"></rect>
-            <path d="M4 7l8 6 8-6" stroke="#f0ede8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+            <rect x="3" y="5" width="18" height="14" rx="2" stroke="#f4f4f2" stroke-width="2"></rect>
+            <path d="M4 7l8 6 8-6" stroke="#f4f4f2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
           </svg>
         </a>
         <a class="contact" href="https://www.linkedin.com/in/ilia-parfenenok-b3a678264/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
@@ -7140,19 +7179,19 @@
       gsap.registerPlugin(ScrollTrigger);
 
       const CASES_RU = [
-        { idx: 0, logo: 'LERNA',       logoImg: 'lerna-logo.png',          bg: '#0d0d0d', accent: '#ffc72c', title: 'Локализация\nпод рынок\nУзбекистана', desc: 'Проверка гипотезы локализации, сэкономили на масштабировании' },
-        { idx: 1, logo: 'LERNA',       logoImg: 'lerna-logo.png',          bg: '#2d2000', accent: '#e8a800', title: 'Как продавать\nна Uzum\nMarket',       desc: '0→1 запуск, ×6 выручка за 2 квартала' },
-        { idx: 2, logo: 'SKILLBOX',    logoImg: 'skillbox-logo-new.png',   bg: '#0a2a10', accent: '#3db865', title: 'Линейка\n«Личные\nФинансы»',           desc: 'CR1 6→8%, CR2 7→10%, выручка +40%' },
-        { idx: 3, logo: 'SKILLBOX',    logoImg: 'skillbox-logo-new.png',   bg: '#08082e', accent: '#6b6bff', title: 'Инвестиции\nв криптовалюту',           desc: '0→1 за 3 месяца, ×3 к плану' },
-        { idx: 4, logo: '', bg: '#2a0808', accent: '#ff6b6b', title: 'Fatigue\nLab',                        desc: 'Pet project: интерпретация анализов крови' },
+        { idx: 0, logo: 'LERNA',       logoImg: 'lerna-logo.png',          bg: '#0d0d0d', accent: '#f4f4f2', title: 'Локализация\nпод рынок\nУзбекистана', desc: 'Проверка гипотезы локализации, сэкономили на масштабировании' },
+        { idx: 1, logo: 'LERNA',       logoImg: 'lerna-logo.png',          bg: '#16130b', accent: '#f4f4f2', title: 'Как продавать\nна Uzum\nMarket',       desc: '0→1 запуск, ×6 выручка за 2 квартала' },
+        { idx: 2, logo: 'SKILLBOX',    logoImg: 'skillbox-logo-new.png',   bg: '#0d140e', accent: '#f4f4f2', title: 'Линейка\n«Личные\nФинансы»',           desc: 'CR1 6→8%, CR2 7→10%, выручка +40%' },
+        { idx: 3, logo: 'SKILLBOX',    logoImg: 'skillbox-logo-new.png',   bg: '#0e0e16', accent: '#f4f4f2', title: 'Инвестиции\nв криптовалюту',           desc: '0→1 за 3 месяца, ×3 к плану' },
+        { idx: 4, logo: '', bg: '#170d0c', accent: '#f4f4f2', title: 'Fatigue\nLab',                        desc: 'Pet project: интерпретация анализов крови' },
       ];
 
       const CASES_EN = [
-        { idx: 0, logo: 'LERNA',       logoImg: 'lerna-logo.png',          bg: '#0d0d0d', accent: '#ffc72c', title: 'Localization\nfor the Uzbekistan\nMarket', desc: 'Tested the localization hypothesis, avoided scaling costs' },
-        { idx: 1, logo: 'LERNA',       logoImg: 'lerna-logo.png',          bg: '#2d2000', accent: '#e8a800', title: 'How to Sell\non Uzum\nMarket',              desc: '0→1 launch, ×6 revenue in 2 quarters' },
-        { idx: 2, logo: 'SKILLBOX',    logoImg: 'skillbox-logo-new.png',   bg: '#0a2a10', accent: '#3db865', title: 'Personal\nFinance\nLine',                  desc: 'CR1 6→8%, CR2 7→10%, revenue +40%' },
-        { idx: 3, logo: 'SKILLBOX',    logoImg: 'skillbox-logo-new.png',   bg: '#08082e', accent: '#6b6bff', title: 'Crypto\nInvesting\nCourse',                desc: '0→1 in 3 months, ×3 vs plan' },
-        { idx: 4, logo: '', bg: '#2a0808', accent: '#ff6b6b', title: 'Fatigue\nLab',                            desc: 'Pet project: blood test interpretation' },
+        { idx: 0, logo: 'LERNA',       logoImg: 'lerna-logo.png',          bg: '#0d0d0d', accent: '#f4f4f2', title: 'Localization\nfor the Uzbekistan\nMarket', desc: 'Tested the localization hypothesis, avoided scaling costs' },
+        { idx: 1, logo: 'LERNA',       logoImg: 'lerna-logo.png',          bg: '#16130b', accent: '#f4f4f2', title: 'How to Sell\non Uzum\nMarket',              desc: '0→1 launch, ×6 revenue in 2 quarters' },
+        { idx: 2, logo: 'SKILLBOX',    logoImg: 'skillbox-logo-new.png',   bg: '#0d140e', accent: '#f4f4f2', title: 'Personal\nFinance\nLine',                  desc: 'CR1 6→8%, CR2 7→10%, revenue +40%' },
+        { idx: 3, logo: 'SKILLBOX',    logoImg: 'skillbox-logo-new.png',   bg: '#0e0e16', accent: '#f4f4f2', title: 'Crypto\nInvesting\nCourse',                desc: '0→1 in 3 months, ×3 vs plan' },
+        { idx: 4, logo: '', bg: '#170d0c', accent: '#f4f4f2', title: 'Fatigue\nLab',                            desc: 'Pet project: blood test interpretation' },
       ];
 
       const DETAIL_RU = [
@@ -7786,6 +7825,20 @@
       const refresh = () => { if (typeof ScrollTrigger !== 'undefined') ScrollTrigger.refresh(); };
       if (document.fonts && document.fonts.ready) document.fonts.ready.then(refresh);
       window.addEventListener('load', refresh);
+    })();
+
+    // Светлый сплэш: переключаем цвет кнопки языка, пока сплэш на экране
+    (function() {
+      const sc = document.querySelector('.splash-container');
+      if (!sc) return;
+      let raf = null;
+      function upd() {
+        raf = null;
+        const r = sc.getBoundingClientRect();
+        document.body.classList.toggle('on-light-splash', r.bottom > window.innerHeight * 0.5 && r.top <= 0 + 1);
+      }
+      window.addEventListener('scroll', () => { if (!raf) raf = requestAnimationFrame(upd); }, { passive: true });
+      upd();
     })();
 
   </script>
