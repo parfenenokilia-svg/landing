@@ -5426,8 +5426,8 @@
       line-height: 0.88;
       color: #f4f4f2;
       white-space: nowrap;
-      transform: translateY(-50%);
-      opacity: 0;
+      transform: translateY(calc(-50% + 100vh));
+      opacity: 1;
       pointer-events: none;
     }
     /* Кейсы наезжают прямо на сцену, отдельного экрана «КЕЙСЫ» нет */
@@ -8603,10 +8603,11 @@
         if (title && cw) {
           const k = Math.min(Math.max((p - 0.3) / 0.16, 0), 1);
           const ek = k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2;
-          title.style.translate = `0 ${(-60 * ek).toFixed(2)}vh`;
-          title.style.opacity = (1 - ek).toFixed(3);
-          cw.style.transform = `translateY(calc(-50% + ${(60 * (1 - ek)).toFixed(2)}vh))`;
-          cw.style.opacity = ek.toFixed(3);
+          // чистая смена кадра: роль уезжает вверх за экран, КЕЙСЫ въезжает снизу, без наложения
+          title.style.translate = `0 ${(-100 * ek).toFixed(2)}vh`;
+          title.style.opacity = '1';
+          cw.style.transform = `translateY(calc(-50% + ${(100 * (1 - ek)).toFixed(2)}vh))`;
+          cw.style.opacity = '1';
         }
         // такт 2, 0.08 → 0.26: MANAGER уезжает вверх, MENTOR поднимается на его место
         if (roleA && roleB) {
