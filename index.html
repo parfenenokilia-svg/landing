@@ -5353,7 +5353,7 @@
 
     /* ═══════════ HERO: роль, тезис, смена роли ═══════════ */
     /* Hero держится на экране, пока проявляется тезис и меняется роль */
-    #heroWrap { height: 230vh; height: 230svh; min-height: 0 !important; }
+    #heroWrap { height: 170vh; height: 170svh; min-height: 0 !important; }
     #heroWrap .fp-slide { position: sticky !important; top: 0; height: 100vh; height: 100svh; min-height: 0; }
     #heroWrap .hero {
       height: 100%;
@@ -5398,6 +5398,17 @@
     @media (prefers-reduced-motion: reduce) { .hero-w { color: #0d0d0d; } }
     @media (max-width: 760px) {
       #heroSub, .hero-v2-slogan { font-size: clamp(22px, 6.2vw, 30px) !important; margin-top: 28px; }
+    }
+
+    /* Роль на всю ширину, без фразы: размер подбирается скриптом под ширину экрана */
+    #heroSub, .hero-v2-slogan { display: none !important; }
+    #heroTitle.fx-fit { white-space: nowrap; }
+    /* Десктоп: роль в одну строку на всю ширину */
+    @media (min-width: 761px) {
+      #heroTitle br { display: none; }
+    }
+    @media (min-width: 761px) {
+      #heroWrap .hero, #heroWrap .hero-v2, #heroWrap .hero-v2-title-wrap { overflow: visible !important; }
     }
 
   
@@ -5508,7 +5519,7 @@
 
       <div class="hero-v2" id="heroV2">
         <div class="hero-v2-title-wrap">
-          <h1 class="hero-v2-title" id="heroTitle" aria-label="Product manager, product mentor">PRODUCT<br><span class="hero-role" aria-hidden="true"><span class="hero-role-a">MANAGER</span><span class="hero-role-b">MENTOR</span></span></h1>
+          <h1 class="hero-v2-title" id="heroTitle" aria-label="Product manager, product mentor">PRODUCT <br><span class="hero-role" aria-hidden="true"><span class="hero-role-a">MANAGER</span><span class="hero-role-b">MENTOR</span></span></h1>
         </div>
         <div class="hero-v2-slogan visible" id="heroSub">
           ЗАПУСКАЮ И РАЗВИВАЮ B2C ПРОДУКТЫ С ФОКУСОМ НА ВЫРУЧКУ.<br><span class="hero-sub-line2">10+ ЛЕТ ПРОЕКТНОГО И ПРОДУКТОВОГО УПРАВЛЕНИЯ.</span>
@@ -8496,7 +8507,40 @@
       });
     })();
 
-    // ═══════════ HERO: тезис проявляется по словам, затем роль меняется на MENTOR ═══════════
+    // ═══════════ HERO: заголовок на всю ширину ═══════════
+    (function() {
+      const t = document.getElementById('heroTitle');
+      if (!t) return;
+      function fit() {
+        const box = t.parentElement.getBoundingClientRect();
+        if (!box.width) return;
+        const desk = window.matchMedia('(min-width: 761px)').matches;
+        // на десктопе заголовок идёт от края до края экрана, с полями как у шапки
+        const brand = document.querySelector('.brand');
+        const pad = desk ? Math.max(24, brand ? Math.round(brand.getBoundingClientRect().left) : 48) : 0;
+        t.style.marginLeft = desk ? (pad - box.left) + 'px' : '';
+        t.style.marginRight = '';
+        t.style.maxWidth = desk ? 'none' : '';
+        t.style.width = desk ? (window.innerWidth - pad * 2) + 'px' : '';
+        const target = desk ? window.innerWidth - pad * 2 : box.width;
+        t.classList.add('fx-fit');
+        t.style.setProperty('font-size', '100px', 'important');
+        const rng = document.createRange(); rng.selectNodeContents(t);
+        let w = 0; [...rng.getClientRects()].forEach(r => { w = Math.max(w, r.right); });
+        w = w - t.getBoundingClientRect().left;
+        const byWidth = 100 * target / w;
+        const lines = window.matchMedia('(min-width: 761px)').matches ? 1 : 2;
+        const byHeight = (window.innerHeight - 180) / (lines * 0.95);
+        t.style.setProperty('font-size', Math.floor(Math.min(byWidth, byHeight)) + 'px', 'important');
+      }
+      fit();
+      if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
+      window.addEventListener('load', fit);
+      let rt = null;
+      window.addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(fit, 120); });
+    })();
+
+    // ═══════════ HERO: роль меняется на MENTOR ═══════════
     (function() {
       const sub = document.getElementById('heroSub');
       const wrap = document.getElementById('heroWrap');
@@ -8522,9 +8566,9 @@
           const a = Math.min(Math.max(rp * n - i, 0), 1);
           w.style.color = `rgba(13,13,13,${(0.14 + 0.86 * a).toFixed(3)})`;
         });
-        // 0.7 → 0.92: MANAGER уезжает вверх, MENTOR поднимается на его место
+        // 0.3 → 0.7: MANAGER уезжает вверх, MENTOR поднимается на его место
         if (roleA && roleB) {
-          const sp = Math.min(Math.max((p - 0.7) / 0.22, 0), 1);
+          const sp = Math.min(Math.max((p - 0.3) / 0.4, 0), 1);
           const e = sp < 0.5 ? 4 * sp * sp * sp : 1 - Math.pow(-2 * sp + 2, 3) / 2;
           roleA.style.transform = `translateY(${(-140 * e).toFixed(2)}%)`;
           roleB.style.transform = `translateY(${(140 - 140 * e).toFixed(2)}%)`;
