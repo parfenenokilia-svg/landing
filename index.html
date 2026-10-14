@@ -5369,6 +5369,16 @@
     @media (min-width: 761px) {
       /* Заголовок и тезис помещаются в высоту экрана */
       #heroTitle { font-size: min(clamp(96px, 15vw, 240px), 20vh) !important; }
+      /* Диагональ: роль слева сверху, тезис справа снизу */
+      #heroSub, .hero-v2-slogan {
+        align-self: flex-end;
+        margin-left: auto !important;
+        margin-right: 0 !important;
+        max-width: 19ch;
+        font-size: clamp(30px, 3.3vw, 50px) !important;
+        margin-top: 24px;
+      }
+      #heroWrap .hero-v2 { height: 100%; justify-content: space-between; }
     }
     .hero-role {
       display: inline-grid;
@@ -5825,7 +5835,7 @@
         contactsTitle: "КОНТАКТЫ",
         contactsText: "Пишите в Telegram или на почту: менторство, консультация, выступление, проект или просто знакомство.",
         footer: "2026 Илья Парфененок. Сделано с любовью к продуктам.",
-        heroSub: "Запускаю образовательные продукты с нуля и довожу их до выручки",
+        heroSub: "Вгружаюсь в продукты, свои и чужие, и быстро понимаю, что в них на самом деле работает",
         servicesLabel: "мои компетенции и их влияние на бизнес",
         aboutLabel: "путь от хелпера до продакта",
         aboutLead: "Сочетаю проектное и продуктовое управление. Мыслю метриками, юнит-экономикой и пользовательским опытом.",
@@ -5982,7 +5992,7 @@
         contactsTitle: "CONTACTS",
         contactsText: "Message me on Telegram or by email about mentoring, consulting, a talk, a project or just to connect.",
         footer: "2026 Ilia Parfenenok. Built with love for products.",
-        heroSub: "I launch education products from scratch and take them to revenue",
+        heroSub: "I dive into products, my own and other people’s, and quickly see what actually works in them",
         servicesLabel: "my competencies and their impact on the business",
         aboutLabel: "from helper to product manager",
         aboutLead: "I combine project and product management. I think in metrics, unit economics, and user experience.",
