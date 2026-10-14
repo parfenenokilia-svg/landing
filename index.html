@@ -5323,6 +5323,34 @@
     /* Полный отзыв в раскрытой карточке */
     .recommend-drawer, .recommend-drawer p { color: rgba(13,13,13,0.85) !important; }
 
+    /* ═══════════ ХОРЕОГРАФИЯ ПРИ СКРОЛЛЕ ═══════════ */
+    /* Кейсы складываются стопкой: новая карточка наезжает на предыдущую */
+    @media (min-width: 761px) {
+      #csCards .cs-card { position: sticky; top: 0; }
+    }
+    .cs-dim {
+      position: absolute;
+      inset: 0;
+      z-index: 4;
+      background: #0d0d0d;
+      opacity: 0;
+      pointer-events: none;
+    }
+    /* Таймлайн: линия между этапами прорисовывается по мере скролла */
+    .tl-agr-line, .tl-agr-item.past .tl-agr-line {
+      position: relative;
+      overflow: hidden;
+      background: rgba(13,13,13,0.12) !important;
+    }
+    .tl-agr-line::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: #0d0d0d;
+      transform-origin: top;
+      transform: scaleY(var(--p, 0));
+    }
+
   
     /* Портрет на сплэше: обработан заранее (ЧБ, резкость), фильтр не нужен */
     .splash-photo { max-width: 78vw; filter: none !important; }
@@ -7946,7 +7974,17 @@
         const dots  = dotsEl.querySelectorAll('.cs-dot');
         // Фото: медленный наезд камеры, цвет в фокусе, счётчик главной цифры
         const rmCases = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-        cards.forEach((card) => {
+        const deskStack = window.matchMedia('(min-width: 761px)').matches;
+        cards.forEach((card, ci) => {
+          // Стопка: предыдущая карточка уменьшается и темнеет под следующей
+          if (deskStack && !rmCases && ci < cards.length - 1) {
+            const next = cards[ci + 1];
+            const dim = document.createElement('div'); dim.className = 'cs-dim'; card.appendChild(dim);
+            const stOpts = { trigger: next, start: 'top bottom', end: 'top top', scrub: true };
+            gsap.fromTo(card, { scale: 1, transformOrigin: '50% 30%' },
+              { scale: 0.92, ease: 'none', immediateRender: false, scrollTrigger: stOpts });
+            gsap.fromTo(dim, { opacity: 0 }, { opacity: 0.7, ease: 'none', immediateRender: false, scrollTrigger: { ...stOpts } });
+          }
           const media = card.querySelector('.cs-media');
           if (media && !rmCases) {
             gsap.fromTo(media, { scale: 1.14 }, { scale: 1, ease: 'none',
@@ -8368,6 +8406,45 @@
           });
         }).observe(overlay, { attributes: true, attributeFilter: ['style'] });
       }
+    })();
+
+    // ═══════════ ХОРЕОГРАФИЯ ПРИ СКРОЛЛЕ ═══════════
+    (function() {
+      if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') return;
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      const desk = window.matchMedia('(min-width: 761px)').matches;
+
+      // Hero уходит вглубь, пока наезжает блок кейсов
+      const heroInner = document.querySelector('#hero .hero-v2') || document.getElementById('hero');
+      const stage = document.querySelector('.cases-stage');
+      if (heroInner && stage) {
+        gsap.fromTo(heroInner, { scale: 1, opacity: 1, y: 0 },
+          { scale: 0.9, opacity: 0.2, y: -48, ease: 'none', immediateRender: false,
+            transformOrigin: '50% 40%',
+            scrollTrigger: { trigger: stage, start: 'top bottom', end: 'top top', scrub: true } });
+      }
+
+      // «КЕЙСЫ» отступает, когда на него наезжает первая карточка
+      const casesTitle = document.getElementById('casesHeroTitle');
+      const firstCard = () => document.querySelector('#csCards .cs-card');
+      if (casesTitle && firstCard()) {
+        gsap.fromTo(casesTitle, { scale: 1, opacity: 1 },
+          { scale: 0.86, opacity: 0.3, ease: 'none', immediateRender: false, transformOrigin: '0% 50%',
+            scrollTrigger: { trigger: '#csCards', start: 'top bottom', end: 'top top', scrub: true } });
+      }
+
+      // Линии таймлайна прорисовываются внутри своего этапа
+      const stages = document.querySelectorAll('.scroll-stage');
+      stages.forEach((st, i) => {
+        const line = document.querySelector(`.tl-agr-item[data-idx="${i}"] .tl-agr-line`);
+        if (!line) return;
+        ScrollTrigger.create({
+          trigger: st, start: 'top center', end: 'bottom center',
+          onUpdate: self => line.style.setProperty('--p', self.progress.toFixed(3)),
+          onLeave: () => line.style.setProperty('--p', 1),
+          onLeaveBack: () => line.style.setProperty('--p', 0)
+        });
+      });
     })();
 
   </script>
