@@ -5376,9 +5376,12 @@
       overflow: hidden;
       vertical-align: top;
       line-height: inherit;
+      /* запас снизу, чтобы маска не срезала низ букв */
+      padding: 0 0 0.14em;
+      margin: 0 0 -0.14em;
     }
     .hero-role > span { grid-area: 1 / 1; display: block; will-change: transform; }
-    .hero-role-b { transform: translateY(105%); }
+    .hero-role-b { transform: translateY(140%); }
 
     #heroSub, .hero-v2-slogan {
       font-family: "IBM Plex Sans", sans-serif !important;
@@ -5826,7 +5829,7 @@
         contactsTitle: "КОНТАКТЫ",
         contactsText: "Пишите в Telegram или на почту: менторство, консультация, выступление, проект или просто знакомство.",
         footer: "2026 Илья Парфененок. Сделано с любовью к продуктам.",
-        heroSub: "Ивенты, госпрограммы, EdTech, стартапы: в каждом продукте я разбирался быстрее, чем от меня ждали",
+        heroSub: "Ивенты, госпрограммы, EdTech, стартапы: поэтому я смотрю на продукт глазами пользователя, команды и бизнеса сразу",
         servicesLabel: "мои компетенции и их влияние на бизнес",
         aboutLabel: "путь от хелпера до продакта",
         aboutLead: "Сочетаю проектное и продуктовое управление. Мыслю метриками, юнит-экономикой и пользовательским опытом.",
@@ -5983,7 +5986,7 @@
         contactsTitle: "CONTACTS",
         contactsText: "Message me on Telegram or by email about mentoring, consulting, a talk, a project or just to connect.",
         footer: "2026 Ilia Parfenenok. Built with love for products.",
-        heroSub: "Events, government programmes, EdTech, startups: in every product I got up to speed faster than anyone expected",
+        heroSub: "Events, government programmes, EdTech, startups: that’s why I see a product through the eyes of its users, its team and the business at once",
         servicesLabel: "my competencies and their impact on the business",
         aboutLabel: "from helper to product manager",
         aboutLead: "I combine project and product management. I think in metrics, unit economics, and user experience.",
@@ -8523,8 +8526,8 @@
         if (roleA && roleB) {
           const sp = Math.min(Math.max((p - 0.7) / 0.22, 0), 1);
           const e = sp < 0.5 ? 4 * sp * sp * sp : 1 - Math.pow(-2 * sp + 2, 3) / 2;
-          roleA.style.transform = `translateY(${(-105 * e).toFixed(2)}%)`;
-          roleB.style.transform = `translateY(${(105 - 105 * e).toFixed(2)}%)`;
+          roleA.style.transform = `translateY(${(-140 * e).toFixed(2)}%)`;
+          roleB.style.transform = `translateY(${(140 - 140 * e).toFixed(2)}%)`;
         }
       }
       split();
