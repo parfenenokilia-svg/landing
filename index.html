@@ -5426,8 +5426,8 @@
       line-height: 0.88;
       color: #f4f4f2;
       white-space: nowrap;
-      transform: translateY(calc(-50% + 100vh));
-      opacity: 1;
+      transform: translateY(-50%) scale(1.9);
+      opacity: 0;
       pointer-events: none;
     }
     /* Кейсы наезжают прямо на сцену, отдельного экрана «КЕЙСЫ» нет */
@@ -8597,17 +8597,20 @@
           const a = Math.min(Math.max(rp * n - i, 0), 1);
           w.style.color = `rgba(13,13,13,${(0.14 + 0.86 * a).toFixed(3)})`;
         });
-        // такт 3, 0.3 → 0.46: роль уходит вверх, на её место поднимается КЕЙСЫ
+        // такт 3: роль уходит вглубь сцены, КЕЙСЫ приходит из-за камеры на её место
         const title = document.getElementById('heroTitle');
         const cw = document.getElementById('heroCasesWord');
         if (title && cw) {
-          const k = Math.min(Math.max((p - 0.3) / 0.16, 0), 1);
-          const ek = k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2;
-          // чистая смена кадра: роль уезжает вверх за экран, КЕЙСЫ въезжает снизу, без наложения
-          title.style.translate = `0 ${(-100 * ek).toFixed(2)}vh`;
-          title.style.opacity = '1';
-          cw.style.transform = `translateY(calc(-50% + ${(100 * (1 - ek)).toFixed(2)}vh))`;
-          cw.style.opacity = '1';
+          const ease = x => 1 - Math.pow(1 - x, 3);
+          const out = ease(Math.min(Math.max((p - 0.30) / 0.14, 0), 1));
+          const inn = ease(Math.min(Math.max((p - 0.36) / 0.14, 0), 1));
+          title.style.transformOrigin = '50% 50%';
+          title.style.scale = (1 - 0.5 * out).toFixed(4);
+          title.style.translate = `0 ${(-6 * out).toFixed(2)}vh`;
+          title.style.opacity = (1 - out).toFixed(3);
+          cw.style.transformOrigin = '50% 50%';
+          cw.style.transform = `translateY(-50%) scale(${(1.9 - 0.9 * inn).toFixed(4)})`;
+          cw.style.opacity = inn.toFixed(3);
         }
         // такт 2, 0.08 → 0.26: MANAGER уезжает вверх, MENTOR поднимается на его место
         if (roleA && roleB) {
