@@ -5323,6 +5323,28 @@
     /* Полный отзыв в раскрытой карточке */
     .recommend-drawer, .recommend-drawer p { color: rgba(13,13,13,0.85) !important; }
 
+    /* «С чем ко мне приходят»: ситуация и доказательство видны сразу, без раскрытия */
+    #servicesGrid .svc-row-head { cursor: default; pointer-events: none; }
+    #servicesGrid .svc-row-arrow { display: none !important; }
+    #servicesGrid .svc-row-body {
+      max-height: none !important;
+      opacity: 1 !important;
+      display: block !important;
+      padding: 0 0 28px !important;
+    }
+    #servicesGrid .svc-row-desc {
+      max-width: 62ch;
+      font-size: clamp(17px, 1.3vw, 20px) !important;
+      line-height: 1.55 !important;
+      color: #4a4a47 !important;
+      margin: 12px 0 0 !important;
+      padding: 0 !important;
+    }
+    #servicesGrid .svc-row-list, #servicesGrid .svc-impact { display: none !important; }
+
+    /* Длинный заголовок раздела: чуть меньше остальных, чтобы встал в две строки */
+    #servicesTitle { font-size: clamp(56px, 7.2vw, 120px) !important; line-height: 0.95 !important; }
+
     /* ═══════════ ХОРЕОГРАФИЯ ПРИ СКРОЛЛЕ ═══════════ */
     /* Кейсы складываются стопкой: новая карточка наезжает на предыдущую */
     @media (min-width: 761px) {
@@ -5751,7 +5773,7 @@
     const data = {
       ru: {
         brand: "Илья Парфененок",
-        nav: { cases: "Кейсы", services: "Экспертиза", about: "Обо мне", recommendations: "Фидбэк", qa: "Q&A", contacts: "Контакты" },
+        nav: { cases: "Кейсы", services: "С чем приходят", about: "Обо мне", recommendations: "Фидбэк", qa: "Q&A", contacts: "Контакты" },
         hero: {
           title: "Product Manager",
           sub: "B2C продукты с фокусом на выручку. 10+ лет от проектного и продуктового управления.",
@@ -5818,27 +5840,27 @@
             ]
           }
         ],
-        servicesTitle: "Экспертиза",
+        servicesTitle: "С чем ко мне приходят",
         services: [
         {
-          title: "Запуски с нуля",
-          body: "Довожу новый продукт от гипотезы до первых продаж: исследование аудитории, позиционирование, CJM, лендинг и выход на рынок.",
-          list: ["Курс «Как продавать на Uzum Market»: запуск с нуля и рост выручки в 6 раз за два квартала", "Курс «Инвестиции в криптовалюту»: выручка в 3 раза выше плана в первые три месяца", "Курс по Uzum Market стал одним из основных источников B2C-выручки Lerna в Узбекистане."]
+          title: "«Заходим в новую для нас нишу или на новый рынок»",
+          body: "Курс про Uzum Market запускал на рынке Узбекистана, где компания до этого не работала, и за два квартала его выручка выросла в 6 раз.",
+          list: []
         },
         {
-          title: "Рост выручки существующих продуктов",
-          body: "Нахожу узкие места воронки и вместе с маркетингом и продажами проверяю гипотезы на лендингах, в пресейле и в продажах.",
-          list: ["Линейка «Личные финансы»: CR1 с 6 до 8%, CR2 с 7 до 10% при сопоставимом объёме лидов", "Uzum Market: CR1 с 5 до 11%, CR2 с 7 до 12%, CSAT с 72 до 91%", "Рентабельная выручка линейки «Личные финансы» выросла на 40%."]
+          title: "«Нужен свежий взгляд на продукт со стороны»",
+          body: "В Skillbox пришёл без опыта в EdTech, а за время работы рентабельная выручка линейки «Личные финансы» выросла на 40%.",
+          list: []
         },
         {
-          title: "Проверка гипотез до вложений",
-          body: "Проверяю спрос через MVP до того, как компания тратит бюджет на производство.",
-          list: ["Локализация курсов на узбекский язык: тест пяти направлений через MVP-лендинги и рекламу", "Гипотеза не подтвердилась, и Lerna не потратила бюджет на масштабную локализацию контента."]
+          title: "«MVP готов, а пользователей и денег пока нет»",
+          body: "Помогаю с этим основателям в акселераторах. До запуска стоит проверить спрос: однажды такой тест сэкономил компании бюджет на целую локализацию.",
+          list: []
         },
         {
-          title: "Образовательные программы",
-          body: "Запускаю и веду образовательные продукты для государственных заказчиков, корпораций и B2C-рынка.",
-          list: ["Сколково: программа для 200+ участников по заказу Минобрнауки, средняя оценка 9,7 из 10", "Ростех: образовательный трек и конкурс технологических проектов, выстроенные с нуля", "Сейчас отвечаю за образовательное направление в Talentgrator."]
+          title: "«Нужно собрать людей и процесс вокруг запуска»",
+          body: "Десять лет собирал команды и подрядчиков на ивентах до двух тысяч человек, а в Skillbox сводил продукт, маркетинг и продажи вокруг общих цифр.",
+          list: []
         }
         ],
         aboutTitle: "Обо мне",
@@ -5891,7 +5913,7 @@
         contactsText: "Пишите в Telegram или на почту: менторство, консультация, выступление, проект или просто знакомство.",
         footer: "2026 Илья Парфененок. Сделано с любовью к продуктам.",
         heroSub: "Ивенты, госпрограммы, EdTech, стартапы",
-        servicesLabel: "мои компетенции и их влияние на бизнес",
+        servicesLabel: "и что я уже делал в похожих ситуациях",
         aboutLabel: "путь от хелпера до продакта",
         aboutLead: "Сочетаю проектное и продуктовое управление. Мыслю метриками, юнит-экономикой и пользовательским опытом.",
         recommendationsLabel: "коллеги и менеджеры о работе со мной",
@@ -5908,7 +5930,7 @@
       },
       en: {
         brand: "Ilia Parfenenok",
-        nav: { cases: "Cases", services: "Expertise", about: "About", recommendations: "Recommendations", qa: "Q&A", contacts: "Contacts" },
+        nav: { cases: "Cases", services: "How I help", about: "About", recommendations: "Recommendations", qa: "Q&A", contacts: "Contacts" },
         hero: {
           title: "Product Manager",
           sub: "B2C products focused on revenue. 10+ years of project and product management.",
@@ -5975,27 +5997,27 @@
             ]
           }
         ],
-        servicesTitle: "Expertise",
+        servicesTitle: "What people come to me with",
         services: [
         {
-          title: "Launches from zero",
-          body: "I take a new product from hypothesis to first sales: audience research, positioning, CJM, landing page and go-to-market.",
-          list: ["“How to Sell on Uzum Market” course: launched from scratch, revenue grew 6x in two quarters", "“Crypto Investing” course: revenue 3x above plan in the first three months", "The Uzum Market course became one of Lerna’s main sources of B2C revenue in Uzbekistan."]
+          title: "“We are entering a new niche or market”",
+          body: "I launched the Uzum Market course in Uzbekistan, a market the company had never worked in, and its revenue grew 6x in two quarters.",
+          list: []
         },
         {
-          title: "Revenue growth in existing products",
-          body: "I find funnel bottlenecks and test hypotheses on landing pages, pre-sale and sales together with marketing and sales teams.",
-          list: ["Personal Finance line: CR1 from 6 to 8%, CR2 from 7 to 10% with comparable lead volume", "Uzum Market: CR1 from 5 to 11%, CR2 from 7 to 12%, CSAT from 72 to 91%", "Profitable revenue of the Personal Finance line grew by 40%."]
+          title: "“We need a fresh outside view of the product”",
+          body: "I joined Skillbox with no EdTech experience, and during my time there profitable revenue of the Personal Finance line grew by 40%.",
+          list: []
         },
         {
-          title: "Testing hypotheses before investing",
-          body: "I validate demand with an MVP before the company spends budget on production.",
-          list: ["Localising courses into Uzbek: five directions tested with MVP landing pages and ads", "The hypothesis was not confirmed, and Lerna avoided spending on large-scale content localisation."]
+          title: "“The MVP is ready, but there are no users or revenue yet”",
+          body: "I help founders with this in accelerators. Demand is worth testing before launch: once such a test saved a company the budget for a full localisation.",
+          list: []
         },
         {
-          title: "Education programmes",
-          body: "I launch and run education products for government clients, corporations and the B2C market.",
-          list: ["SKOLKOVO: a programme for 200+ participants commissioned by the Ministry of Science and Higher Education, average rating 9.7 out of 10", "Rostec: an education track and a technology project competition built from scratch", "I now lead the education track at Talentgrator."]
+          title: "“We need to bring people and process together around a launch”",
+          body: "For ten years I assembled teams and contractors for events of up to two thousand people, and at Skillbox I aligned product, marketing and sales around shared numbers.",
+          list: []
         }
         ],
         aboutTitle: "About",
@@ -6048,7 +6070,7 @@
         contactsText: "Message me on Telegram or by email about mentoring, consulting, a talk, a project or just to connect.",
         footer: "2026 Ilia Parfenenok. Built with love for products.",
         heroSub: "Events, government programmes, EdTech, startups",
-        servicesLabel: "my competencies and their impact on the business",
+        servicesLabel: "and what I have already done in similar situations",
         aboutLabel: "from helper to product manager",
         aboutLead: "I combine project and product management. I think in metrics, unit economics, and user experience.",
         recommendationsLabel: "colleagues and managers on working with me",
