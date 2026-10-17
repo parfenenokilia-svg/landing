@@ -5345,6 +5345,56 @@
     /* Длинный заголовок раздела: чуть меньше остальных, чтобы встал в две строки */
     #servicesTitle { font-size: clamp(56px, 7.2vw, 120px) !important; line-height: 0.95 !important; }
 
+    /* ── Менторство ── */
+    .mentor-section {
+      background: #f4f4f2;
+      margin-left: calc(-50vw + 50%);
+      margin-right: calc(-50vw + 50%);
+      width: 100vw;
+      position: relative;
+      z-index: 6;
+      padding: 120px max(24px, calc(50vw - 556px)) 120px;
+      box-sizing: border-box;
+      border-top: 1px solid rgba(13,13,13,0.12);
+    }
+    #mentorTitle { color: #0d0d0d !important; }
+    #mentor .section-mega-label { color: #5c5c59 !important; }
+    .mentor-body { margin-top: 48px; }
+    .mentor-text {
+      margin: 0;
+      font-family: "IBM Plex Sans", sans-serif;
+      font-size: clamp(20px, 1.9vw, 28px);
+      line-height: 1.45;
+      letter-spacing: -0.01em;
+      color: #0d0d0d;
+      max-width: 40ch;
+      text-wrap: pretty;
+    }
+    .mentor-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 40px;
+      padding: 16px 28px;
+      border-radius: 999px;
+      background: #0d0d0d;
+      color: #f4f4f2;
+      font-family: "Oswald", sans-serif;
+      font-weight: 700;
+      font-size: 15px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      text-decoration: none;
+      transition: transform 0.2s ease, background-color 0.2s ease;
+    }
+    @media (hover: hover) and (pointer: fine) { .mentor-cta:hover { background: #2a2a28; } }
+    .mentor-cta:active { transform: scale(0.97); }
+    @media (max-width: 760px) {
+      .mentor-section { padding: 88px var(--mobile-pad, 20px); }
+      .mentor-body { margin-top: 32px; }
+      .mentor-cta { margin-top: 28px; }
+    }
+
     /* ═══════════ ХОРЕОГРАФИЯ ПРИ СКРОЛЛЕ ═══════════ */
     /* Кейсы складываются стопкой: новая карточка наезжает на предыдущую */
     @media (min-width: 761px) {
@@ -5566,6 +5616,11 @@
         </a>
       </li>
       <li>
+        <a href="#mentor" class="nav-flip-link" id="navMentor" onclick="closeNavMenu()">
+          <div class="nav-flip-inner"><span>Менторство</span><span>Менторство</span></div>
+        </a>
+      </li>
+      <li>
         <a href="#qa" class="nav-flip-link" onclick="closeNavMenu()">
           <div class="nav-flip-inner"><span data-nav="qa">Q&amp;A</span><span data-nav="qa">Q&amp;A</span></div>
         </a>
@@ -5738,6 +5793,15 @@
 
 
   </main>
+
+  <section id="mentor" class="punk-section mentor-section">
+    <span class="section-mega-title" id="mentorTitle">Менторство</span>
+    <span class="section-mega-label" id="mentorLabel">для основателей стартапов на ранней стадии</span>
+    <div class="mentor-body">
+      <p class="mentor-text" id="mentorText"></p>
+      <a class="mentor-cta" id="mentorCta" href="https://t.me/ilya_9010" target="_blank" rel="noopener">Написать в Telegram ↗</a>
+    </div>
+  </section>
 
   <section id="qa" class="punk-section" style="background:#111111;margin-left:calc(-50vw + 50%);margin-right:calc(-50vw + 50%);width:100vw;position:relative;z-index:6;padding-left:max(24px, calc(50vw - 556px));padding-right:max(24px, calc(50vw - 556px));box-sizing:border-box;">
     <span class="section-mega-title" id="qaTitle">Q&A</span>
@@ -8362,7 +8426,7 @@
       const RM = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
       // ── Что сейчас под шапкой: светлый раздел или тёмный ──
-      const LIGHT = '#recommendations, #about, #services, #qa, #contacts, footer';
+      const LIGHT = '#recommendations, #about, #services, #mentor, #qa, #contacts, footer';
       window.__lightUnder = function() {
         const h = document.querySelector('header');
         const y = (h ? h.offsetHeight : 60) + 2;
@@ -8413,6 +8477,23 @@
           cv.setAttribute('download', lang === 'en' ? 'Ilia_Parfenenok_CV_EN.pdf' : 'Ilia_Parfenenok_CV_RU.pdf');
           cv.querySelectorAll('span').forEach(s => { s.textContent = d.cv.toUpperCase(); });
         }
+      };
+      const MENTOR = {
+        ru: { title: 'Менторство', label: 'для основателей стартапов на ранней стадии',
+              text: 'Работаю с основателями стартапов на ранней стадии, когда идея уже есть, а понятного пути к первым пользователям и деньгам ещё нет. Вместе разбираемся, кто ваш пользователь и за что он заплатит, какую гипотезу проверить первой и как собрать MVP, не потратив лишнего. Сейчас менторю команды в 2080\u00A0Ventures. Если вы на этой стадии, напишите мне.',
+              cta: 'Написать в Telegram ↗', nav: 'Менторство' },
+        en: { title: 'Mentoring', label: 'for early-stage startup founders',
+              text: 'I work with early-stage startup founders who already have an idea but no clear path to their first users and revenue yet. Together we figure out who your user is and what they will pay for, which hypothesis to test first and how to build an MVP without overspending. I currently mentor teams at 2080\u00A0Ventures. If you are at this stage, get in touch.',
+              cta: 'Message on Telegram ↗', nav: 'Mentoring' }
+      };
+      const renderNowBase = window.renderNow;
+      window.renderNow = function(lang) {
+        renderNowBase(lang);
+        const d = MENTOR[lang] || MENTOR.ru;
+        const set = (id, v) => { const e = document.getElementById(id); if (e) e.textContent = v; };
+        set('mentorTitle', d.title); set('mentorLabel', d.label); set('mentorText', d.text); set('mentorCta', d.cta);
+        const nav = document.getElementById('navMentor');
+        if (nav) nav.querySelectorAll('span').forEach(sp => { sp.textContent = d.nav; });
       };
       window.renderNow(window.currentLang || 'ru');
 
