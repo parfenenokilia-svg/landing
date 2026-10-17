@@ -5435,6 +5435,32 @@
     .cases-stage { margin-top: -100vh; margin-top: -100svh; z-index: 25; }
     .cases-stage .cs-hero { display: none !important; }
 
+    /* ═══ Мобилка: плакатный перенос PRO / DUCT / MANA / GER ═══ */
+    .hero-m, .hero-m-cases { display: none; }
+    @media (max-width: 760px) {
+      #heroWrap { height: 260vh; height: 260svh; }
+      #heroTitle, .hero-cases-word { display: none !important; }
+      .hero-m, .hero-m-cases {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        position: absolute;
+        inset: 0;
+        padding: 64px 16px 24px;
+        font-family: "Oswald", sans-serif;
+        font-weight: 700;
+        text-transform: uppercase;
+        color: #f4f4f2;
+        line-height: 0.86;
+        pointer-events: none;
+      }
+      .hero-m .hm-line, .hero-m-cases .hm-line { display: block; flex: none; white-space: nowrap; will-change: translate; }
+      .hero-m .hm-roll { display: grid; overflow: hidden; padding-bottom: 0.12em; margin-bottom: -0.12em; }
+      .hero-m .hm-roll > span { grid-area: 1 / 1; display: block; will-change: transform; }
+      .hero-m .hm-roll > .hm-b { transform: translateY(140%); }
+      .hero-m-cases .hm-line { translate: 110vw 0; }
+    }
+
   
     /* Портрет на сплэше: обработан заранее (ЧБ, резкость), фильтр не нужен */
     .splash-photo { max-width: 78vw; filter: none !important; }
@@ -8631,6 +8657,79 @@
         trigger: wrap, start: 'top top', end: 'bottom bottom',
         onUpdate: self => update(self.progress)
       });
+    })();
+
+    // ═══════════ HERO на мобилке: плакатный перенос, смена роли, уход волной, КЕЙ / СЫ ═══════════
+    (function() {
+      if (!window.matchMedia('(max-width: 760px)').matches) return;
+      const v2 = document.querySelector('#heroWrap .hero-v2');
+      const wrap = document.getElementById('heroWrap');
+      if (!v2 || !wrap) return;
+      const RM = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const m = document.createElement('div');
+      m.className = 'hero-m'; m.setAttribute('aria-hidden', 'true');
+      m.innerHTML =
+        '<span class="hm-line">PRO</span>' +
+        '<span class="hm-line">DUCT</span>' +
+        '<span class="hm-line hm-roll"><span class="hm-a">MANA</span><span class="hm-b">MEN</span></span>' +
+        '<span class="hm-line hm-roll"><span class="hm-a">GER</span><span class="hm-b">TOR</span></span>';
+      const mc = document.createElement('div');
+      mc.className = 'hero-m-cases'; mc.setAttribute('aria-hidden', 'true');
+      v2.appendChild(m); v2.appendChild(mc);
+      const src = document.getElementById('casesHeroTitle');
+      function casesLines() {
+        const t = (src ? src.textContent : 'КЕЙСЫ').trim().toUpperCase();
+        const parts = t === 'КЕЙСЫ' ? ['КЕЙ', 'СЫ'] : t === 'CASES' ? ['CA', 'SES'] : [t.slice(0, Math.ceil(t.length / 2)), t.slice(Math.ceil(t.length / 2))];
+        mc.innerHTML = parts.map(s => `<span class="hm-line">${s}</span>`).join('');
+        fit(); update(lastP);
+      }
+      function fit() {
+        const W = window.innerWidth - 32;
+        const probe = document.createElement('span');
+        probe.style.cssText = 'position:absolute;visibility:hidden;white-space:nowrap;font:700 100px Oswald, sans-serif;text-transform:uppercase';
+        document.body.appendChild(probe);
+        let maxW = 0;
+        ['PRO', 'DUCT', 'MANA', 'GER', 'MEN', 'TOR'].concat([...mc.querySelectorAll('.hm-line')].map(l => l.textContent)).forEach(s => {
+          probe.textContent = s; maxW = Math.max(maxW, probe.getBoundingClientRect().width);
+        });
+        probe.remove();
+        const byW = 100 * W / maxW;
+        const byH = (window.innerHeight - 110) / (4 * 0.86);
+        const fs = Math.floor(Math.min(byW, byH));
+        m.style.fontSize = fs + 'px'; mc.style.fontSize = fs + 'px';
+      }
+      let lastP = 0;
+      const clamp = x => Math.min(Math.max(x, 0), 1);
+      const inOut = x => x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+      const outE = x => 1 - Math.pow(1 - x, 3);
+      function update(p) {
+        lastP = p;
+        const lines = [...m.querySelectorAll(':scope > .hm-line')];
+        const rolls = [...m.querySelectorAll('.hm-roll')];
+        // такт 2: MANA → MEN, GER → TOR, вторая строка чуть позже
+        rolls.forEach((r, i) => {
+          const e = inOut(clamp((p - 0.04 - i * 0.02) / 0.08));
+          r.querySelector('.hm-a').style.transform = `translateY(${(-140 * e).toFixed(2)}%)`;
+          r.querySelector('.hm-b').style.transform = `translateY(${(140 - 140 * e).toFixed(2)}%)`;
+        });
+        // такт 3: строки уезжают влево волной, снизу вверх
+        lines.forEach((l, i) => {
+          const order = lines.length - 1 - i;
+          const e = inOut(clamp((p - 0.15 - order * 0.02) / 0.08));
+          l.style.translate = `${(-115 * e).toFixed(2)}vw 0`;
+        });
+        // КЕЙ / СЫ въезжают справа, тоже со сдвигом
+        [...mc.querySelectorAll('.hm-line')].forEach((l, i) => {
+          const e = outE(clamp((p - 0.23 - i * 0.03) / 0.09));
+          l.style.translate = `${(110 * (1 - e)).toFixed(2)}vw 0`;
+        });
+      }
+      casesLines();
+      if (src) new MutationObserver(casesLines).observe(src, { childList: true, characterData: true, subtree: true });
+      if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { fit(); update(lastP); });
+      window.addEventListener('resize', () => { fit(); update(lastP); });
+      if (RM || typeof ScrollTrigger === 'undefined') { update(0); return; }
+      ScrollTrigger.create({ trigger: wrap, start: 'top top', end: 'bottom bottom', onUpdate: self => update(self.progress) });
     })();
 
   </script>
